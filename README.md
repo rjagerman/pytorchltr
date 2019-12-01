@@ -7,7 +7,6 @@ The goal of this library is to support the infrastructure necessary for performi
 
 In your virtualenv simply run:
 
-    pip install pytorchltr
+    pip install git+ssh://git@github.com/rjagerman/pytorchltr.git#egg=pytorchltr
 
 Note that this is a Python 3 only library.
-
