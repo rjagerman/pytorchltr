@@ -52,7 +52,8 @@ class SVMRankingDataset(_Dataset):
             "features": features,
             "relevance": y,
             "qid": qid,
-            "n": n
+            "n": n,
+            "sparse": self._sparse
         }
 
     def __len__(self):
@@ -101,5 +102,82 @@ def _per_offset_normalize(xs, offsets):
         xs[start:end,:] /= m
 
 
-def collate_svmrank(batch):
-    pass
+def create_svmranking_collate_fn(rng=_np.random.RandomState(42),
+                                 max_list_size=None):
+    r"""Creates a collate function for batches of svm rank examples.
+
+    Arguments:
+        rng: A numpy random state for selecting indices to cut off.
+        max_list_size: The maximum list size (cuts off documents beyond this).
+    """
+    def _collate_fn(batch):
+        # Check if batch is sparse or not
+        sparse = batch[0]["sparse"]
+
+        # Compute list size
+        list_size = max([b['features'].shape[0] for b in batch])
+        if max_list_size is not None:
+            list_size = min(max_list_size, list_size)
+
+        # Create output tensors from batch
+        if sparse:
+            out_features = []
+        else:
+            out_features = _torch.zeros((len(batch), list_size, batch[0]['features'].shape[1]))
+        out_relevance = _torch.zeros((len(batch), list_size))
+        out_qid = _torch.zeros(len(batch))
+        out_n = _torch.zeros(len(batch))
+
+        # Collate the whole batch
+        for batch_index, sample in enumerate(batch):
+
+            # Generate random indices when we exceed the list_size.
+            xs = sample["features"]
+            if xs.shape[0] > list_size:
+                rng_indices = _np.sort(rng.permutation(xs.shape[0])[:list_size])
+
+            # Collate features
+            if sparse:
+                xs_coalesce = xs.coalesce()
+                ind = xs_coalesce.indices()
+                val = xs_coalesce.values()
+                if xs.shape[0] > list_size:
+                    mask = [ind[0, :] == i for i in rng_indices]
+                    for i in range(len(mask)):
+                        ind[0, mask[i]] = int(i)
+                    ind = ind[:, sum(mask)]
+                    val = val[sum(mask)]
+                ind_l = _torch.ones((1, ind.shape[1]), dtype=ind.dtype) * batch_index
+                ind = _torch.cat([ind_l, ind], dim=0)
+                out_features.append((ind, val))
+            else:
+                if xs.shape[0] > list_size:
+                    out_features[batch_index, :, :] = xs[rng_indices, :]
+                else:
+                    out_features[batch_index, 0:xs.shape[0], :] = xs
+
+            # Collate relevance
+            if xs.shape[0] > list_size:
+                out_relevance[batch_index, 0:len(rng_indices)] = sample["relevance"][rng_indices]
+            else:
+                out_relevance[batch_index, 0:len(sample["relevance"])] = sample["relevance"]
+
+            # Collate qid and n
+            out_qid[batch_index] = int(sample["qid"])
+            out_n[batch_index] = min(int(sample["n"]), list_size)
+
+        if sparse:
+            ind = _torch.cat([d[0] for d in out_features], dim=1)
+            val = _torch.cat([d[1] for d in out_features], dim=0)
+            size = (len(batch), list_size, batch[0]['features'].shape[1])
+            out_features = _torch.sparse.FloatTensor(
+                ind, val, _torch.Size(size))
+
+        return {
+            "features": out_features,
+            "relevance": out_relevance,
+            "qid": out_qid,
+            "n": out_n
+        }
+
+    return _collate_fn
