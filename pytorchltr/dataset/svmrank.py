@@ -125,8 +125,8 @@ def create_svmranking_collate_fn(rng=_np.random.RandomState(42),
         else:
             out_features = _torch.zeros((len(batch), list_size, batch[0]['features'].shape[1]))
         out_relevance = _torch.zeros((len(batch), list_size))
-        out_qid = _torch.zeros(len(batch))
-        out_n = _torch.zeros(len(batch))
+        out_qid = _torch.zeros(len(batch), dtype=_torch.long)
+        out_n = _torch.zeros(len(batch), dtype=_torch.long)
 
         # Collate the whole batch
         for batch_index, sample in enumerate(batch):
