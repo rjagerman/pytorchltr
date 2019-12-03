@@ -1,8 +1,28 @@
+r"""Data loading for SVMRank-style data sets."""
 from torch.utils.data import Dataset as _Dataset
 from sklearn.datasets import load_svmlight_file as _load_svmlight_file
 from scipy.sparse import coo_matrix as _coo_matrix
 import numpy as _np
 import torch as _torch
+
+
+class _FilteredDataset(_Dataset):
+    r"""A Filtered Dataset that filters on given indices."""
+    def __init__(self, dataset, indices):
+        r"""Initializes a filtered dataset.
+
+        Arguments:
+            dataset: The underlying dataset.
+            indices: The indices of the underlying dataset to expose.
+        """
+        self._dataset = dataset
+        self._indices = indices
+
+    def __getitem__(self, index):
+        return self._dataset[self._indices[index]]
+
+    def __len__(self):
+        return len(self._indices)
 
 
 class SVMRankingDataset(_Dataset):
@@ -34,7 +54,7 @@ class SVMRankingDataset(_Dataset):
         start = self._offsets[index]
         end = self._offsets[index + 1]
         features = self._xs[start:end, :]
-        y = _torch.tensor(self._ys[start:end])
+        y = _torch.LongTensor(self._ys[start:end])
         n = end - start
 
         # Compute sparse or dense torch tensor
@@ -45,7 +65,7 @@ class SVMRankingDataset(_Dataset):
             features = _torch.sparse.FloatTensor(
                 ind, val, _torch.Size(coo.shape))
         else:
-            features = _torch.tensor(features)
+            features = _torch.FloatTensor(features)
 
         # Return data sample
         return {
@@ -61,7 +81,7 @@ class SVMRankingDataset(_Dataset):
 
 
 def svmranking_dataset(file, sparse=False, normalize=False,
-                       zero_based="auto"):
+                       filter_queries=False, zero_based="auto"):
     r"""Loads an SVMRank-style dataset from given file_path.
 
     Arguments:
@@ -90,11 +110,23 @@ def svmranking_dataset(file, sparse=False, normalize=False,
             raise NotImplementedError("Normalization without dense features is not supported.")
         _per_offset_normalize(xs, offsets)
 
-    # Return full dataset
-    return SVMRankingDataset(xs, ys, unique_qids, offsets, sparse)
+    # Create full dataset
+    dataset = SVMRankingDataset(xs, ys, unique_qids, offsets, sparse)
+
+    # Filter out queries with only non-relevant reuslts
+    if filter_queries:
+        indices = []
+        for i, (start, end) in enumerate(zip(offsets[:-1], offsets[1:])):
+            if _np.sum(ys[start:end]) > 0.0:
+                indices.append(i)
+        indices = _np.array(indices)
+        dataset = _FilteredDataset(dataset, indices)
+
+    return dataset
 
 
 def _per_offset_normalize(xs, offsets):
+    r"""Performs query-level normalization using xs and offsets."""
     for start, end in zip(offsets[:-1], offsets[1:]):
         xs[start:end,:] -= _np.min(xs[start:end,:], axis=0)
         m = _np.max(xs[start:end,:], axis=0)
