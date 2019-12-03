@@ -29,16 +29,15 @@ class AdditivePairwiseLoss(_torch.nn.Module):
         if relevance.ndimension() == 2:
             relevance = relevance.reshape((relevance.shape[0], relevance.shape[1], 1))
 
-        # Compute pairwise differences for pairs that have different relevance grades
+        # Compute pairwise differences for scores
         s_ij = _batch_pairwise_difference(scores)
-        s_ij[_batch_pairwise_difference(relevance) <= 0.0] = 0.0
 
-        # Hinge loss
+        # Compute hinge loss for pairs that have a relevance difference
         loss = 1.0 - s_ij
         loss[_batch_pairwise_difference(relevance) <= 0.0] = 0.0
         loss[loss < 0.0] = 0.0
 
-        # Reduce per nr_docs in batch
+        # Mask out padded documents per query in the batch
         n_grid = n.reshape((n.shape[0], 1, 1))
         n_grid = _torch.repeat_interleave(n_grid, s_ij.shape[1], dim=1)
         n_grid = _torch.repeat_interleave(n_grid, s_ij.shape[2], dim=2)
@@ -48,12 +47,6 @@ class AdditivePairwiseLoss(_torch.nn.Module):
             (1, range_grid.shape[0], range_grid.shape[1]))
         range_grid = _torch.repeat_interleave(range_grid, n.shape[0], dim=0)
         loss[n_grid <= range_grid] = 0.0
-
-        # Reduce only pairs where s_i > s_j
-        tri = _torch.tril(_torch.ones(loss.shape[1], loss.shape[1]))
-        tri = tri.reshape((1, tri.shape[0], tri.shape[1]))
-        tri = _torch.repeat_interleave(tri, loss.shape[0], dim=0)
-        loss *= tri
 
         # Reduce final list loss by sum, creating upper bound on rel result ranks
         loss = loss.view(loss.shape[0], -1)
