@@ -1,7 +1,7 @@
 import pickle
 from io import BytesIO
 
-from nose.tools import assert_almost_equals
+from nose.tools import assert_almost_equal
 from nose.tools import assert_equals
 from nose.tools import raises
 from numpy.testing import assert_array_almost_equal
@@ -81,7 +81,7 @@ def test_basic():
     x, y, q = sample['features'], sample['relevance'], sample['qid']
     assert_equals(x.shape, (9, 45))
     assert_equals(y.shape, (9,))
-    assert_equals(float(x[5, 3]), 0.422507)
+    assert_almost_equal(float(x[5, 3]), 0.422507)
     assert_equals(y[5], 1.0)
     assert_equals(q, 16)
 
@@ -90,7 +90,7 @@ def test_basic():
     x, y, q = sample['features'], sample['relevance'], sample['qid']
     assert_equals(x.shape, (14, 45))
     assert_equals(y.shape, (14,))
-    assert_equals(float(x[12, 2]), 0.461538)
+    assert_almost_equal(float(x[12, 2]), 0.461538)
     assert_equals(y[12], 0.0)
     assert_equals(q, 60)
 
@@ -99,7 +99,7 @@ def test_basic():
     x, y, q = sample['features'], sample['relevance'], sample['qid']
     assert_equals(x.shape, (10, 45))
     assert_equals(y.shape, (10,))
-    assert_equals(float(x[8, 2]), 0.25)
+    assert_almost_equal(float(x[8, 2]), 0.25)
     assert_equals(y[8], 0.0)
     assert_equals(q, 63)
 
@@ -149,19 +149,19 @@ def test_normalize():
     assert_equals(y.shape, (6,))
     assert_equals(q, 1)
 
-    assert_almost_equals(float(x[0, 1]), 1.0)
-    assert_almost_equals(float(x[1, 1]), 0.5)
-    assert_almost_equals(float(x[2, 1]), 0.25)
-    assert_almost_equals(float(x[3, 1]), 0.0)
-    assert_almost_equals(float(x[4, 1]), 0.125)
-    assert_almost_equals(float(x[5, 1]), 0.5)
+    assert_almost_equal(float(x[0, 1]), 1.0)
+    assert_almost_equal(float(x[1, 1]), 0.5)
+    assert_almost_equal(float(x[2, 1]), 0.25)
+    assert_almost_equal(float(x[3, 1]), 0.0)
+    assert_almost_equal(float(x[4, 1]), 0.125)
+    assert_almost_equal(float(x[5, 1]), 0.5)
 
-    assert_almost_equals(float(x[0, 0]), 0.24242424242424246)
-    assert_almost_equals(float(x[1, 0]), 0.12121212121212122)
-    assert_almost_equals(float(x[2, 0]), 0.060606060606060615)
-    assert_almost_equals(float(x[3, 0]), 0.0)
-    assert_almost_equals(float(x[4, 0]), 1.0)
-    assert_almost_equals(float(x[5, 0]), 0.12121212121212122)
+    assert_almost_equal(float(x[0, 0]), 0.24242424242424246)
+    assert_almost_equal(float(x[1, 0]), 0.12121212121212122)
+    assert_almost_equal(float(x[2, 0]), 0.060606060606060615)
+    assert_almost_equal(float(x[3, 0]), 0.0)
+    assert_almost_equal(float(x[4, 0]), 1.0)
+    assert_almost_equal(float(x[5, 0]), 0.12121212121212122)
 
 
 @raises(NotImplementedError)
