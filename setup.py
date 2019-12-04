@@ -11,6 +11,8 @@ setup(
     license='MIT',
     packages=['pytorchltr',
               'pytorchltr.dataset',
+              'pytorchltr.loss',
+              'pytorchltr.evaluation',
               'test',
               'test.dataset'],
     install_requires=['numpy',
