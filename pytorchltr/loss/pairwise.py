@@ -7,7 +7,7 @@ class AdditivePairwiseLoss(_torch.nn.Module):
     Implementation of linearly decomposible additive pairwise ranking losses.
     This includes RankSVM hinge loss and variations.
     """
-    def __init__(self, loss_modifier='rank'):
+    def __init__(self, loss_modifier="rank"):
         r"""Initializes the Additive Pairwise Loss.
 
         Arguments:
@@ -53,9 +53,9 @@ class AdditivePairwiseLoss(_torch.nn.Module):
         loss = 1.0 + loss.sum(1)
 
         # Apply a loss modifier
-        if self.loss_modifier == 'mean':
+        if self.loss_modifier == "mean":
             loss /= n.to(dtype=loss.dtype)
-        elif self.loss_modifier == 'dcg':
+        elif self.loss_modifier == "dcg":
             loss = -1.0 / _torch.log(1.0 + loss)
 
         # Return loss
