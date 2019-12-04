@@ -6,25 +6,6 @@ import numpy as _np
 import torch as _torch
 
 
-class _FilteredDataset(_Dataset):
-    r"""A Filtered Dataset that filters on given indices."""
-    def __init__(self, dataset, indices):
-        r"""Initializes a filtered dataset.
-
-        Arguments:
-            dataset: The underlying dataset.
-            indices: The indices of the underlying dataset to expose.
-        """
-        self._dataset = dataset
-        self._indices = indices
-
-    def __getitem__(self, index):
-        return self._dataset[self._indices[index]]
-
-    def __len__(self):
-        return len(self._indices)
-
-
 class SVMRankingDataset(_Dataset):
     def __init__(self, xs, ys, unique_qids, offsets, sparse):
         r"""An SVM ranking dataset supporting both dense and sparse tensors.
@@ -120,7 +101,7 @@ def svmranking_dataset(file, sparse=False, normalize=False,
             if _np.sum(ys[start:end]) > 0.0:
                 indices.append(i)
         indices = _np.array(indices)
-        dataset = _FilteredDataset(dataset, indices)
+        dataset = _torch.utils.data.Subset(dataset, indices)
 
     return dataset
 
