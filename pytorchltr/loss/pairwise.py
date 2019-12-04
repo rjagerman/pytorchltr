@@ -55,7 +55,7 @@ class AdditivePairwiseLoss(_torch.nn.Module):
         loss = 1.0 + loss.sum(1)
 
         # Apply a loss modifier
-        if self.loss_modifier == "mean":
+        if self.loss_modifier == "normrank":
             loss /= n.to(dtype=loss.dtype)
         elif self.loss_modifier == "dcg":
             loss = -1.0 / _torch.log(1.0 + loss)
