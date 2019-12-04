@@ -1,5 +1,6 @@
 """DCG and NDCG evaluation metrics."""
 import torch as _torch
+from pytorchltr.util import rank_by_score as _rank_by_score
 
 
 def ndcg(scores, relevance, n, k=None, exp=True):
@@ -47,40 +48,18 @@ def dcg(scores, relevance, n, k=None, exp=True):
         query at every rank. If k is not None, then this returns a tensor of
         size (batch_size), indicating the DCG@k of each query.
     """
-    # Compute nr_doc mask to mask out padded documents
-    if scores.dim() == 3:
-        scores = scores.reshape((scores.shape[0], scores.shape[1]))
-    mask = _torch.repeat_interleave(
-        _torch.arange(scores.shape[1]).reshape((1, scores.shape[1])),
-        scores.shape[0], dim=0)
-    n_mask = _torch.repeat_interleave(
-        n.reshape((n.shape[0], 1)), scores.shape[1], dim=1)
-    scores[mask >= n_mask] = -float('inf')
-    relevance[mask >= n_mask] = 0.0
-
     # Compute relevance per rank
-    rel_sort = _torch.gather(relevance, 1, _batched_tiebreak_argsort(scores)).float()
+    rel_sort = _torch.gather(relevance, 1, _rank_by_score(scores, n)).float()
     arange = _torch.repeat_interleave(
-        _torch.arange(scores.shape[1], dtype=_torch.float).reshape((1, scores.shape[1])),
+        _torch.arange(scores.shape[1], dtype=_torch.float).reshape(
+            (1, scores.shape[1])),
         scores.shape[0], dim=0)
-    per_rank_dcg = (2.0 ** rel_sort - 1.0) / _torch.log2(arange + 2.0)
+    if exp:
+        rel_sort = (2.0 ** rel_sort - 1.0)
+    per_rank_dcg = rel_sort / _torch.log2(arange + 2.0)
     dcg = _torch.cumsum(per_rank_dcg, dim=1)
 
     # Do cutoff at k (or return all dcg@k as an array)
     if k is not None:
         dcg = dcg[:, :k][:, -1]
     return dcg
-
-
-def _batched_tiebreak_argsort(x):
-    """Computes a per-row argsort of matrix x with random tiebreaks.
-
-    Arguments:
-        x: A 2D tensor where each row will be argsorted.
-
-    Returns:
-        A 2D tensor of the same size as x, where each row is the argsort of x,
-        with ties broken randomly.
-    """
-    p = _torch.randperm(x.shape[1])
-    return p[_torch.argsort(x[:, p], descending=True)]
