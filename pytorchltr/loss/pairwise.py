@@ -2,23 +2,25 @@ import torch as _torch
 
 
 class AdditivePairwiseLoss(_torch.nn.Module):
-    r"""Additive pairwise ranking losses.
+    """Additive pairwise ranking losses.
 
     Implementation of linearly decomposible additive pairwise ranking losses.
     This includes RankSVM hinge loss and variations.
     """
     def __init__(self, loss_modifier="rank"):
-        r"""Initializes the Additive Pairwise Loss.
+        """Initializes the Additive Pairwise Loss.
 
         Arguments:
-            loss_modifier: One of "rank", "mean" or "dcg". Each indicating a
-                type of loss modification.
+            loss_modifier: One of "rank", "normrank" or "dcg", where "rank"
+                indicates the hinge loss upper bound to svmrank, "normrank"
+                normalizes the "rank" objective with size of the ranked list
+                and "dcg" applies additive dcg weighting.
         """
         super().__init__()
         self.loss_modifier = loss_modifier
 
     def forward(self, scores, relevance, n):
-        r"""Computes the loss for given batch of samples.
+        """Computes the loss for given batch of samples.
 
         Arguments:
             scores: A batch of per-query-document scores.
