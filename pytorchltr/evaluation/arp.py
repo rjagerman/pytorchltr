@@ -23,6 +23,9 @@ def arp(scores, relevance, n):
     """
     # Compute relevance per rank
     rel_sort = _torch.gather(relevance, 1, _rank_by_score(scores, n)).float()
-    arange = _torch.repeat_interleave(
+    arange = 1.0 + _torch.repeat_interleave(
         _torch.arange(rel_sort.shape[1])[None, :], rel_sort.shape[0], dim=0)
-    return 1.0 + _torch.mean(arange * rel_sort, dim=1)
+    srp = _torch.sum(arange * rel_sort, dim=1)
+    nrp = _torch.sum(rel_sort, dim=1)
+    nrp[nrp == 0.0] = 1.0
+    return srp / nrp
