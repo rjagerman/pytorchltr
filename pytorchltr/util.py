@@ -1,7 +1,7 @@
 import torch as _torch
 
 
-def mask_padded_values(xs, n, mask_value=-float('inf')):
+def mask_padded_values(xs, n, mask_value=-float('inf'), mutate=False):
     """Turns padded values into given mask value.
 
     Arguments:
@@ -9,15 +9,17 @@ def mask_padded_values(xs, n, mask_value=-float('inf')):
             values.
         n: A tensor of size (batch_size) containing list size of each query.
         mask_value: The value to mask with (default: -inf).
+        mutate: Whether to mutate the values of xs or return a copy.
     """
     mask = _torch.repeat_interleave(
         _torch.arange(xs.shape[1]).reshape((1, xs.shape[1])),
         xs.shape[0], dim=0)
     n_mask = _torch.repeat_interleave(
         n.reshape((n.shape[0], 1)), xs.shape[1], dim=1)
-    out_multiplier = _torch.ones_like(xs)
-    out_multiplier[mask >= n_mask] = mask_value
-    return xs * out_multiplier
+    if not mutate:
+        xs = xs.clone()
+    xs[mask >= n_mask] = mask_value
+    return xs
 
 
 def tiebreak_argsort(x):
