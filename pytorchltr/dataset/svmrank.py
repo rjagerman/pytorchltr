@@ -35,9 +35,9 @@ class SVMRankingDataset(_Dataset):
 
     def to(self, device):
         if not self._sparse:
-            self._xs = _torch.FloatTensor(self._xs, device=device)
-        self._ys = _torch.LongTensor(self._ys, device=device)
-        self._unique_qids = _torch.LongTensor(self._unique_qids, device=device)
+            self._xs = _torch.FloatTensor(self._xs).to(device=device)
+        self._ys = _torch.LongTensor(self._ys).to(device=device)
+        self._unique_qids = _torch.LongTensor(self._unique_qids).to(device=device)
 
     def __getitem__(self, index):
         # Extract query features and relevance labels
