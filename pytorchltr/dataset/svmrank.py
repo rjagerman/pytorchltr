@@ -25,9 +25,13 @@ class SVMRankingDataset(_Dataset):
         self._xs = xs
         self._ys = ys
         self._unique_qids = unique_qids
+        self._qid_map = {qid: index for index, qid in enumerate(unique_qids)}
         self._offsets = offsets
         self._n = len(self._offsets) - 1
         self._sparse = sparse
+
+    def get_index(self, qid):
+        return self._qid_map[qid]
 
     def __getitem__(self, index):
         # Extract query features and relevance labels
