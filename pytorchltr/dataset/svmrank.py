@@ -33,12 +33,6 @@ class SVMRankingDataset(_Dataset):
     def get_index(self, qid):
         return self._qid_map[qid]
 
-    def to(self, device):
-        if not self._sparse:
-            self._xs = _torch.FloatTensor(self._xs).to(device=device)
-        self._ys = _torch.LongTensor(self._ys).to(device=device)
-        self._unique_qids = _torch.LongTensor(self._unique_qids).to(device=device)
-
     def __getitem__(self, index):
         # Extract query features and relevance labels
         qid = self._unique_qids[index]
@@ -126,7 +120,7 @@ def _per_offset_normalize(xs, offsets):
 
 
 def create_svmranking_collate_fn(rng=_np.random.RandomState(42),
-                                 max_list_size=None, device=None):
+                                 max_list_size=None):
     r"""Creates a collate function for batches of svm rank examples.
 
     Arguments:
@@ -147,11 +141,10 @@ def create_svmranking_collate_fn(rng=_np.random.RandomState(42),
             out_features = []
         else:
             out_features = _torch.zeros(
-                (len(batch), list_size, batch[0]['features'].shape[1]),
-                device=device)
-        out_relevance = _torch.zeros((len(batch), list_size), device=device)
-        out_qid = _torch.zeros(len(batch), dtype=_torch.long, device=device)
-        out_n = _torch.zeros(len(batch), dtype=_torch.long, device=device)
+                (len(batch), list_size, batch[0]['features'].shape[1]))
+        out_relevance = _torch.zeros((len(batch), list_size))
+        out_qid = _torch.zeros(len(batch), dtype=_torch.long)
+        out_n = _torch.zeros(len(batch), dtype=_torch.long)
 
         # Collate the whole batch
         for batch_index, sample in enumerate(batch):
@@ -173,8 +166,7 @@ def create_svmranking_collate_fn(rng=_np.random.RandomState(42),
                         ind[0, mask[i]] = int(i)
                     ind = ind[:, sum(mask)]
                     val = val[sum(mask)]
-                ind_l = _torch.ones((1, ind.shape[1]), dtype=ind.dtype,
-                                    device=device) * batch_index
+                ind_l = _torch.ones((1, ind.shape[1]), dtype=ind.dtype) * batch_index
                 ind = _torch.cat([ind_l, ind], dim=0)
                 out_features.append((ind, val))
             else:
@@ -198,7 +190,7 @@ def create_svmranking_collate_fn(rng=_np.random.RandomState(42),
             val = _torch.cat([d[1] for d in out_features], dim=0)
             size = (len(batch), list_size, batch[0]['features'].shape[1])
             out_features = _torch.sparse.FloatTensor(
-                ind, val, _torch.Size(size), device=device)
+                ind, val, _torch.Size(size))
 
         return {
             "features": out_features,
