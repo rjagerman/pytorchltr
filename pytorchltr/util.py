@@ -12,7 +12,7 @@ def mask_padded_values(xs, n, mask_value=-float('inf'), mutate=False):
         mutate: Whether to mutate the values of xs or return a copy.
     """
     mask = _torch.repeat_interleave(
-        _torch.arange(xs.shape[1]).reshape((1, xs.shape[1])),
+        _torch.arange(xs.shape[1], device=xs.device).reshape((1, xs.shape[1])),
         xs.shape[0], dim=0)
     n_mask = _torch.repeat_interleave(
         n.reshape((n.shape[0], 1)), xs.shape[1], dim=1)
@@ -32,7 +32,7 @@ def tiebreak_argsort(x):
         A 2D tensor of the same size as x, where each row is the argsort of x,
         with ties broken randomly.
     """
-    p = _torch.randperm(x.shape[1])
+    p = _torch.randperm(x.shape[1], device=x.device)
     return p[_torch.argsort(x[:, p], descending=True)]
 
 

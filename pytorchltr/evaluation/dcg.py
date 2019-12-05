@@ -51,7 +51,8 @@ def dcg(scores, relevance, n, k=None, exp=True):
     # Compute relevance per rank
     rel_sort = _torch.gather(relevance, 1, _rank_by_score(scores, n)).float()
     arange = _torch.repeat_interleave(
-        _torch.arange(scores.shape[1], dtype=_torch.float).reshape(
+        _torch.arange(scores.shape[1], dtype=_torch.float,
+                      device=scores.device).reshape(
             (1, scores.shape[1])),
         scores.shape[0], dim=0)
     if exp:

@@ -44,7 +44,8 @@ class AdditivePairwiseLoss(_torch.nn.Module):
         n_grid = _torch.repeat_interleave(n_grid, s_ij.shape[1], dim=1)
         n_grid = _torch.repeat_interleave(n_grid, s_ij.shape[2], dim=2)
         range_grid = _torch.max(*_torch.meshgrid(
-            [_torch.arange(s_ij.shape[1]), _torch.arange(s_ij.shape[2])]))
+            [_torch.arange(s_ij.shape[1], device=s_ij.device),
+             _torch.arange(s_ij.shape[2], device=s_ij.device)]))
         range_grid = range_grid.reshape(
             (1, range_grid.shape[0], range_grid.shape[1]))
         range_grid = _torch.repeat_interleave(range_grid, n.shape[0], dim=0)
