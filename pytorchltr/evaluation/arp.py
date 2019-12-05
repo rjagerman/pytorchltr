@@ -14,9 +14,6 @@ def arp(scores, relevance, n):
             relevance judgements per document per query.
         n: A tensor of size (batch_size) indicating the number of docs per
             query.
-        k: (Optional) an integer indicating the cutoff for ndcg.
-        exp: A boolean indicating whether to use the exponential notation of
-            DCG.
 
     Returns:
         A tensor of size (batch_size) indicating the ARP of each query.
@@ -24,7 +21,8 @@ def arp(scores, relevance, n):
     # Compute relevance per rank
     rel_sort = _torch.gather(relevance, 1, _rank_by_score(scores, n)).float()
     arange = 1.0 + _torch.repeat_interleave(
-        _torch.arange(rel_sort.shape[1])[None, :], rel_sort.shape[0], dim=0)
+        _torch.arange(rel_sort.shape[1], device=rel_sort.device)[None, :],
+        rel_sort.shape[0], dim=0)
     srp = _torch.sum(arange * rel_sort, dim=1)
     nrp = _torch.sum(rel_sort, dim=1)
     nrp[nrp == 0.0] = 1.0
