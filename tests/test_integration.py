@@ -1,7 +1,7 @@
 from io import BytesIO
 
 import torch
-from test.dataset.test_svmrank import get_sample_dataset
+from tests.dataset.test_svmrank import get_sample_dataset
 from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
 from pytorchltr.loss.pairwise import AdditivePairwiseLoss
 from pytorchltr.evaluation.arp import arp
