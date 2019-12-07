@@ -1,11 +1,11 @@
 import pickle
 from io import BytesIO
 
-from nose.tools import assert_almost_equal
-from nose.tools import assert_equals
-from nose.tools import raises
-from numpy.testing import assert_array_almost_equal
-from numpy.testing import assert_array_equal
+# from nose.tools import assert_almost_equal
+# from nose.tools import assert_equals
+# from nose.tools import raises
+from pytest import raises
+from pytest import approx
 from pytorchltr.dataset.svmrank import svmranking_dataset as load
 from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
 
@@ -65,43 +65,43 @@ def test_basic():
         dataset = load(file)
 
     # Check data set size.
-    assert_equals(len(dataset), 4)
+    assert len(dataset) == 4
 
     # Get first sample.
     sample = dataset[0]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
-    assert_equals(x.shape, (6, 45))
-    assert_equals(y.shape, (6,))
-    assert_equals(x[1, 2], 1.0)
-    assert_equals(y[1], 2.0)
-    assert_equals(q, 1)
+    assert x.shape == (6, 45)
+    assert y.shape == (6,)
+    assert x[1, 2] == 1.0
+    assert y[1] == 2.0
+    assert q == 1
 
     # Get second sample.
     sample = dataset[1]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
-    assert_equals(x.shape, (9, 45))
-    assert_equals(y.shape, (9,))
-    assert_almost_equal(float(x[5, 3]), 0.422507)
-    assert_equals(y[5], 1.0)
-    assert_equals(q, 16)
+    assert x.shape == (9, 45)
+    assert y.shape == (9,)
+    assert float(x[5, 3]) == approx(0.422507)
+    assert y[5] == 1.0
+    assert q == 16
 
     # Get third sample.
     sample = dataset[2]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
-    assert_equals(x.shape, (14, 45))
-    assert_equals(y.shape, (14,))
-    assert_almost_equal(float(x[12, 2]), 0.461538)
-    assert_equals(y[12], 0.0)
-    assert_equals(q, 60)
+    assert x.shape == (14, 45)
+    assert y.shape == (14,)
+    assert float(x[12, 2]) == approx(0.461538)
+    assert y[12] == 0.0
+    assert q == 60
 
     # Get fourth sample.
     sample = dataset[3]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
-    assert_equals(x.shape, (10, 45))
-    assert_equals(y.shape, (10,))
-    assert_almost_equal(float(x[8, 2]), 0.25)
-    assert_equals(y[8], 0.0)
-    assert_equals(q, 63)
+    assert x.shape == (10, 45)
+    assert y.shape == (10,)
+    assert float(x[8, 2]) == approx(0.25)
+    assert y[8] == 0.0
+    assert q == 63
 
 
 def test_sparse():
@@ -116,19 +116,17 @@ def test_sparse():
         dataset_dense = load(file, sparse=False)
 
     # Check data set size.
-    assert_equals(len(dataset_dense), len(dataset_sparse))
+    assert len(dataset_dense) == len(dataset_sparse)
 
     # Check sparse and dense return same samples.
     for i in range(len(dataset_dense)):
         sample_dense = dataset_dense[i]
         sample_sparse = dataset_sparse[i]
-        assert_equals(sample_sparse['qid'], sample_dense['qid'])
-        assert_equals(sample_sparse['n'], sample_dense['n'])
-        assert_array_almost_equal(
-            sample_sparse['features'].to_dense().numpy(),
+        assert sample_sparse['qid'] == sample_dense['qid']
+        assert sample_sparse['n'] == sample_dense['n']
+        assert sample_sparse['features'].to_dense().numpy() == approx(
             sample_dense['features'].numpy())
-        assert_array_equal(
-            sample_sparse['relevance'].numpy(),
+        assert sample_sparse['relevance'].numpy() == approx(
             sample_dense['relevance'].numpy())
 
 
@@ -140,31 +138,30 @@ def test_normalize():
         dataset = load(file, normalize=True)
 
     # Check data set size.
-    assert_equals(len(dataset), 4)
+    assert len(dataset) == 4
 
     # Get first sample and assert the contents is as expected.
     sample = dataset[0]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
-    assert_equals(x.shape, (6, 45))
-    assert_equals(y.shape, (6,))
-    assert_equals(q, 1)
+    assert x.shape == (6, 45)
+    assert y.shape == (6,)
+    assert q == 1
 
-    assert_almost_equal(float(x[0, 1]), 1.0)
-    assert_almost_equal(float(x[1, 1]), 0.5)
-    assert_almost_equal(float(x[2, 1]), 0.25)
-    assert_almost_equal(float(x[3, 1]), 0.0)
-    assert_almost_equal(float(x[4, 1]), 0.125)
-    assert_almost_equal(float(x[5, 1]), 0.5)
+    assert float(x[0, 1]) == approx(1.0)
+    assert float(x[1, 1]) == approx(0.5)
+    assert float(x[2, 1]) == approx(0.25)
+    assert float(x[3, 1]) == approx(0.0)
+    assert float(x[4, 1]) == approx(0.125)
+    assert float(x[5, 1]) == approx(0.5)
 
-    assert_almost_equal(float(x[0, 0]), 0.24242424242424246)
-    assert_almost_equal(float(x[1, 0]), 0.12121212121212122)
-    assert_almost_equal(float(x[2, 0]), 0.060606060606060615)
-    assert_almost_equal(float(x[3, 0]), 0.0)
-    assert_almost_equal(float(x[4, 0]), 1.0)
-    assert_almost_equal(float(x[5, 0]), 0.12121212121212122)
+    assert float(x[0, 0]) == approx(0.24242424242424246)
+    assert float(x[1, 0]) == approx(0.12121212121212122)
+    assert float(x[2, 0]) == approx(0.060606060606060615)
+    assert float(x[3, 0]) == approx(0.0)
+    assert float(x[4, 0]) == approx(1.0)
+    assert float(x[5, 0]) == approx(0.12121212121212122)
 
 
-@raises(NotImplementedError)
 def test_sparse_normalize():
 
     # Load data set.
@@ -172,7 +169,8 @@ def test_sparse_normalize():
         write_dataset_file(file)
 
         # This should raise an error as it is not implemented.
-        dataset = load(file, sparse=True, normalize=True)
+        with raises(NotImplementedError):
+            dataset = load(file, sparse=True, normalize=True)
 
 
 def test_serialize():
@@ -187,15 +185,15 @@ def test_serialize():
     deserialized = pickle.loads(serialized)
 
     # Assert original and deserialized versions are the same.
-    assert_equals(len(dataset), len(deserialized))
+    assert len(dataset) == len(deserialized)
     for i in range(len(dataset)):
         sample1 = dataset[i]
         x1, y1, q1 = sample1['features'], sample1['relevance'], sample1['qid']
         sample2 = deserialized[i]
         x2, y2, q2 = sample2['features'], sample2['relevance'], sample2['qid']
-        assert_array_equal(x1.numpy(), x2.numpy())
-        assert_array_equal(y1.numpy(), y2.numpy())
-        assert_equals(q1, q2)
+        assert x1.numpy() == approx(x2.numpy())
+        assert y1.numpy() == approx(y2.numpy())
+        assert q1 == q2
 
 
 def test_serialize_sparse():
@@ -210,15 +208,15 @@ def test_serialize_sparse():
     deserialized = pickle.loads(serialized)
 
     # Assert original and deserialized versions are the same.
-    assert_equals(len(dataset), len(deserialized))
+    assert len(dataset) == len(deserialized)
     for i in range(len(dataset)):
         sample1 = dataset[i]
         x1, y1, q1 = sample1['features'], sample1['relevance'], sample1['qid']
         sample2 = deserialized[i]
         x2, y2, q2 = sample2['features'], sample2['relevance'], sample2['qid']
-        assert_array_almost_equal(x1.to_dense().numpy(), x2.to_dense().numpy())
-        assert_array_equal(y1.numpy(), y2.numpy())
-        assert_equals(q1, q2)
+        assert x1.to_dense().numpy() == approx(x2.to_dense().numpy())
+        assert y1.numpy() == approx(y2.numpy())
+        assert q1 == q2
 
 
 def test_double_serialize():
@@ -234,15 +232,15 @@ def test_double_serialize():
     deserialized = pickle.loads(s2)
 
     # Assert original and deserialized versions are the same.
-    assert_equals(len(dataset), len(deserialized))
+    assert len(dataset) == len(deserialized)
     for i in range(len(dataset)):
         sample1 = dataset[i]
         x1, y1, q1 = sample1['features'], sample1['relevance'], sample1['qid']
         sample2 = deserialized[i]
         x2, y2, q2 = sample2['features'], sample2['relevance'], sample2['qid']
-        assert_array_equal(x1.numpy(), x2.numpy())
-        assert_array_equal(y1.numpy(), y2.numpy())
-        assert_equals(q1, q2)
+        assert x1.numpy() == approx(x2.numpy())
+        assert y1.numpy() == approx(y2.numpy())
+        assert q1 == q2
 
 
 def test_collate_sparse_10():
@@ -259,7 +257,7 @@ def test_collate_sparse_10():
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert_equals(tensor_batch["features"].shape, (3, 10, 45))
+    assert tensor_batch["features"].shape == (3, 10, 45)
 
 
 def test_collate_dense_10():
@@ -276,7 +274,7 @@ def test_collate_dense_10():
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert_equals(tensor_batch["features"].shape, (3, 10, 45))
+    assert tensor_batch["features"].shape == (3, 10, 45)
 
 
 def test_collate_sparse_3():
@@ -293,7 +291,7 @@ def test_collate_sparse_3():
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert_equals(tensor_batch["features"].shape, (3, 3, 45))
+    assert tensor_batch["features"].shape == (3, 3, 45)
 
 
 def test_collate_dense_3():
@@ -310,7 +308,7 @@ def test_collate_dense_3():
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert_equals(tensor_batch["features"].shape, (3, 3, 45))
+    assert tensor_batch["features"].shape == (3, 3, 45)
 
 
 def test_collate_sparse_all():
@@ -327,7 +325,7 @@ def test_collate_sparse_all():
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert_equals(tensor_batch["features"].shape, (3, 14, 45))
+    assert tensor_batch["features"].shape == (3, 14, 45)
 
 
 def test_collate_dense_all():
@@ -344,4 +342,4 @@ def test_collate_dense_all():
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert_equals(tensor_batch["features"].shape, (3, 14, 45))
+    assert tensor_batch["features"].shape == (3, 14, 45)

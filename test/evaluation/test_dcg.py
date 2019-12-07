@@ -1,7 +1,7 @@
 import torch
 from pytorchltr.evaluation.dcg import dcg
 from pytorchltr.evaluation.dcg import ndcg
-from nose.tools import assert_true
+from pytest import approx
 
 
 def _generate_data():
@@ -26,7 +26,7 @@ def test_dcg3():
         1.1309297535714575,
         5.4165082750002025])
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_ndcg3():
@@ -38,7 +38,7 @@ def test_ndcg3():
         1.1309297535714575 / 2.1309297535714578,
         5.4165082750002025 / 8.130929753571458])
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_dcg5_exp():
@@ -50,7 +50,7 @@ def test_dcg5_exp():
         1.5177825608059992,
         5.847184833073595])
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_ndcg5_exp():
@@ -62,7 +62,7 @@ def test_ndcg5_exp():
         1.5177825608059992 / 2.1309297535714578,
         5.847184833073595 / 8.130929753571458])
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_dcg5_nonexp():
@@ -74,7 +74,7 @@ def test_dcg5_nonexp():
         1.5177825608059992,
         3.3234658187877653])
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_ndcg5_nonexp():
@@ -86,7 +86,7 @@ def test_ndcg5_nonexp():
         1.5177825608059992 / 2.1309297535714578,
         3.3234658187877653 / 4.130929753571458])
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_dcg_all_relevant():
@@ -106,7 +106,7 @@ def test_dcg_all_relevant():
         1.0 / torch.log2(2.0 + torch.arange(5, dtype=torch.float))[None, :],
         2, dim=0), dim=1)
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_ndcg_all_relevant():
@@ -123,7 +123,7 @@ def test_ndcg_all_relevant():
     out = ndcg(scores, ys, n, k=5, exp=False)
     expected = torch.ones(2)
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_dcg_no_relevant():
@@ -137,9 +137,11 @@ def test_dcg_no_relevant():
         [0, 0, 0, 0, 0]
     ])
     n = torch.LongTensor([5, 4])
+
     out = dcg(scores, ys, n, k=5, exp=False)
     expected = torch.zeros(2)
-    assert_true(torch.allclose(out, expected))
+
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_ndcg_no_relevant():
@@ -153,7 +155,8 @@ def test_ndcg_no_relevant():
         [0, 0, 0, 0, 0]
     ])
     n = torch.LongTensor([5, 4])
+
     out = ndcg(scores, ys, n, k=5, exp=False)
     expected = torch.zeros(2)
 
-    assert_true(torch.allclose(out, expected))
+    assert out.numpy() == approx(expected.numpy())

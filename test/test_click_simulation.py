@@ -2,7 +2,7 @@ import torch
 from pytorchltr.click_simulation import simulate_perfect
 from pytorchltr.click_simulation import simulate_position
 from pytorchltr.click_simulation import simulate_nearrandom
-from nose.tools import assert_true
+from pytest import approx
 
 
 def _generate_test_data():
@@ -55,8 +55,8 @@ def test_perfect_clicks():
         [1.0, 1.0, 1.0, 0.0, 0.0]
     ])
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_perfect_clicks_cutoff_3():
@@ -73,8 +73,8 @@ def test_perfect_clicks_cutoff_3():
         [1.0, 1.0, 1.0, 0.0, 0.0]
     ])
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_perfect_clicks_cutoff_2():
@@ -91,8 +91,8 @@ def test_perfect_clicks_cutoff_2():
         [1.0, 1.0, 0.0, 0.0, 0.0]
     ])
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_position_clicks():
@@ -107,8 +107,8 @@ def test_position_clicks():
         [1/3.0, 1/2.0, 1/4.0, 0.0, 0.0]
     ])
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_position_clicks_eta_2():
@@ -124,8 +124,8 @@ def test_position_clicks_eta_2():
         [1/3.0, 1/2.0, 1/4.0, 0.0, 0.0]
     ]) ** 2.0
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_position_clicks_eta_0():
@@ -144,8 +144,8 @@ def test_position_clicks_eta_0():
     props_expected[1,3] = 0.0
     props_expected[1,4] = 0.0
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_position_clicks_cutoff_3():
@@ -162,8 +162,8 @@ def test_position_clicks_cutoff_3():
         [1/3.0, 1/2.0, 1/4.0, 0.0, 0.0]
     ])
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_nearrandom_clicks():
@@ -178,8 +178,8 @@ def test_nearrandom_clicks():
         [1/3.0, 1/2.0, 1/4.0, 0.0, 0.0]
     ])
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_nearrandom_clicks_eta_2():
@@ -196,8 +196,8 @@ def test_nearrandom_clicks_eta_2():
         [1/3.0, 1/2.0, 1/4.0, 0.0, 0.0]
     ]) ** 2.0
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_nearrandom_clicks_eta_0():
@@ -216,8 +216,8 @@ def test_nearrandom_clicks_eta_0():
     props_expected[1,3] = 0.0
     props_expected[1,4] = 0.0
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
 
 
 def test_nearrandom_clicks_cutoff_3():
@@ -234,5 +234,5 @@ def test_nearrandom_clicks_cutoff_3():
         [1/3.0, 1/2.0, 1/4.0, 0.0, 0.0]
     ])
     clicks_expected = rel_expected * props_expected
-    assert_true(torch.allclose(clicks, clicks_expected, atol=1e-01))
-    assert_true(torch.allclose(props, props_expected, atol=1e-01))
+    assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
+    assert props_expected.numpy() == approx(props.numpy(), abs=0.1)

@@ -1,5 +1,6 @@
 import torch
 from pytorchltr.evaluation.arp import arp
+from pytest import approx
 
 
 def test_arp():
@@ -13,9 +14,11 @@ def test_arp():
         [1, 1, 0, 0, 0]
     ])
     n = torch.LongTensor([5, 4])
+
     out = arp(scores, ys, n)
-    expected = torch.FloatTensor([3.0, 1.5])
-    torch.allclose(out, expected)
+    expected = torch.FloatTensor([3.333333333, 1.5])
+
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_arp_all_relevant():
@@ -29,9 +32,11 @@ def test_arp_all_relevant():
         [1, 1, 1, 1, 1]
     ])
     n = torch.LongTensor([5, 4])
+
     out = arp(scores, ys, n)
     expected = torch.FloatTensor([3.0, 2.5])
-    torch.allclose(out, expected)
+
+    assert out.numpy() == approx(expected.numpy())
 
 
 def test_arp_no_relevant():
@@ -45,6 +50,8 @@ def test_arp_no_relevant():
         [0, 0, 0, 0, 0]
     ])
     n = torch.LongTensor([5, 4])
+
     out = arp(scores, ys, n)
     expected = torch.FloatTensor([0.0, 0.0])
-    torch.allclose(out, expected)
+
+    assert out.numpy() == approx(expected.numpy())

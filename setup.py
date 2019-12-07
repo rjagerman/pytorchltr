@@ -19,6 +19,5 @@ setup(
                       'scikit-learn',
                       'scipy',
                       'torch'],
-    test_suite='nose.collector',
-    tests_require=['nose']
+    tests_require=['pytest']
 )

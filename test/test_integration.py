@@ -5,7 +5,7 @@ from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
 from pytorchltr.dataset.svmrank import svmranking_dataset
 from pytorchltr.loss.pairwise import AdditivePairwiseLoss
 from pytorchltr.evaluation.arp import arp
-from nose.tools import assert_less_equal
+from pytest import approx
 
 import torch
 
@@ -69,4 +69,4 @@ def test_basic_sgd_learning():
 
     # Assert that the ARP was decreased by a significant amount from start to
     # finish.
-    assert_less_equal(arp_per_epoch[-1] - arp_per_epoch[0], -0.40)
+    assert arp_per_epoch[-1] - arp_per_epoch[0] <= -0.40
