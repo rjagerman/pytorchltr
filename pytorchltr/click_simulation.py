@@ -1,3 +1,4 @@
+"""Collection of click simulators."""
 import torch as _torch
 from pytorchltr.util import mask_padded_values as _mask_padded_values
 

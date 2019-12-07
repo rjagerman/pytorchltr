@@ -4,7 +4,7 @@ from pytorchltr.util import rank_by_score as _rank_by_score
 
 
 def ndcg(scores, relevance, n, k=None, exp=True):
-    r"""Computes Normalized Discounted Cumulative Gain (NDCG).
+    """Computes Normalized Discounted Cumulative Gain (NDCG).
 
     Arguments:
         scores: A tensor of size (batch_size, list_size, 1) or
@@ -29,7 +29,7 @@ def ndcg(scores, relevance, n, k=None, exp=True):
 
 
 def dcg(scores, relevance, n, k=None, exp=True):
-    r"""Computes Discounted Cumulative Gain (DCG).
+    """Computes Discounted Cumulative Gain (DCG).
 
     Arguments:
         scores: A tensor of size (batch_size, list_size, 1) or

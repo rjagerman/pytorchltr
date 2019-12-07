@@ -1,3 +1,4 @@
+"""Pairwise ranking losses."""
 import torch as _torch
 
 

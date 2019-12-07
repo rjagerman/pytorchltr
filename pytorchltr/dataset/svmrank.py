@@ -1,4 +1,4 @@
-r"""Data loading for SVMRank-style data sets."""
+"""Data loading for SVMRank-style data sets."""
 from torch.utils.data import Dataset as _Dataset
 from sklearn.datasets import load_svmlight_file as _load_svmlight_file
 from scipy.sparse import coo_matrix as _coo_matrix
@@ -8,7 +8,7 @@ import torch as _torch
 
 class SVMRankingDataset(_Dataset):
     def __init__(self, xs, ys, unique_qids, offsets, sparse):
-        r"""An SVM ranking dataset supporting both dense and sparse tensors.
+        """An SVM ranking dataset supporting both dense and sparse tensors.
 
         Call `svmranking_dataset()` instead of constructing this class
         directly.
@@ -67,7 +67,7 @@ class SVMRankingDataset(_Dataset):
 
 def svmranking_dataset(file, sparse=False, normalize=False,
                        filter_queries=False, zero_based="auto"):
-    r"""Loads an SVMRank-style dataset from given file_path.
+    """Loads an SVMRank-style dataset from given file_path.
 
     Arguments:
         file (str or file-like): The path to load the dataset from.
@@ -111,7 +111,7 @@ def svmranking_dataset(file, sparse=False, normalize=False,
 
 
 def _per_offset_normalize(xs, offsets):
-    r"""Performs query-level normalization using xs and offsets."""
+    """Performs query-level normalization using xs and offsets."""
     for start, end in zip(offsets[:-1], offsets[1:]):
         xs[start:end,:] -= _np.min(xs[start:end,:], axis=0)
         m = _np.max(xs[start:end,:], axis=0)
@@ -121,7 +121,7 @@ def _per_offset_normalize(xs, offsets):
 
 def create_svmranking_collate_fn(rng=_np.random.RandomState(42),
                                  max_list_size=None):
-    r"""Creates a collate function for batches of svm rank examples.
+    """Creates a collate function for batches of svm rank examples.
 
     Arguments:
         rng: A numpy random state for selecting indices to cut off.

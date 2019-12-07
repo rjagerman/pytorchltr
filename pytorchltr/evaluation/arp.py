@@ -4,7 +4,7 @@ from pytorchltr.util import rank_by_score as _rank_by_score
 
 
 def arp(scores, relevance, n):
-    r"""Computes Average Relevant Position (ARP).
+    """Computes Average Relevant Position (ARP).
 
     Arguments:
         scores: A tensor of size (batch_size, list_size, 1) or
