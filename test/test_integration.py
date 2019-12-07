@@ -1,13 +1,11 @@
 from io import BytesIO
 
-from test.dataset.test_svmrank import write_dataset_file
+import torch
+from test.dataset.test_svmrank import get_sample_dataset
 from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
-from pytorchltr.dataset.svmrank import svmranking_dataset
 from pytorchltr.loss.pairwise import AdditivePairwiseLoss
 from pytorchltr.evaluation.arp import arp
 from pytest import approx
-
-import torch
 
 
 class Model(torch.nn.Module):
@@ -21,13 +19,8 @@ class Model(torch.nn.Module):
 
 def test_basic_sgd_learning():
     torch.manual_seed(42)
-    with BytesIO() as file:
-       write_dataset_file(file)
-       dataset = svmranking_dataset(file)
 
-    with BytesIO() as file:
-       write_dataset_file(file)
-       vali_dataset = svmranking_dataset(file)
+    dataset = get_sample_dataset()
 
     input_dim = dataset[0]["features"].shape[1]
     collate_fn = create_svmranking_collate_fn(max_list_size=50)

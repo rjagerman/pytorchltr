@@ -1,9 +1,7 @@
 import pickle
 from io import BytesIO
+from contextlib import contextmanager
 
-# from nose.tools import assert_almost_equal
-# from nose.tools import assert_equals
-# from nose.tools import raises
 from pytest import raises
 from pytest import approx
 from pytorchltr.dataset.svmrank import svmranking_dataset as load
@@ -52,17 +50,22 @@ dataset_txt = """0 qid:1 1:1.000000 2:1.000000 3:0.833333 4:0.871264 5:0 6:0 7:0
 """
 
 
-def write_dataset_file(handle):
+def _write_dataset_file(handle):
     handle.write(dataset_txt.encode('utf-8'))
     handle.seek(0)
+
+
+def get_sample_dataset(*args, **kwargs):
+    with BytesIO() as file:
+        _write_dataset_file(file)
+        dataset = load(file, *args, **kwargs)
+    return dataset
 
 
 def test_basic():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file)
+    dataset = get_sample_dataset()
 
     # Check data set size.
     assert len(dataset) == 4
@@ -107,13 +110,8 @@ def test_basic():
 def test_sparse():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset_sparse = load(file, sparse=True)
-
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset_dense = load(file, sparse=False)
+    dataset_sparse = get_sample_dataset(sparse=True)
+    dataset_dense = get_sample_dataset(sparse=False)
 
     # Check data set size.
     assert len(dataset_dense) == len(dataset_sparse)
@@ -133,9 +131,7 @@ def test_sparse():
 def test_normalize():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, normalize=True)
+    dataset = get_sample_dataset(normalize=True)
 
     # Check data set size.
     assert len(dataset) == 4
@@ -164,21 +160,15 @@ def test_normalize():
 
 def test_sparse_normalize():
 
-    # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-
-        # This should raise an error as it is not implemented.
-        with raises(NotImplementedError):
-            dataset = load(file, sparse=True, normalize=True)
+    # This should raise an error as it is not implemented.
+    with raises(NotImplementedError):
+        dataset = get_sample_dataset(sparse=True, normalize=True)
 
 
 def test_serialize():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, normalize=True)
+    dataset = get_sample_dataset(normalize=True)
 
     # Attempt to serialize and deserialize it.
     serialized = pickle.dumps(dataset)
@@ -199,9 +189,7 @@ def test_serialize():
 def test_serialize_sparse():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, sparse=True)
+    dataset = get_sample_dataset(sparse=True)
 
     # Attempt to serialize and deserialize it.
     serialized = pickle.dumps(dataset)
@@ -220,10 +208,9 @@ def test_serialize_sparse():
 
 
 def test_double_serialize():
+
     # Load data set
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, normalize=True)
+    dataset = get_sample_dataset(normalize=True)
 
     # Attempt to serialize and deserialize it multiple times.
     s1 = pickle.dumps(dataset)
@@ -246,9 +233,7 @@ def test_double_serialize():
 def test_collate_sparse_10():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, sparse=True)
+    dataset = get_sample_dataset(sparse=True)
 
     # Construct a batch of three samples and collate it with a maximum list
     # size of 10.
@@ -263,9 +248,7 @@ def test_collate_sparse_10():
 def test_collate_dense_10():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, sparse=False)
+    dataset = get_sample_dataset(sparse=False)
 
     # Construct a batch of three samples and collate it with a maximum list
     # size of 10.
@@ -280,9 +263,7 @@ def test_collate_dense_10():
 def test_collate_sparse_3():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, sparse=True)
+    dataset = get_sample_dataset(sparse=True)
 
     # Construct a batch of three samples and collate it with a maximum list
     # size of 3.
@@ -297,9 +278,7 @@ def test_collate_sparse_3():
 def test_collate_dense_3():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, sparse=False)
+    dataset = get_sample_dataset(sparse=False)
 
     # Construct a batch of three samples and collate it with a maximum list
     # size of 3.
@@ -314,9 +293,7 @@ def test_collate_dense_3():
 def test_collate_sparse_all():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, sparse=True)
+    dataset = get_sample_dataset(sparse=True)
 
     # Construct a batch of three samples and collate it with an unlimited
     # maximum list size.
@@ -331,9 +308,7 @@ def test_collate_sparse_all():
 def test_collate_dense_all():
 
     # Load data set.
-    with BytesIO() as file:
-        write_dataset_file(file)
-        dataset = load(file, sparse=False)
+    dataset = get_sample_dataset(sparse=False)
 
     # Construct a batch of three samples and collate it with an unlimited
     # maximum list size.
