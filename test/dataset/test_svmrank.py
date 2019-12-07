@@ -56,6 +56,7 @@ def _write_dataset_file(handle):
 
 
 def get_sample_dataset(*args, **kwargs):
+    """Get sample dataset, uses the same arguments as `svmranking_dataset`."""
     with BytesIO() as file:
         _write_dataset_file(file)
         dataset = load(file, *args, **kwargs)
