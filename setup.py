@@ -1,4 +1,6 @@
 from setuptools import setup
+from setuptools import find_packages
+
 
 setup(
     name='pytorchltr',
@@ -9,13 +11,7 @@ setup(
     author='Rolf Jagerman',
     author_email='rjagerman@gmail.com',
     license='MIT',
-    packages=['pytorchltr',
-              'pytorchltr.dataset',
-              'pytorchltr.loss',
-              'pytorchltr.evaluation',
-              'test',
-              'test.dataset',
-              'test.evaluation'],
+    packages=find_packages(exclude=('tests', 'tests.*',)),
     install_requires=['numpy',
                       'scikit-learn',
                       'scipy',
