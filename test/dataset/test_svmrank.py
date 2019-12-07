@@ -59,15 +59,15 @@ def write_dataset_file(handle):
 
 def test_basic():
 
-    # Load data set
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file)
 
-    # Check data set size
+    # Check data set size.
     assert_equals(len(dataset), 4)
 
-    # Get first sample
+    # Get first sample.
     sample = dataset[0]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
     assert_equals(x.shape, (6, 45))
@@ -76,7 +76,7 @@ def test_basic():
     assert_equals(y[1], 2.0)
     assert_equals(q, 1)
 
-    # Get second sample
+    # Get second sample.
     sample = dataset[1]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
     assert_equals(x.shape, (9, 45))
@@ -85,7 +85,7 @@ def test_basic():
     assert_equals(y[5], 1.0)
     assert_equals(q, 16)
 
-    # Get third sample
+    # Get third sample.
     sample = dataset[2]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
     assert_equals(x.shape, (14, 45))
@@ -94,7 +94,7 @@ def test_basic():
     assert_equals(y[12], 0.0)
     assert_equals(q, 60)
 
-    # Get fourth sample
+    # Get fourth sample.
     sample = dataset[3]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
     assert_equals(x.shape, (10, 45))
@@ -106,7 +106,7 @@ def test_basic():
 
 def test_sparse():
 
-    # Load data set
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset_sparse = load(file, sparse=True)
@@ -115,10 +115,10 @@ def test_sparse():
         write_dataset_file(file)
         dataset_dense = load(file, sparse=False)
 
-    # Check data set size
+    # Check data set size.
     assert_equals(len(dataset_dense), len(dataset_sparse))
 
-    # Check sparse and dense return same samples
+    # Check sparse and dense return same samples.
     for i in range(len(dataset_dense)):
         sample_dense = dataset_dense[i]
         sample_sparse = dataset_sparse[i]
@@ -134,15 +134,15 @@ def test_sparse():
 
 def test_normalize():
 
-    # Load data set
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, normalize=True)
 
-    # Check data set size
+    # Check data set size.
     assert_equals(len(dataset), 4)
 
-    # Get first sample
+    # Get first sample and assert the contents is as expected.
     sample = dataset[0]
     x, y, q = sample['features'], sample['relevance'], sample['qid']
     assert_equals(x.shape, (6, 45))
@@ -166,22 +166,27 @@ def test_normalize():
 
 @raises(NotImplementedError)
 def test_sparse_normalize():
-    # Load data set
+
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
+
+        # This should raise an error as it is not implemented.
         dataset = load(file, sparse=True, normalize=True)
 
 
 def test_serialize():
 
-    # Load data set
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, normalize=True)
 
+    # Attempt to serialize and deserialize it.
     serialized = pickle.dumps(dataset)
     deserialized = pickle.loads(serialized)
 
+    # Assert original and deserialized versions are the same.
     assert_equals(len(dataset), len(deserialized))
     for i in range(len(dataset)):
         sample1 = dataset[i]
@@ -195,14 +200,16 @@ def test_serialize():
 
 def test_serialize_sparse():
 
-    # Load data set
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, sparse=True)
 
+    # Attempt to serialize and deserialize it.
     serialized = pickle.dumps(dataset)
     deserialized = pickle.loads(serialized)
 
+    # Assert original and deserialized versions are the same.
     assert_equals(len(dataset), len(deserialized))
     for i in range(len(dataset)):
         sample1 = dataset[i]
@@ -220,11 +227,13 @@ def test_double_serialize():
         write_dataset_file(file)
         dataset = load(file, normalize=True)
 
+    # Attempt to serialize and deserialize it multiple times.
     s1 = pickle.dumps(dataset)
     d1 = pickle.loads(s1)
     s2 = pickle.dumps(d1)
     deserialized = pickle.loads(s2)
 
+    # Assert original and deserialized versions are the same.
     assert_equals(len(dataset), len(deserialized))
     for i in range(len(dataset)):
         sample1 = dataset[i]
@@ -237,78 +246,102 @@ def test_double_serialize():
 
 
 def test_collate_sparse_10():
-    # Load data set
+
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, sparse=True)
 
+    # Construct a batch of three samples and collate it with a maximum list
+    # size of 10.
     batch = [dataset[0], dataset[1], dataset[2]]
     collate_fn = create_svmranking_collate_fn(max_list_size=10)
 
+    # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
     assert_equals(tensor_batch["features"].shape, (3, 10, 45))
 
 
 def test_collate_dense_10():
-    # Load data set
+
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, sparse=False)
 
+    # Construct a batch of three samples and collate it with a maximum list
+    # size of 10.
     batch = [dataset[0], dataset[1], dataset[2]]
     collate_fn = create_svmranking_collate_fn(max_list_size=10)
 
+    # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
     assert_equals(tensor_batch["features"].shape, (3, 10, 45))
 
 
 def test_collate_sparse_3():
-    # Load data set
+
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, sparse=True)
 
+    # Construct a batch of three samples and collate it with a maximum list
+    # size of 3.
     batch = [dataset[0], dataset[1], dataset[2]]
     collate_fn = create_svmranking_collate_fn(max_list_size=3)
 
+    # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
     assert_equals(tensor_batch["features"].shape, (3, 3, 45))
 
 
 def test_collate_dense_3():
-    # Load data set
+
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, sparse=False)
 
+    # Construct a batch of three samples and collate it with a maximum list
+    # size of 3.
     batch = [dataset[0], dataset[1], dataset[2]]
     collate_fn = create_svmranking_collate_fn(max_list_size=3)
 
+    # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
     assert_equals(tensor_batch["features"].shape, (3, 3, 45))
 
 
 def test_collate_sparse_all():
-    # Load data set
+
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, sparse=True)
 
+    # Construct a batch of three samples and collate it with an unlimited
+    # maximum list size.
     batch = [dataset[0], dataset[1], dataset[2]]
     collate_fn = create_svmranking_collate_fn(max_list_size=None)
 
+    # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
     assert_equals(tensor_batch["features"].shape, (3, 14, 45))
 
 
 def test_collate_dense_all():
-    # Load data set
+
+    # Load data set.
     with BytesIO() as file:
         write_dataset_file(file)
         dataset = load(file, sparse=False)
 
+    # Construct a batch of three samples and collate it with an unlimited
+    # maximum list size.
     batch = [dataset[0], dataset[1], dataset[2]]
     collate_fn = create_svmranking_collate_fn(max_list_size=None)
 
+    # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
     assert_equals(tensor_batch["features"].shape, (3, 14, 45))
