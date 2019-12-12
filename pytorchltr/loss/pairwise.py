@@ -43,8 +43,8 @@ class AdditivePairwiseLoss(_torch.nn.Module):
         # Mask out padded documents per query in the batch
         n_grid = n[:, None, None].repeat(1, s_ij.shape[1], s_ij.shape[2])
         arange = _torch.arange(s_ij.shape[1], device=s_ij.device)
-        range_grid_1 = _torch.max(*_torch.meshgrid([arange, arange]))
-        range_grid = range_grid_1[None, :, :].repeat(n.shape[0], 1, 1)
+        range_grid = _torch.max(*_torch.meshgrid([arange, arange]))
+        range_grid = range_grid[None, :, :].repeat(n.shape[0], 1, 1)
         loss[n_grid <= range_grid] = 0.0
 
         # Reduce final list loss by sum, creating upper bound on rel result ranks
