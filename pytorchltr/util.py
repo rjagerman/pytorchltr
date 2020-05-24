@@ -44,7 +44,8 @@ def rank_by_score(scores, n):
     broken randomly.
 
     Arguments:
-        scores: A tensor of size (batch_size, list_size, 1) containing scores.
+        scores: A tensor of size (batch_size, list_size, 1) or
+                (batch_size, list_size) containing scores.
         n: A tensor of size (batch_size) containing list size of each query.
     """
     if scores.dim() == 3:
