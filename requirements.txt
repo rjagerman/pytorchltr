@@ -4,8 +4,9 @@
 #
 #    pip-compile requirements.in
 #
-joblib==0.14.0            # via scikit-learn
-numpy==1.17.0
-scikit-learn==0.21.3
-scipy==1.3.3
-torch==1.1.0.post2
+future==0.18.2            # via torch
+joblib==0.14.1            # via scikit-learn
+numpy==1.18.3             # via -r requirements.in, scikit-learn, scipy, torch
+scikit-learn==0.22.2.post1  # via -r requirements.in
+scipy==1.4.1              # via -r requirements.in, scikit-learn
+torch==1.5.0              # via -r requirements.in
