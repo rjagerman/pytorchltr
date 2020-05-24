@@ -1,6 +1,6 @@
 # PyTorch Learning to Rank (LTR)
 
-> :warning: **This is in early release and subject to breaking changes**
+> :warning: **This is an early release and subject to breaking changes**
 
 This is a library for Learning to Rank (LTR) with PyTorch.
 The goal of this library is to support the infrastructure necessary for performing LTR experiments in PyTorch.
