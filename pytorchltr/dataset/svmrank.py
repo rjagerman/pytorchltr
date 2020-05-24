@@ -119,14 +119,17 @@ def _per_offset_normalize(xs, offsets):
         xs[start:end,:] /= m
 
 
-def create_svmranking_collate_fn(rng=_np.random.RandomState(42),
-                                 max_list_size=None):
+def create_svmranking_collate_fn(max_list_size=None,
+                                 rng=None):
     """Creates a collate function for batches of svm rank examples.
 
     Arguments:
-        rng: A numpy random state for selecting indices to cut off.
         max_list_size: The maximum list size (cuts off documents beyond this).
+        rng: A numpy random state for selecting indices to cut off.
     """
+    if rng is None:
+        rng = _np.random.RandomState(42)
+
     def _collate_fn(batch):
         # Check if batch is sparse or not
         sparse = batch[0]["sparse"]
