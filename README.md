@@ -1,5 +1,7 @@
 # PyTorch Learning to Rank (LTR)
 
+[![Build Status](https://travis-ci.org/rjagerman/pytorchltr.svg?branch=master)](https://travis-ci.org/rjagerman/pytorchltr)
+
 > :warning: **This is an early release and subject to breaking changes**
 
 This is a library for Learning to Rank (LTR) with PyTorch.
