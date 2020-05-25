@@ -13,42 +13,59 @@ class Resource:
     provided by publically available datasets and can provide download
     functionality if available.
     """
-    def __init__(self, name, location, download=False, url=None):
+    def __init__(self, name, location, download=False, force_download=False,
+                 url=None):
         """
         Initializes the resource with given name in directory at root.
 
         Arguments:
             name: The name of the resource.
             location: The directory to load the resource from.
-            download: If True, this will force a download of the dataset into
-                given root folder.
+            download: If True, this will attempt to download the dataset into
+                given location folder if it does not already exist.
+            force_download: If True, this will always force a download even if
+                the dataset already exist.
             url: The URL to download from if download is True.
         """
         self.name = name
         self.location = location
         self._url = url
         self._cache = {}
-        if download and url:
-            self.download_and_extract()
+        if url and download:
+            if not self.exists() or force_download:
+                self.download()
+                self.extract()
+            else:
+                logging.info("skip download of %s dataset, already exists",
+                             self.name)
 
-    def download_and_extract(self):
+    def exists(self):
         """
-        Downloads and extracts the resource.
+        Checks if the resource already exists.
         """
+        dest = os.path.join(self.location, "data.tar.gz")
+        return os.path.isfile(dest)
 
-        # Download
-        req = urlopen(self._url)
+    def download(self):
+        """
+        Downloads the resource.
+        """
         dest = os.path.join(self.location, "data.tar.gz")
         logging.info("downloading %s dataset from %s to %s",
-                     self.name, self._url, dest)
+                    self.name, self._url, dest)
+        req = urlopen(self._url)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         with open(dest, 'wb') as fp:
             shutil.copyfileobj(req, fp, 32 * 1024)
 
-        # Extract
+    def extract(self):
+        """
+        Extracts the resource.
+        """
+        src = os.path.join(self.location, "data.tar.gz")
         logging.info("extracting %s dataset from %s to %s",
-                     self.name, dest, self.location)
-        with tarfile.open(dest) as f:
+                     self.name, src, self.location)
+        with tarfile.open(src) as f:
             f.extractall(self.location)
 
     def load_svmrank_dataset(self, path, cache_name=None, normalize=False,
@@ -76,6 +93,9 @@ class Resource:
             if cache_name:
                 self._cache[cache_name] = data
             return data
+
+    def collate_fn(self):
+        raise NotImplementedError("%s provides no batch collate function" % self.name)
 
     def train(self):
         raise NotImplementedError("%s provides no train split" % self.name)
