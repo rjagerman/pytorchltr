@@ -10,6 +10,7 @@ attrs==19.3.0             # via pytest
 babel==2.8.0              # via sphinx
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
+coverage==5.1             # via pytest-cov
 docutils==0.16            # via sphinx
 idna==2.9                 # via requests
 imagesize==1.2.0          # via sphinx
@@ -25,7 +26,8 @@ py==1.8.1                 # via pytest
 pygments==2.6.1           # via sphinx
 pylint==2.4.4             # via -r dev-requirements.in
 pyparsing==2.4.7          # via packaging
-pytest==5.4.1             # via -r dev-requirements.in
+pytest-cov==2.9.0         # via -r dev-requirements.in
+pytest==5.4.1             # via -r dev-requirements.in, pytest-cov
 pytz==2020.1              # via babel
 requests==2.23.0          # via sphinx
 six==1.14.0               # via astroid, packaging

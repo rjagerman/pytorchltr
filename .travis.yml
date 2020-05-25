@@ -3,8 +3,14 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+
 install:
   - pip install -r requirements.txt
   - pip install -r dev-requirements.txt
+  - pip install codecov
+
 script:
-  - pytest
+  - pytest --cov-report term --cov=pytorchltr
+
+after_success:
+  - codecov
