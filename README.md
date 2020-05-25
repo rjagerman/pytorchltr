@@ -29,7 +29,7 @@ See `examples/01-basic-usage.py` for a more complete example including evaluatio
     dataset = Example3("./datasets/example3", download=True)
     train, collate_fn = dataset.train(), dataset.collate_fn()
 
-    # Setup model, optimizer, loss and batch collate function
+    # Setup model, optimizer and loss
     model = torch.nn.Linear(train[0]["features"].shape[1], 1)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
     loss = AdditivePairwiseLoss()
