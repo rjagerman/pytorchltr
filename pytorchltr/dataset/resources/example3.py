@@ -1,11 +1,13 @@
 from pytorchltr.dataset.resources.resource import Resource
+from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
 from pytorchltr.dataset.svmrank import svmranking_dataset
 from os import path
 import logging
 
 
 class Example3(Resource):
-    def __init__(self, location, download=False, normalize=True,
+    def __init__(self, location, download=False, force_download=False,
+                 normalize=True,
                  url="http://download.joachims.org/svm_light/examples/example3.tar.gz"):
         """
         Utility class for loading and using the Example3 dataset. This dataset
@@ -18,11 +20,16 @@ class Example3(Resource):
         Arguments:
             location: Directory where the dataset is located.
             download: Whether to download the dataset automatically.
+            force_download: Whether to force a re-download.
             normalize: Whether to perform query-level feature normalization.
             url: Where to download the dataset from if download is True.
         """
-        super().__init__("example3", location, download, url=url)
+        super().__init__("example3", location, download,
+                         force_download=force_download, url=url)
         self.normalize = normalize
+
+    def collate_fn(self):
+        return create_svmranking_collate_fn()
 
     def train(self):
         return self.load_svmrank_dataset(

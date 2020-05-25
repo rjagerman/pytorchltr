@@ -1,11 +1,13 @@
 from pytorchltr.dataset.resources.resource import Resource
+from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
 from pytorchltr.dataset.svmrank import svmranking_dataset
 from os import path
 import logging
 
 
 class IstellaS(Resource):
-    def __init__(self, location, download=False, normalize=True,
+    def __init__(self, location, download=False, force_download=False,
+                 normalize=True,
                  url="http://library.istella.it/dataset/istella-s-letor.tar.gz"):
         """
         Utility class for loading and using the istella-s dataset.
@@ -16,11 +18,16 @@ class IstellaS(Resource):
         Arguments:
             location: Directory where the dataset is located.
             download: Whether to download the dataset automatically.
+            force_download: Whether to force a re-download.
             normalize: Whether to perform query-level feature normalization.
             url: Where to download the dataset from if download is True.
         """
-        super().__init__("istella-s", location, download, url=url)
+        super().__init__("istella-s", location, download,
+                         force_download=force_download, url=url)
         self.normalize = normalize
+
+    def collate_fn(self):
+        return create_svmranking_collate_fn()
 
     def train(self):
         return self.load_svmrank_dataset(
