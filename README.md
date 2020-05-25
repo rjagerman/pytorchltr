@@ -1,6 +1,6 @@
 # PyTorch Learning to Rank (LTR)
 
-[![Build Status](https://travis-ci.org/rjagerman/pytorchltr.svg?branch=master)](https://travis-ci.org/rjagerman/pytorchltr)
+[![Build Status](https://travis-ci.org/rjagerman/pytorchltr.svg?branch=master)](https://travis-ci.org/rjagerman/pytorchltr)[![codecov](https://codecov.io/gh/rjagerman/pytorchltr/branch/master/graph/badge.svg)](https://codecov.io/gh/rjagerman/pytorchltr)
 
 > :warning: **This is an early release and subject to breaking changes**
 
