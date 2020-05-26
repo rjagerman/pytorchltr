@@ -20,28 +20,30 @@ Note that this library requires Python 3.6 or higher.
 
 See `examples/01-basic-usage.py` for a more complete example including evaluation
 
-    import torch
-    from pytorchltr.dataset.resources import Example3
-    from pytorchltr.loss.pairwise import AdditivePairwiseLoss
+```python
+import torch
+from pytorchltr.dataset.resources import Example3
+from pytorchltr.loss.pairwise import AdditivePairwiseLoss
 
-    # Load dataset
-    dataset = Example3("./datasets/example3", download=True)
-    train, collate_fn = dataset.train(), dataset.collate_fn()
+# Load dataset
+dataset = Example3("./datasets/example3", download=True)
+train, collate_fn = dataset.train(), dataset.collate_fn()
 
-    # Setup model, optimizer and loss
-    model = torch.nn.Linear(train[0]["features"].shape[1], 1)
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
-    loss = AdditivePairwiseLoss()
+# Setup model, optimizer and loss
+model = torch.nn.Linear(train[0]["features"].shape[1], 1)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+loss = AdditivePairwiseLoss()
 
-    # Train for 3 epochs
-    for epoch in range(3):
-        loader = torch.utils.data.DataLoader(train, batch_size=2, collate_fn=collate_fn)
-        for batch in loader:
-            xs, ys, n = batch["features"], batch["relevance"], batch["n"]
-            l = loss(model(xs), ys, n).mean()
-            optimizer.zero_grad()
-            l.backward()
-            optimizer.step()
+# Train for 3 epochs
+for epoch in range(3):
+    loader = torch.utils.data.DataLoader(train, batch_size=2, collate_fn=collate_fn)
+    for batch in loader:
+        xs, ys, n = batch["features"], batch["relevance"], batch["n"]
+        l = loss(model(xs), ys, n).mean()
+        optimizer.zero_grad()
+        l.backward()
+        optimizer.step()
+```
 
 ## Citing
 If you find this software useful for your research, we kindly ask you to cite the following publication:
