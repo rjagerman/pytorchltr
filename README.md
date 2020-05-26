@@ -23,7 +23,6 @@ See `examples/01-basic-usage.py` for a more complete example including evaluatio
     import torch
     from pytorchltr.dataset.resources import Example3
     from pytorchltr.loss.pairwise import AdditivePairwiseLoss
-    from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
 
     # Load dataset
     dataset = Example3("./datasets/example3", download=True)
