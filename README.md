@@ -45,10 +45,10 @@ for epoch in range(3):
         optimizer.step()
 ```
 
-## Disclaimer on Datasets
+## Dataset Disclaimer
 This library provides utilities to automatically download and prepare several public LTR datasets.
 We cannot vouch for the quality, correctness or usefulness of these datasets.
-We do not host or distribute these datasets and it is **your responsibility** to determine whether you have permission to use the datasets.
+We do not host or distribute these datasets and it is ultimately **your responsibility** to determine whether you have permission to use each dataset under its respective license.
 
 ## Citing
 If you find this software useful for your research, we kindly ask you to cite the following publication:
