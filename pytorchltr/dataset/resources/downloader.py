@@ -1,15 +1,27 @@
+import logging
+import os
+import sys
+import time
+from collections import deque
+from urllib.request import urlopen
+
 from pytorchltr.dataset.resources.util import ChecksumError
 from pytorchltr.dataset.resources.util import validate_file
-from urllib.request import urlopen
-from collections import deque
-import os
-import hashlib
-import logging
-import time
-import sys
 
 
 class Downloader:
+    """
+    Downloader allows downloading from a given url to a given target file.
+
+    Attributes:
+        url (str): The URL to download from.
+        target (str): The target file to save as.
+        sha256_checksum (str, optional): The SHA256 checksum of the file which
+            will be checked to see if a download and is needed and to validate
+            the downloaded contents.
+        force_download (bool): If set to True, a call to download will always
+            download, regardless of whether the target file already exists.
+    """
     def __init__(self, url, target, sha256_checksum=None, force_download=False,
                  chunk_size=32*1024, progress_fn=None, create_dirs=True,
                  postprocess_fn=None):
@@ -124,6 +136,13 @@ class IntervalProgress:
             self.last_update = time.time()
 
     def progress(self, bytes_read, total_size, final):
+        """Processes the progress so far. Called only once per interval.
+
+        Args:
+            bytes_read (int): The number of bytes read so far.
+            total_size (int, optional): The total number of bytes.
+            final (bool): Whether this is the final progress call.
+        """
         raise NotImplementedError
 
 
@@ -180,8 +199,7 @@ def _to_human_readable(b):
     byte_unit = byte_unit.popleft()
     if b < 10.0 and byte_unit != "B":
         return "%.1f%s" % (b, byte_unit)
-    else:
-        return "%d%s" % (b, byte_unit)
+    return "%d%s" % (b, byte_unit)
 
 
 # Set default progress hook depending on whether the stdout is a terminal.

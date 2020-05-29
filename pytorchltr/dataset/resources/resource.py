@@ -1,7 +1,6 @@
 import logging
 import os
 
-from pytorchltr.dataset.resources.downloader import Downloader
 from pytorchltr.dataset.resources.util import ChecksumError
 from pytorchltr.dataset.resources.util import validate_file
 
@@ -50,15 +49,19 @@ class Resource:
                     raise RuntimeError("entries in expected_files should be either of type str or a dict containing 'path' and 'sha256' keys.")
 
     def collate_fn(self):
+        """Returns the collate function used for batching this dataset."""
         raise NotImplementedError("%s provides no batch collate function" % self.name)
 
     def train(self):
+        """Returns the train split of the resource."""
         raise NotImplementedError("%s provides no train split" % self.name)
 
     def test(self):
+        """Returns the test split of the resource."""
         raise NotImplementedError("%s provides no test split" % self.name)
 
     def vali(self):
+        """Returns the validation split of the resource."""
         raise NotImplementedError("%s provides no vali split" % self.name)
 
 
@@ -89,8 +92,8 @@ class DownloadableResource(Resource):
         super().__init__(name, location, expected_files=expected_files)
         try:
             self.validate_resource(validate_checksums)
-        except (FileNotFoundError, ChecksumError) as error:
+        except (FileNotFoundError, ChecksumError):
             if downloader is not None:
-                logging.info("attempting to download %s dataset" % self.name)
+                logging.info("attempting to download %s dataset", self.name)
                 downloader.download(location)
             self.validate_resource(validate_checksums)

@@ -9,6 +9,15 @@ from pytorchltr.dataset.svmrank import svmranking_dataset
 
 
 class IstellaS(DownloadableResource):
+    """
+    Utility class for downloading and using the istella-s dataset:
+    http://quickrank.isti.cnr.it/istella-dataset/.
+
+    This dataset is a smaller sampled version of the Istella dataset.
+
+    Attributes:
+        normalize (bool): Whether to perform query-level feature normalization.
+    """
 
     default_downloader = Downloader(
         url="http://library.istella.it/dataset/istella-s-letor.tar.gz",
@@ -26,12 +35,7 @@ class IstellaS(DownloadableResource):
     def __init__(self, location, normalize=True, downloader=default_downloader,
                  validate_checksums=True):
         """
-        Utility class for loading and using the istella-s dataset:
-        http://quickrank.isti.cnr.it/istella-dataset/.
-
-        This dataset is a smaller sampled version of the Istella dataset.
-
-        Arguments:
+        Args:
             location: Directory where the dataset is located.
             normalize: Whether to perform query-level feature normalization.
             downloader: A downloader for downloading the dataset.

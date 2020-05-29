@@ -9,6 +9,13 @@ from pytorchltr.dataset.svmrank import svmranking_dataset
 
 
 class Example3(DownloadableResource):
+    """
+    Utility class for loading and using the Example3 dataset:
+    http://www.cs.cornell.edu/people/tj/svm_light/svm_rank.html
+
+    This dataset is a very small toy sample which is useful as a sanity check
+    for testing your code.
+    """
 
     default_downloader = Downloader(
         url="http://download.joachims.org/svm_light/examples/example3.tar.gz",
@@ -25,13 +32,7 @@ class Example3(DownloadableResource):
     def __init__(self, location, normalize=True, downloader=default_downloader,
                  validate_checksums=True):
         """
-        Utility class for loading and using the Example3 dataset:
-        http://www.cs.cornell.edu/people/tj/svm_light/svm_rank.html
-
-        This dataset is a very small toy sample which is useful as a sanity
-        check for testing your code.
-
-        Arguments:
+        Args:
             location: Directory where the dataset is located.
             normalize: Whether to perform query-level feature normalization.
             downloader: A downloader for downloading the dataset.
