@@ -25,12 +25,11 @@ class Example3(DownloadableResource):
     def __init__(self, location, normalize=True, downloader=default_downloader,
                  validate_checksums=True):
         """
-        Utility class for loading and using the Example3 dataset. This dataset
-        is a very small toy sample which is useful as a sanity check for
-        testing your code.
+        Utility class for loading and using the Example3 dataset:
+        http://www.cs.cornell.edu/people/tj/svm_light/svm_rank.html
 
-        Before using this dataset you must review the licensing agreement on
-        http://www.cs.cornell.edu/people/tj/svm_light/svm_rank.html.
+        This dataset is a very small toy sample which is useful as a sanity
+        check for testing your code.
 
         Arguments:
             location: Directory where the dataset is located.

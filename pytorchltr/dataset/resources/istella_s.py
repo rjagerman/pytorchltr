@@ -26,10 +26,10 @@ class IstellaS(DownloadableResource):
     def __init__(self, location, normalize=True, downloader=default_downloader,
                  validate_checksums=True):
         """
-        Utility class for loading and using the istella-s dataset.
-
-        Before using this dataset you must review the licensing agreement on
+        Utility class for loading and using the istella-s dataset:
         http://quickrank.isti.cnr.it/istella-dataset/.
+
+        This dataset is a smaller sampled version of the Istella dataset.
 
         Arguments:
             location: Directory where the dataset is located.
