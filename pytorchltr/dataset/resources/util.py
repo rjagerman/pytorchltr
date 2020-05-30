@@ -2,6 +2,7 @@ import hashlib
 import logging
 import os
 import tarfile
+import zipfile
 
 
 class ChecksumError(Exception):
@@ -70,9 +71,22 @@ def extract_tar(path, destination):
     Extracts the .tar[.gz] file at given path to given destination.
 
     Args:
-        path: The lcoation of the .tar[.gz] file.
+        path: The location of the .tar[.gz] file.
         destination: The destination to extract to.
     """
     logging.info("extracting tar file at %s to %s", path, destination)
     with tarfile.open(path) as f:
+        f.extractall(destination)
+
+
+def extract_zip(path, destination):
+    """
+    Extracts the .zip file at given path to given destination.
+
+    Args:
+        path: The location of the .zip file.
+        destination: The destination to extract to.
+    """
+    logging.info("extracting zip file at %s to %s", path, destination)
+    with zipfile.ZipFile(path, "r") as f:
         f.extractall(destination)
