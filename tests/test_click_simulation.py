@@ -61,8 +61,9 @@ def test_perfect_clicks():
 
 def test_perfect_clicks_cutoff_3():
     rankings, ys, n = _generate_test_data()
-    click_fn = lambda rankings, ys, n: simulate_perfect(
-        rankings, ys, n, cutoff=3)
+
+    def click_fn(rankings, ys, n):
+        return simulate_perfect(rankings, ys, n, cutoff=3)
     clicks, props = _monte_carlo_simulation(rankings, ys, n, click_fn)
     rel_expected = torch.FloatTensor([
         [0.2, 0.0, 1.0, 0.0, 0.4],
@@ -79,8 +80,9 @@ def test_perfect_clicks_cutoff_3():
 
 def test_perfect_clicks_cutoff_2():
     rankings, ys, n = _generate_test_data()
-    click_fn = lambda rankings, ys, n: simulate_perfect(
-        rankings, ys, n, cutoff=2)
+
+    def click_fn(rankings, ys, n):
+        return simulate_perfect(rankings, ys, n, cutoff=2)
     clicks, props = _monte_carlo_simulation(rankings, ys, n, click_fn)
     rel_expected = torch.FloatTensor([
         [0.2, 0.0, 1.0, 0.0, 0.4],
@@ -113,7 +115,9 @@ def test_position_clicks():
 
 def test_position_clicks_eta_2():
     rankings, ys, n = _generate_test_data()
-    click_fn = lambda rankings, ys, n: simulate_position(rankings, ys, n, eta=2.0)
+
+    def click_fn(rankings, ys, n):
+        return simulate_position(rankings, ys, n, eta=2.0)
     clicks, props = _monte_carlo_simulation(rankings, ys, n, click_fn)
     rel_expected = torch.FloatTensor([
         [0.1, 0.1, 1.0, 0.1, 0.1],
@@ -130,8 +134,9 @@ def test_position_clicks_eta_2():
 
 def test_position_clicks_eta_0():
     rankings, ys, n = _generate_test_data()
-    click_fn = lambda rankings, ys, n: simulate_position(
-        rankings, ys, n, eta=0.0)
+
+    def click_fn(rankings, ys, n):
+        return simulate_position(rankings, ys, n, eta=0.0)
     clicks, props = _monte_carlo_simulation(rankings, ys, n, click_fn)
     rel_expected = torch.FloatTensor([
         [0.1, 0.1, 1.0, 0.1, 0.1],
@@ -141,8 +146,8 @@ def test_position_clicks_eta_0():
         [1/4.0, 1/6.0, 1/5.0, 1/2.0, 1/3.0],
         [1/3.0, 1/2.0, 1/4.0, 0.0, 0.0]
     ]) ** 0.0
-    props_expected[1,3] = 0.0
-    props_expected[1,4] = 0.0
+    props_expected[1, 3] = 0.0
+    props_expected[1, 4] = 0.0
     clicks_expected = rel_expected * props_expected
     assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
     assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
@@ -150,8 +155,9 @@ def test_position_clicks_eta_0():
 
 def test_position_clicks_cutoff_3():
     rankings, ys, n = _generate_test_data()
-    click_fn = lambda rankings, ys, n: simulate_position(
-        rankings, ys, n, cutoff=3)
+
+    def click_fn(rankings, ys, n):
+        return simulate_position(rankings, ys, n, cutoff=3)
     clicks, props = _monte_carlo_simulation(rankings, ys, n, click_fn)
     rel_expected = torch.FloatTensor([
         [0.1, 0.1, 1.0, 0.1, 0.1],
@@ -168,7 +174,8 @@ def test_position_clicks_cutoff_3():
 
 def test_nearrandom_clicks():
     rankings, ys, n = _generate_test_data()
-    clicks, props = _monte_carlo_simulation(rankings, ys, n, simulate_nearrandom)
+    clicks, props = _monte_carlo_simulation(
+        rankings, ys, n, simulate_nearrandom)
     rel_expected = torch.FloatTensor([
         [0.45, 0.4, 0.6, 0.4, 0.5],
         [0.6, 0.55, 0.4, 0.4, 0.4]
@@ -184,8 +191,9 @@ def test_nearrandom_clicks():
 
 def test_nearrandom_clicks_eta_2():
     rankings, ys, n = _generate_test_data()
-    click_fn = lambda rankings, ys, n: simulate_nearrandom(
-        rankings, ys, n, eta=2.0)
+
+    def click_fn(rankings, ys, n):
+        return simulate_nearrandom(rankings, ys, n, eta=2.0)
     clicks, props = _monte_carlo_simulation(rankings, ys, n, click_fn)
     rel_expected = torch.FloatTensor([
         [0.45, 0.4, 0.6, 0.4, 0.5],
@@ -202,8 +210,9 @@ def test_nearrandom_clicks_eta_2():
 
 def test_nearrandom_clicks_eta_0():
     rankings, ys, n = _generate_test_data()
-    click_fn = lambda rankings, ys, n: simulate_nearrandom(
-        rankings, ys, n, eta=0.0)
+
+    def click_fn(rankings, ys, n):
+        return simulate_nearrandom(rankings, ys, n, eta=0.0)
     clicks, props = _monte_carlo_simulation(rankings, ys, n, click_fn)
     rel_expected = torch.FloatTensor([
         [0.45, 0.4, 0.6, 0.4, 0.5],
@@ -213,8 +222,8 @@ def test_nearrandom_clicks_eta_0():
         [1/4.0, 1/6.0, 1/5.0, 1/2.0, 1/3.0],
         [1/3.0, 1/2.0, 1/4.0, 0.0, 0.0]
     ]) ** 0.0
-    props_expected[1,3] = 0.0
-    props_expected[1,4] = 0.0
+    props_expected[1, 3] = 0.0
+    props_expected[1, 4] = 0.0
     clicks_expected = rel_expected * props_expected
     assert clicks_expected.numpy() == approx(clicks.numpy(), abs=0.1)
     assert props_expected.numpy() == approx(props.numpy(), abs=0.1)
@@ -222,8 +231,9 @@ def test_nearrandom_clicks_eta_0():
 
 def test_nearrandom_clicks_cutoff_3():
     rankings, ys, n = _generate_test_data()
-    click_fn = lambda rankings, ys, n: simulate_nearrandom(
-        rankings, ys, n, cutoff=3)
+
+    def click_fn(rankings, ys, n):
+        return simulate_nearrandom(rankings, ys, n, cutoff=3)
     clicks, props = _monte_carlo_simulation(rankings, ys, n, click_fn)
     rel_expected = torch.FloatTensor([
         [0.45, 0.4, 0.6, 0.4, 0.5],

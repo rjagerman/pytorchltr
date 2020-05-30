@@ -11,6 +11,7 @@ install:
 
 script:
   - pytest --cov-report term --cov=pytorchltr
+  - flake8 pytorchltr tests
 
 after_success:
   - codecov

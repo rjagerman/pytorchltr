@@ -30,7 +30,8 @@ class AdditivePairwiseLoss(_torch.nn.Module):
         """
         # Reshape relevance if necessary
         if relevance.ndimension() == 2:
-            relevance = relevance.reshape((relevance.shape[0], relevance.shape[1], 1))
+            relevance = relevance.reshape(
+                (relevance.shape[0], relevance.shape[1], 1))
 
         # Compute pairwise differences for scores
         s_ij = _batch_pairwise_difference(scores)
@@ -47,7 +48,8 @@ class AdditivePairwiseLoss(_torch.nn.Module):
         range_grid = range_grid[None, :, :].repeat(n.shape[0], 1, 1)
         loss[n_grid <= range_grid] = 0.0
 
-        # Reduce final list loss by sum, creating upper bound on rel result ranks
+        # Reduce final list loss by sum, creating upper bound on relevant
+        # result ranks
         loss = loss.view(loss.shape[0], -1)
         loss = loss.sum(1)
 

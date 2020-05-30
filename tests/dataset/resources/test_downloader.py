@@ -11,7 +11,8 @@ from pytorchltr.dataset.resources.util import ChecksumError
 
 @contextlib.contextmanager
 def mock_urlopen(read, info):
-    with mock.patch("pytorchltr.dataset.resources.downloader.urlopen") as urlopen_mock:
+    urlopen_fn_to_mock = "pytorchltr.dataset.resources.downloader.urlopen"
+    with mock.patch(urlopen_fn_to_mock) as urlopen_mock:
         urlopen_obj = mock.MagicMock()
         urlopen_obj.read.side_effect = read
         urlopen_obj.info.return_value = info
@@ -40,21 +41,23 @@ def test_empty_download():
 
 
 def test_download_sha256_succeeds():
+    sha256 = "d6185849aea1f15d847aba8b45cf54da8f9bc5895484d2f04830941f68148864"
     with mock_urlopen(read=[b"mocked", b"content"], info={}):
         with tempfile.TemporaryDirectory() as tmpdir:
             downloader = Downloader(
                 "http://mocked", "file.dat",
-                sha256_checksum="d6185849aea1f15d847aba8b45cf54da8f9bc5895484d2f04830941f68148864")
+                sha256_checksum=sha256)
             downloader.download(tmpdir)
 
 
 def test_download_sha256_fails():
+    sha256 = "f13b7a15b26814ac2e5c8ab37ef135623ee0aed1cac5cc583e1b99fa688e0e29"
     with mock_urlopen(read=[b"mocked", b"content"], info={}):
         with tempfile.TemporaryDirectory() as tmpdir:
             downloader = Downloader(
                 "http://mocked", "file.dat",
-                sha256_checksum="f13b7a15b26814ac2e5c8ab37ef135623ee0aed1cac5cc583e1b99fa688e0e29")
-            with pytest.raises(ChecksumError) as excinfo:
+                sha256_checksum=sha256)
+            with pytest.raises(ChecksumError):
                 downloader.download(tmpdir)
 
 
@@ -96,10 +99,10 @@ def test_download_progress_with_known_length():
                                     progress_fn=progress_fn)
             downloader.download(tmpdir)
             progress_fn.assert_has_calls([
-                mock.call(0, 13, False),  # Initial progress (0 bytes)
-                mock.call(6, 13, False),  # Should have read 6 bytes b"mocked"
-                mock.call(13, 13, False), # Should have read 7 bytes b"content"
-                mock.call(13, 13, True)   # Final call should be True
+                mock.call(0, 13, False),   # Initial progress (0 bytes)
+                mock.call(6, 13, False),   # Read 6 bytes b"mocked"
+                mock.call(13, 13, False),  # Read 7 bytes b"content"
+                mock.call(13, 13, True)    # Final call should be True
             ])
 
 
@@ -111,18 +114,19 @@ def test_download_progress_with_unknown_length():
                                     progress_fn=progress_fn)
             downloader.download(tmpdir)
             progress_fn.assert_has_calls([
-                mock.call(0, None, False),  # Initial progress (0 bytes)
-                mock.call(3, None, False),  # Should have read 3 bytes b"moc"
-                mock.call(6, None, False),  # Should have read 3 bytes b"ked"
-                mock.call(9, None, False),  # Should have read 3 bytes b"con"
-                mock.call(12, None, False), # Should have read 3 bytes b"ten"
-                mock.call(13, None, False), # Should have read 1 byte b"t"
-                mock.call(13, None, True)   # Final call should be True
+                mock.call(0, None, False),   # Initial progress (0 bytes)
+                mock.call(3, None, False),   # Read 3 bytes b"moc"
+                mock.call(6, None, False),   # Read 3 bytes b"ked"
+                mock.call(9, None, False),   # Read 3 bytes b"con"
+                mock.call(12, None, False),  # Read 3 bytes b"ten"
+                mock.call(13, None, False),  # Read 1 byte b"t"
+                mock.call(13, None, True)    # Final call should be True
             ])
 
 
 def test_download_logging_progress_with_known_length():
-    with mock.patch("pytorchltr.dataset.resources.downloader.logging") as logging_mock:
+    logging_fn_to_mock = "pytorchltr.dataset.resources.downloader.logging"
+    with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked", b"content"],
                           info={"Content-Length": "13"}):
             with tempfile.TemporaryDirectory() as tmpdir:
@@ -139,7 +143,8 @@ def test_download_logging_progress_with_known_length():
 
 
 def test_download_logging_progress_with_unknown_length():
-    with mock.patch("pytorchltr.dataset.resources.downloader.logging") as logging_mock:
+    logging_fn_to_mock = "pytorchltr.dataset.resources.downloader.logging"
+    with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked", b"content"], info={}):
             with tempfile.TemporaryDirectory() as tmpdir:
                 downloader = Downloader(
@@ -155,7 +160,8 @@ def test_download_logging_progress_with_unknown_length():
 
 
 def test_download_logging_progress_with_kilobytes():
-    with mock.patch("pytorchltr.dataset.resources.downloader.logging") as logging_mock:
+    logging_fn_to_mock = "pytorchltr.dataset.resources.downloader.logging"
+    with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked" * 1024, b"content" * 1024],
                           info={"Content-Length": "13312"}):
             with tempfile.TemporaryDirectory() as tmpdir:
@@ -172,8 +178,12 @@ def test_download_logging_progress_with_kilobytes():
 
 
 def test_download_logging_progress_with_megabytes():
-    with mock.patch("pytorchltr.dataset.resources.downloader.logging") as logging_mock:
-        with mock_urlopen(read=[b"moc" * 1024 * 120, b"moc" * 1024 * 748, b"ked" * 1024 * 768, b"content123" * 1024 * 300],
+    logging_fn_to_mock = "pytorchltr.dataset.resources.downloader.logging"
+    with mock.patch(logging_fn_to_mock) as logging_mock:
+        with mock_urlopen(read=[b"moc" * 1024 * 120,
+                                b"moc" * 1024 * 748,
+                                b"ked" * 1024 * 768,
+                                b"content123" * 1024 * 300],
                           info={"Content-Length": "8097792"}):
             with tempfile.TemporaryDirectory() as tmpdir:
                 downloader = Downloader(
