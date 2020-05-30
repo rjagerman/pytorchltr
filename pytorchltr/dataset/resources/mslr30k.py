@@ -10,7 +10,7 @@ from pytorchltr.dataset.svmrank import svmranking_dataset
 
 class MSLR30K(DownloadableResource):
     """
-    Utility class for downloading and using the MSLR-WEB30K	dataset:
+    Utility class for downloading and using the MSLR-WEB30K dataset:
     https://www.microsoft.com/en-us/research/project/mslr/.
 
     Attributes:
