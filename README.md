@@ -26,7 +26,7 @@ from pytorchltr.dataset.resources import Example3
 from pytorchltr.loss.pairwise import AdditivePairwiseLoss
 
 # Load dataset
-dataset = Example3("./datasets/example3", download=True)
+dataset = Example3("./datasets/example3")
 train, collate_fn = dataset.train(), dataset.collate_fn()
 
 # Setup model, optimizer and loss
