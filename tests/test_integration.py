@@ -1,11 +1,8 @@
-from io import BytesIO
-
 import torch
 from tests.dataset.test_svmrank import get_sample_dataset
 from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
 from pytorchltr.loss.pairwise import AdditivePairwiseLoss
 from pytorchltr.evaluation.arp import arp
-from pytest import approx
 
 
 class Model(torch.nn.Module):
@@ -26,7 +23,7 @@ def test_basic_sgd_learning():
     collate_fn = create_svmranking_collate_fn(max_list_size=50)
     model = Model(input_dim)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
-    loss = AdditivePairwiseLoss()
+    loss_fn = AdditivePairwiseLoss()
     arp_per_epoch = torch.zeros(100)
 
     # Perform 100 epochs
@@ -41,12 +38,12 @@ def test_basic_sgd_learning():
             xs, ys, n = batch["features"], batch["relevance"], batch["n"]
 
             # Compute loss
-            l = loss(model(xs), ys, n)
-            l = l.mean()
+            loss = loss_fn(model(xs), ys, n)
+            loss = loss.mean()
 
             # Perform SGD step
             optimizer.zero_grad()
-            l.backward()
+            loss.backward()
             optimizer.step()
 
             # Evaluate ARP on train data

@@ -36,7 +36,8 @@ train, test, collate_fn = dataset.train(), dataset.test(), dataset.collate_fn()
 # Create model, optimizer and loss to optimize
 model = torch.nn.Linear(train[0]["features"].shape[1], 1)
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
-loss = AdditivePairwiseLoss()
+loss_fn = AdditivePairwiseLoss()
+
 
 # Function to evaluate the model on the test split of the dataset
 def evaluate():
@@ -52,6 +53,7 @@ def evaluate():
     model.train()
     return ndcg_score
 
+
 logging.info("Test nDCG at start: %.4f" % evaluate())
 
 # Train model for 3 epochs
@@ -60,9 +62,9 @@ for epoch in range(3):
                                          collate_fn=collate_fn)
     for batch in loader:
         xs, ys, n = batch["features"], batch["relevance"], batch["n"]
-        l = loss(model(xs), ys, n).mean()
+        loss = loss_fn(model(xs), ys, n).mean()
         optimizer.zero_grad()
-        l.backward()
+        loss.backward()
         optimizer.step()
 
     logging.info("Test nDCG after epoch %d: %.4f" % (epoch + 1, evaluate()))
