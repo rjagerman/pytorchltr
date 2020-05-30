@@ -20,13 +20,13 @@ class Example3(DownloadableResource):
     default_downloader = Downloader(
         url="http://download.joachims.org/svm_light/examples/example3.tar.gz",
         target="example3.tar.gz",
-        sha256_checksum="c46e97b66d3c9d5f37f7c3a2201aa2c4ea2a4e8a768f8794b10152c22648106b",
+        sha256_checksum="c46e97b66d3c9d5f37f7c3a2201aa2c4ea2a4e8a768f8794b10152c22648106b",  # noqa: E501
         progress_fn=DefaultProgress(),
         postprocess_fn=extract_tar)
 
     default_expected_files = [
-        {"path": "example3/train.dat", "sha256": "503aa66c6a1b1bb8a86b14e52163dcdb5bcffc017981afdff4cf026eacc592cf"},
-        {"path": "example3/test.dat", "sha256": "81aaac13dfc5180edce38a588cec80ee00b5d85662e00d1b7ac1d3f98242698e"}
+        {"path": "example3/train.dat", "sha256": "503aa66c6a1b1bb8a86b14e52163dcdb5bcffc017981afdff4cf026eacc592cf"},  # noqa: E501
+        {"path": "example3/test.dat", "sha256": "81aaac13dfc5180edce38a588cec80ee00b5d85662e00d1b7ac1d3f98242698e"}  # noqa: E501
     ]
 
     def __init__(self, location, normalize=True, downloader=default_downloader,

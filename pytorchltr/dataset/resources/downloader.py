@@ -15,15 +15,24 @@ class Downloader:
 
     Attributes:
         url (str): The URL to download from.
-        target (str): The target file to save as.
+        target (str): The target file name to save as.
         sha256_checksum (str, optional): The SHA256 checksum of the file which
             will be checked to see if a download and is needed and to validate
             the downloaded contents.
         force_download (bool): If set to True, a call to download will always
             download, regardless of whether the target file already exists.
+        chunk_size (int): The download chunk size, which is the maximum amount
+            of bytes read per file-write. Default is 32*1024 (32KB)
+        create_dirs (bool): Whether to create directories automatically if the
+            target file should be downloaded in a non-existing directory.
+        progress_fn (callable, optional): A callable function that reports the
+            download progress after every download chunk.
+        postprocess_fn (callable, optional): A callable function that is called
+            when the download finished. Typical use cases include extracting or
+            unzipping a downloaded archive.
     """
     def __init__(self, url, target, sha256_checksum=None, force_download=False,
-                 chunk_size=32*1024, progress_fn=None, create_dirs=True,
+                 chunk_size=32*1024, create_dirs=True, progress_fn=None,
                  postprocess_fn=None):
         """
         Creates a downloader that downloads from a url.
@@ -38,8 +47,8 @@ class Downloader:
             sha256_checksum: (Optional) sha256 checksum to validate against.
             force_download: (Optional) forces a re-dowload always.
             chunk_size: (Optional) chunk size to download in.
-            progress_fn: (Optional) a callable progress function.
             create_dirs: (Optional) whether to create directories.
+            progress_fn: (Optional) a callable progress function.
             postprocess_fn: (Optional) function to call after successfull
                 download.
         """
@@ -54,8 +63,9 @@ class Downloader:
 
     def download(self, destination):
         """
-        Downloads to given destination. If the file already exists and its
-        (optional) sha256 checksum matches, this will skip the download.
+        Downloads to given destination. Unless force_download is True, this
+        will skip the download if the file already exists and its (optional)
+        sha256 checksum matches.
 
         Arguments:
             destination: The destination to download to
@@ -77,7 +87,7 @@ class Downloader:
         try:
             validate_file(path, self.sha256_checksum)
             return False
-        except (FileNotFoundError, ChecksumError) as error:
+        except (FileNotFoundError, ChecksumError):
             return True
 
     def _download(self, path):
@@ -183,23 +193,23 @@ def _progress_string(bytes_read, total_size, final):
             _to_human_readable(total_size))
 
 
-def _to_human_readable(b):
+def _to_human_readable(nr_of_bytes):
     """
     Returns a human-readable string representation of given bytes.
 
     Arugments:
-        b: The bytes as an integer or float
+        nr_of_bytes: The number bytes as an integer or float
     """
     # Convert to human readble byte format
     byte_unit = deque(["B", "KB", "MB", "GB", "TB"])
-    while len(byte_unit) > 1 and b > 1024.0:
+    while len(byte_unit) > 1 and nr_of_bytes > 1024.0:
         byte_unit.popleft()
-        b /= 1024.0
+        nr_of_bytes /= 1024.0
 
     byte_unit = byte_unit.popleft()
-    if b < 10.0 and byte_unit != "B":
-        return "%.1f%s" % (b, byte_unit)
-    return "%d%s" % (b, byte_unit)
+    if nr_of_bytes < 10.0 and byte_unit != "B":
+        return "%.1f%s" % (nr_of_bytes, byte_unit)
+    return "%d%s" % (nr_of_bytes, byte_unit)
 
 
 # Set default progress hook depending on whether the stdout is a terminal.

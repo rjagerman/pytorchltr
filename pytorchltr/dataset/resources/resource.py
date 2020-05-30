@@ -46,11 +46,14 @@ class Resource:
                         os.path.join(self.location, f["path"]),
                         f["sha256"] if validate_checksums else None)
                 else:
-                    raise RuntimeError("entries in expected_files should be either of type str or a dict containing 'path' and 'sha256' keys.")
+                    raise RuntimeError(
+                        "entries in expected_files should be either of type "
+                        "str or a dict containing 'path' and 'sha256' keys.")
 
     def collate_fn(self):
         """Returns the collate function used for batching this dataset."""
-        raise NotImplementedError("%s provides no batch collate function" % self.name)
+        raise NotImplementedError(
+            "%s provides no batch collate function" % self.name)
 
     def train(self):
         """Returns the train split of the resource."""
@@ -66,8 +69,7 @@ class Resource:
 
 
 class DownloadableResource(Resource):
-    """A Downloadable Resource provides immediate download functionality to a
-    resource."""
+    """A Downloadable Resource provides additional download functionality."""
     def __init__(self, name, location, expected_files=None, downloader=None,
                  validate_checksums=True):
         """

@@ -71,7 +71,8 @@ def svmranking_dataset(file, sparse=False, normalize=False,
 
     Arguments:
         file (str or file-like): The path to load the dataset from.
-        sparse (bool, optional): Whether to load the features as sparse features.
+        sparse (bool, optional): Whether to load the features as sparse
+            features.
         normalize (bool, optional): Whether to perform query-level
             normalization (requires non-sparse features).
         zero_based (str or int, optional): The zero based index.
@@ -92,7 +93,8 @@ def svmranking_dataset(file, sparse=False, normalize=False,
     # Normalize xs
     if normalize:
         if sparse:
-            raise NotImplementedError("Normalization without dense features is not supported.")
+            raise NotImplementedError(
+                "Normalization without dense features is not supported.")
         _per_offset_normalize(xs, offsets)
 
     # Create full dataset
@@ -113,10 +115,10 @@ def svmranking_dataset(file, sparse=False, normalize=False,
 def _per_offset_normalize(xs, offsets):
     """Performs query-level normalization using xs and offsets."""
     for start, end in zip(offsets[:-1], offsets[1:]):
-        xs[start:end,:] -= _np.min(xs[start:end,:], axis=0)
-        m = _np.max(xs[start:end,:], axis=0)
+        xs[start:end, :] -= _np.min(xs[start:end, :], axis=0)
+        m = _np.max(xs[start:end, :], axis=0)
         m[m == 0.0] = 1.0
-        xs[start:end,:] /= m
+        xs[start:end, :] /= m
 
 
 def create_svmranking_collate_fn(max_list_size=None,
@@ -170,7 +172,8 @@ def create_svmranking_collate_fn(max_list_size=None,
                         ind[0, mask[i]] = int(i)
                     ind = ind[:, sum(mask)]
                     val = val[sum(mask)]
-                ind_l = _torch.ones((1, ind.shape[1]), dtype=ind.dtype) * batch_index
+                ind_l = _torch.ones((1, ind.shape[1]),
+                                    dtype=ind.dtype) * batch_index
                 ind = _torch.cat([ind_l, ind], dim=0)
                 out_features.append((ind, val))
             else:
@@ -181,9 +184,9 @@ def create_svmranking_collate_fn(max_list_size=None,
 
             # Collate relevance
             if xs.shape[0] > list_size:
-                out_relevance[batch_index, 0:len(rng_indices)] = sample["relevance"][rng_indices]
+                out_relevance[batch_index, 0:len(rng_indices)] = sample["relevance"][rng_indices]  # noqa: E501
             else:
-                out_relevance[batch_index, 0:len(sample["relevance"])] = sample["relevance"]
+                out_relevance[batch_index, 0:len(sample["relevance"])] = sample["relevance"]  # noqa: E501
 
             # Collate qid and n
             out_qid[batch_index] = int(sample["qid"])
