@@ -1,10 +1,10 @@
 import torch
-from pytorchltr.loss.pairwise import AdditivePairwiseLoss
+from pytorchltr.loss.pairwise import PairwiseHingeLoss
 from pytest import approx
 
 
 def test_pairwise_rank_perfect():
-    loss_fn = AdditivePairwiseLoss("rank")
+    loss_fn = PairwiseHingeLoss()
     scores = torch.FloatTensor([[[0.0], [0.0], [1.0], [2.0], [1.0]]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -15,7 +15,7 @@ def test_pairwise_rank_perfect():
 
 
 def test_pairwise_rank_2():
-    loss_fn = AdditivePairwiseLoss("rank")
+    loss_fn = PairwiseHingeLoss()
     scores = torch.FloatTensor([[[0.0], [0.0], [1.0], [1.0], [1.0]]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -26,7 +26,7 @@ def test_pairwise_rank_2():
 
 
 def test_pairwise_rank_3():
-    loss_fn = AdditivePairwiseLoss("rank")
+    loss_fn = PairwiseHingeLoss()
     scores = torch.FloatTensor([[[0.0], [0.0], [1.0], [-5.0], [1.0]]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -37,7 +37,7 @@ def test_pairwise_rank_3():
 
 
 def test_pairwise_rank_batch():
-    loss_fn = AdditivePairwiseLoss("rank")
+    loss_fn = PairwiseHingeLoss()
     scores = torch.FloatTensor([
         [[0.0], [10.0], [1.0], [0.5], [1.0]],
         [[1.0], [3.5], [6.0], [4.3], [10.0]]])
@@ -53,7 +53,7 @@ def test_pairwise_rank_batch():
 
 
 def test_pairwise_rank_cutoff():
-    loss_fn = AdditivePairwiseLoss("rank")
+    loss_fn = PairwiseHingeLoss()
     scores = torch.FloatTensor([[[1.0], [3.5], [6.0], [4.3], [8.0]]])
     ys = torch.LongTensor([[1, 2, 2, 1, 0]])
     n1 = torch.LongTensor([3])
