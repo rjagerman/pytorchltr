@@ -1,7 +1,8 @@
 # PyTorch Learning to Rank (LTR)
 
-[![Build Status](https://travis-ci.org/rjagerman/pytorchltr.svg?branch=master)](https://travis-ci.org/rjagerman/pytorchltr)
-[![codecov](https://codecov.io/gh/rjagerman/pytorchltr/branch/master/graph/badge.svg)](https://codecov.io/gh/rjagerman/pytorchltr)
+[![Build](https://img.shields.io/travis/rjagerman/pytorchltr/master)](https://travis-ci.org/rjagerman/pytorchltr)
+[![Coverage](https://img.shields.io/codecov/c/github/rjagerman/pytorchltr/master)](https://codecov.io/gh/rjagerman/pytorchltr)
+[![License](https://img.shields.io/github/license/rjagerman/pytorchltr)](https://github.com/rjagerman/pytorchltr/blob/master/LICENSE.md)
 
 > :warning: **This is an early release and subject to breaking changes**
 
