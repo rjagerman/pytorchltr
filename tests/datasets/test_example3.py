@@ -1,5 +1,4 @@
 import os
-from unittest import mock
 
 import pytest
 from pytorchltr.datasets.example3 import Example3
@@ -21,7 +20,7 @@ def test_call_validate_download():
         mock_vali.called_once()
         args, kwargs = mock_vali.call_args
         assert kwargs["location"] == tmpdir
-        assert kwargs["validate_checksums"] == True
+        assert kwargs["validate_checksums"]
         assert isinstance(kwargs["expected_files"], list)
 
 
@@ -31,8 +30,8 @@ def test_call_super_train():
         mock_super.called_once()
         args, kwargs = mock_super.call_args
         assert kwargs["file"] == os.path.join(tmpdir, "example3", "train.dat")
-        assert kwargs["normalize"] == True
-        assert kwargs["filter_queries"] == False
+        assert kwargs["normalize"]
+        assert not kwargs["filter_queries"]
 
 
 def test_call_super_test():
@@ -41,5 +40,5 @@ def test_call_super_test():
         mock_super.called_once()
         args, kwargs = mock_super.call_args
         assert kwargs["file"] == os.path.join(tmpdir, "example3", "test.dat")
-        assert kwargs["normalize"] == True
-        assert kwargs["filter_queries"] == True
+        assert kwargs["normalize"]
+        assert kwargs["filter_queries"]

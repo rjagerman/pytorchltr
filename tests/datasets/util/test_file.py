@@ -112,6 +112,7 @@ def test_validate_and_download_calls_download():
     downloader = mock.MagicMock()
     expected_files = ["file1.txt"]
     actual_files = ["file1.txt"]
+
     def create_files_side_effect(location):
         for actual_file in actual_files:
             Path(os.path.join(location, actual_file)).touch()
@@ -130,6 +131,7 @@ def test_validate_and_download_skips_download():
     downloader = mock.MagicMock()
     expected_files = ["file1.txt"]
     actual_files = ["file1.txt"]
+
     def create_files_side_effect(location):
         for actual_file in actual_files:
             Path(os.path.join(location, actual_file)).touch()
