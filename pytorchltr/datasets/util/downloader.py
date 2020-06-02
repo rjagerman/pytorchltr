@@ -5,8 +5,8 @@ import time
 from collections import deque
 from urllib.request import urlopen
 
-from pytorchltr.dataset.resources.util import ChecksumError
-from pytorchltr.dataset.resources.util import validate_file
+from pytorchltr.datasets.util.file import ChecksumError
+from pytorchltr.datasets.util.file import validate_file
 
 
 class Downloader:
@@ -33,7 +33,7 @@ class Downloader:
     """
     def __init__(self, url, target, sha256_checksum=None, force_download=False,
                  chunk_size=32*1024, create_dirs=True, progress_fn=None,
-                 postprocess_fn=None):
+                 postprocess_fn=None, expected_files=None):
         """
         Creates a downloader that downloads from a url.
 
@@ -51,6 +51,10 @@ class Downloader:
             progress_fn: (Optional) a callable progress function.
             postprocess_fn: (Optional) function to call after successfull
                 download.
+            expected_files: (Optional) a list of expected files for this
+                downloader. Each entry in the list should be either a string
+                indicating the path of the file or a dict containing a 'path'
+                and 'sha256' key for the path and sha256 checksum of the file.
         """
         self.url = url
         self.target = target
@@ -60,6 +64,7 @@ class Downloader:
         self.progress_fn = progress_fn
         self.create_dirs = create_dirs
         self.postprocess_fn = postprocess_fn
+        self.expected_files = expected_files
 
     def download(self, destination):
         """
@@ -88,6 +93,7 @@ class Downloader:
             validate_file(path, self.sha256_checksum)
             return False
         except (FileNotFoundError, ChecksumError):
+            logging.debug("could not validate file at '%s'", path)
             return True
 
     def _download(self, path):
@@ -97,6 +103,8 @@ class Downloader:
         Args:
             path: The path to download the file to.
         """
+        logging.info("starting download from '%s' to '%s'", self.url, path)
+
         # Create directories
         if self.create_dirs:
             os.makedirs(os.path.dirname(path), exist_ok=True)

@@ -1,16 +1,27 @@
+import contextlib
 import pickle
+import tempfile
+from unittest import mock
 
 from pytest import raises
 from pytest import approx
-from pytorchltr.dataset.svmrank import svmranking_dataset as load
-from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
+from pytorchltr.datasets.svmrank import SVMRankingDataset
 
 
 def get_sample_dataset(*args, **kwargs):
     """Get sample dataset, uses the same arguments as `svmranking_dataset`."""
-    with open("tests/dataset/dataset.txt", "rb") as dataset_file:
-        dataset = load(dataset_file, *args, **kwargs)
-    return dataset
+    with open("tests/datasets/dataset.txt", "rb") as dataset_file:
+        return SVMRankingDataset(dataset_file, *args, **kwargs)
+
+
+@contextlib.contextmanager
+def mock_svmrank_dataset(package_str="pytorchltr.datasets.svmrank"):
+    validate_and_download_str = package_str + ".validate_and_download"
+    super_str = "pytorchltr.datasets.svmrank.SVMRankingDataset.__init__"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        with mock.patch(validate_and_download_str) as mock_vali:
+            with mock.patch(super_str) as mock_super:
+                yield tmpdir, mock_super, mock_vali
 
 
 def test_basic():
@@ -189,7 +200,7 @@ def test_collate_sparse_10():
     # Construct a batch of three samples and collate it with a maximum list
     # size of 10.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = create_svmranking_collate_fn(max_list_size=10)
+    collate_fn = SVMRankingDataset.collate_fn(max_list_size=10)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
@@ -204,7 +215,7 @@ def test_collate_dense_10():
     # Construct a batch of three samples and collate it with a maximum list
     # size of 10.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = create_svmranking_collate_fn(max_list_size=10)
+    collate_fn = SVMRankingDataset.collate_fn(max_list_size=10)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
@@ -219,7 +230,7 @@ def test_collate_sparse_3():
     # Construct a batch of three samples and collate it with a maximum list
     # size of 3.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = create_svmranking_collate_fn(max_list_size=3)
+    collate_fn = SVMRankingDataset.collate_fn(max_list_size=3)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
@@ -234,7 +245,7 @@ def test_collate_dense_3():
     # Construct a batch of three samples and collate it with a maximum list
     # size of 3.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = create_svmranking_collate_fn(max_list_size=3)
+    collate_fn = SVMRankingDataset.collate_fn(max_list_size=3)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
@@ -249,7 +260,7 @@ def test_collate_sparse_all():
     # Construct a batch of three samples and collate it with an unlimited
     # maximum list size.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = create_svmranking_collate_fn(max_list_size=None)
+    collate_fn = SVMRankingDataset.collate_fn(max_list_size=None)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
@@ -264,7 +275,7 @@ def test_collate_dense_all():
     # Construct a batch of three samples and collate it with an unlimited
     # maximum list size.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = create_svmranking_collate_fn(max_list_size=None)
+    collate_fn = SVMRankingDataset.collate_fn(max_list_size=None)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
