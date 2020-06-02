@@ -23,12 +23,12 @@ See `examples/01-basic-usage.py` for a more complete example including evaluatio
 
 ```python
 import torch
-from pytorchltr.dataset.resources import Example3
+from pytorchltr.datasets import Example3
 from pytorchltr.loss.pairwise import AdditivePairwiseLoss
 
 # Load dataset
-dataset = Example3("./datasets/example3")
-train, collate_fn = dataset.train(), dataset.collate_fn()
+train = Example3("./datasets/example3", split="train")
+collate_fn = train.collate_fn()
 
 # Setup model, optimizer and loss
 model = torch.nn.Linear(train[0]["features"].shape[1], 1)
@@ -64,4 +64,3 @@ If you find this software useful for your research, we kindly ask you to cite th
         doi = {10.1145/3397271.3401069},
         series = {SIGIR’20}
     }
-

@@ -3,15 +3,15 @@ import os
 import contextlib
 import pytest
 from unittest import mock
-from pytorchltr.dataset.resources.downloader import Downloader
-from pytorchltr.dataset.resources.downloader import LoggingProgress
-from pytorchltr.dataset.resources.downloader import TerminalProgress
-from pytorchltr.dataset.resources.util import ChecksumError
+from pytorchltr.datasets.util.downloader import Downloader
+from pytorchltr.datasets.util.downloader import LoggingProgress
+from pytorchltr.datasets.util.downloader import TerminalProgress
+from pytorchltr.datasets.util.file import ChecksumError
 
 
 @contextlib.contextmanager
 def mock_urlopen(read, info):
-    urlopen_fn_to_mock = "pytorchltr.dataset.resources.downloader.urlopen"
+    urlopen_fn_to_mock = "pytorchltr.datasets.util.downloader.urlopen"
     with mock.patch(urlopen_fn_to_mock) as urlopen_mock:
         urlopen_obj = mock.MagicMock()
         urlopen_obj.read.side_effect = read
@@ -125,7 +125,7 @@ def test_download_progress_with_unknown_length():
 
 
 def test_download_logging_progress_with_known_length():
-    logging_fn_to_mock = "pytorchltr.dataset.resources.downloader.logging"
+    logging_fn_to_mock = "pytorchltr.datasets.util.downloader.logging"
     with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked", b"content"],
                           info={"Content-Length": "13"}):
@@ -143,7 +143,7 @@ def test_download_logging_progress_with_known_length():
 
 
 def test_download_logging_progress_with_unknown_length():
-    logging_fn_to_mock = "pytorchltr.dataset.resources.downloader.logging"
+    logging_fn_to_mock = "pytorchltr.datasets.util.downloader.logging"
     with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked", b"content"], info={}):
             with tempfile.TemporaryDirectory() as tmpdir:
@@ -160,7 +160,7 @@ def test_download_logging_progress_with_unknown_length():
 
 
 def test_download_logging_progress_with_kilobytes():
-    logging_fn_to_mock = "pytorchltr.dataset.resources.downloader.logging"
+    logging_fn_to_mock = "pytorchltr.datasets.util.downloader.logging"
     with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked" * 1024, b"content" * 1024],
                           info={"Content-Length": "13312"}):
@@ -178,7 +178,7 @@ def test_download_logging_progress_with_kilobytes():
 
 
 def test_download_logging_progress_with_megabytes():
-    logging_fn_to_mock = "pytorchltr.dataset.resources.downloader.logging"
+    logging_fn_to_mock = "pytorchltr.datasets.util.downloader.logging"
     with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"moc" * 1024 * 120,
                                 b"moc" * 1024 * 748,

@@ -1,6 +1,6 @@
 import torch
-from tests.dataset.test_svmrank import get_sample_dataset
-from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
+from tests.datasets.test_svmrank import get_sample_dataset
+from pytorchltr.datasets.svmrank import SVMRankingDataset
 from pytorchltr.loss.pairwise import AdditivePairwiseLoss
 from pytorchltr.evaluation.arp import arp
 
@@ -20,7 +20,7 @@ def test_basic_sgd_learning():
     dataset = get_sample_dataset()
 
     input_dim = dataset[0]["features"].shape[1]
-    collate_fn = create_svmranking_collate_fn(max_list_size=50)
+    collate_fn = SVMRankingDataset.collate_fn(max_list_size=50)
     model = Model(input_dim)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
     loss_fn = AdditivePairwiseLoss()

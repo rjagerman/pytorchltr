@@ -1,22 +1,19 @@
 import os
 
-from pytorchltr.dataset.resources.downloader import DefaultProgress
-from pytorchltr.dataset.resources.downloader import Downloader
-from pytorchltr.dataset.resources.resource import DownloadableResource
-from pytorchltr.dataset.resources.util import extract_zip
-from pytorchltr.dataset.svmrank import create_svmranking_collate_fn
-from pytorchltr.dataset.svmrank import svmranking_dataset
+from pytorchltr.datasets.util.downloader import DefaultProgress
+from pytorchltr.datasets.util.downloader import Downloader
+from pytorchltr.datasets.util.file import validate_and_download
+from pytorchltr.datasets.util.file import extract_zip
+from pytorchltr.datasets.svmrank import SVMRankingDataset
 
 
-class MSLR30K(DownloadableResource):
+class MSLR30K(SVMRankingDataset):
     """
     Utility class for downloading and using the MSLR-WEB30K dataset:
     https://www.microsoft.com/en-us/research/project/mslr/.
-
-    Attributes:
-        normalize (bool): Whether to perform query-level feature normalization.
     """
-    default_downloader = Downloader(
+
+    downloader = Downloader(
         url="https://api.onedrive.com/v1.0/shares/s!AtsMfWUz5l8nbXGPBlwD1rnFdBY/root/content",  # noqa: E501
         target="MSLR-WEB30K.zip",
         sha256_checksum="08cb7977e1d5cbdeb57a9a2537a0923dbca6d46a76db9a6afc69e043c85341ae",  # noqa: E501
@@ -51,41 +48,49 @@ class MSLR30K(DownloadableResource):
         ]
     }
 
-    def __init__(self, location, fold=1, normalize=True,
-                 downloader=default_downloader, validate_checksums=True):
+    splits = {
+        "train": "train.txt",
+        "test": "test.txt",
+        "vali": "vali.txt"
+    }
+
+    def __init__(self, location, split="train", fold=1, normalize=True,
+                 filter_queries=None, download=True, validate_checksums=True):
         """
         Args:
-            location: Directory where the dataset is located.
-            fold: The fold to use (1...5) in the MSLR dataset.
-            normalize: Whether to perform query-level feature normalization.
-            downloader: A downloader for downloading the dataset.
-            validate_checksums: Whether to validate the dataset files via
-                sha256.
+            location (str): Directory where the dataset is located.
+            split (str): The data split to load ("train", "test" or "vali")
+            fold (int): Which data fold to load (1...5)
+            normalize (bool): Whether to perform query-level feature
+                normalization.
+            filter_queries (bool, optional): Whether to filter out queries that
+                have no relevant items. If not given this will filter queries
+                for the test set but not the train set.
+            download (bool): Whether to download the dataset if it does not
+                exist.
+            validate_checksums (bool): Whether to validate the dataset files
+                via sha256.
         """
-        super().__init__("MSLR-WEB30K", location,
-                         expected_files=MSLR30K.per_fold_expected_files[fold],
-                         downloader=downloader,
-                         validate_checksums=validate_checksums)
-        self.normalize = normalize
-        self._fold = fold
+        # Check if specified split and fold exists.
+        if split not in MSLR30K.splits.keys():
+            raise ValueError("unrecognized data split '%s'" % str(split))
 
-    def fold_folder(self):
-        return "Fold%d" % self._fold
+        if fold not in MSLR30K.per_fold_expected_files.keys():
+            raise ValueError("unrecognized data fold '%s'" % str(fold))
 
-    def collate_fn(self):
-        return create_svmranking_collate_fn()
+        # Validate dataset exists and is correct, or download it.
+        validate_and_download(
+            location=location,
+            expected_files=MSLR30K.per_fold_expected_files[fold],
+            downloader=MSLR30K.downloader if download else None,
+            validate_checksums=validate_checksums)
 
-    def train(self):
-        return svmranking_dataset(
-            os.path.join(self.location, self.fold_folder(), "train.txt"),
-            sparse=False, normalize=self.normalize, filter_queries=False)
+        # Only filter queries on non-train splits.
+        if filter_queries is None:
+            filter_queries = False if split == "train" else True
 
-    def test(self):
-        return svmranking_dataset(
-            os.path.join(self.location, self.fold_folder(), "test.txt"),
-            sparse=False, normalize=self.normalize, filter_queries=True)
-
-    def vali(self):
-        return svmranking_dataset(
-            os.path.join(self.location, self.fold_folder(), "vali.txt"),
-            sparse=False, normalize=self.normalize, filter_queries=True)
+        # Initialize the dataset.
+        datafile = os.path.join(location, "Fold%d" % fold,
+                                MSLR30K.splits[split])
+        super().__init__(file=datafile, sparse=False, normalize=normalize,
+                         filter_queries=filter_queries, zero_based="auto")
