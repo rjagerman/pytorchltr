@@ -1,6 +1,6 @@
 """DCG and NDCG evaluation metrics."""
 import torch as _torch
-from pytorchltr.util import rank_by_score as _rank_by_score
+from pytorchltr.utils import rank_by_score as _rank_by_score
 
 
 def ndcg(scores, relevance, n, k=None, exp=True):

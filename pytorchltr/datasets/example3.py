@@ -1,9 +1,9 @@
 import os
 
-from pytorchltr.datasets.util.downloader import DefaultProgress
-from pytorchltr.datasets.util.downloader import Downloader
-from pytorchltr.datasets.util.file import validate_and_download
-from pytorchltr.datasets.util.file import extract_tar
+from pytorchltr.utils.downloader import DefaultDownloadProgress
+from pytorchltr.utils.downloader import Downloader
+from pytorchltr.utils.file import validate_and_download
+from pytorchltr.utils.file import extract_tar
 from pytorchltr.datasets.svmrank import SVMRankingDataset
 
 
@@ -20,7 +20,7 @@ class Example3(SVMRankingDataset):
         url="http://download.joachims.org/svm_light/examples/example3.tar.gz",
         target="example3.tar.gz",
         sha256_checksum="c46e97b66d3c9d5f37f7c3a2201aa2c4ea2a4e8a768f8794b10152c22648106b",  # noqa: E501
-        progress_fn=DefaultProgress(),
+        progress_fn=DefaultDownloadProgress(),
         postprocess_fn=extract_tar)
 
     expected_files = [

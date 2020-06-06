@@ -1,7 +1,7 @@
 import torch
-from pytorchltr.click_simulation import simulate_perfect
-from pytorchltr.click_simulation import simulate_position
-from pytorchltr.click_simulation import simulate_nearrandom
+from pytorchltr.click_simulation.pbm import simulate_perfect
+from pytorchltr.click_simulation.pbm import simulate_position
+from pytorchltr.click_simulation.pbm import simulate_nearrandom
 from pytest import approx
 
 

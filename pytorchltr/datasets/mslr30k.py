@@ -1,9 +1,9 @@
 import os
 
-from pytorchltr.datasets.util.downloader import DefaultProgress
-from pytorchltr.datasets.util.downloader import Downloader
-from pytorchltr.datasets.util.file import validate_and_download
-from pytorchltr.datasets.util.file import extract_zip
+from pytorchltr.utils.downloader import DefaultDownloadProgress
+from pytorchltr.utils.downloader import Downloader
+from pytorchltr.utils.file import validate_and_download
+from pytorchltr.utils.file import extract_zip
 from pytorchltr.datasets.svmrank import SVMRankingDataset
 
 
@@ -17,7 +17,7 @@ class MSLR30K(SVMRankingDataset):
         url="https://api.onedrive.com/v1.0/shares/s!AtsMfWUz5l8nbXGPBlwD1rnFdBY/root/content",  # noqa: E501
         target="MSLR-WEB30K.zip",
         sha256_checksum="08cb7977e1d5cbdeb57a9a2537a0923dbca6d46a76db9a6afc69e043c85341ae",  # noqa: E501
-        progress_fn=DefaultProgress(),
+        progress_fn=DefaultDownloadProgress(),
         postprocess_fn=extract_zip)
 
     per_fold_expected_files = {

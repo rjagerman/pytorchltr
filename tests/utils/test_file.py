@@ -4,9 +4,9 @@ from unittest import mock
 from pathlib import Path
 
 import pytest
-from pytorchltr.datasets.util.file import validate_expected_files
-from pytorchltr.datasets.util.file import validate_and_download
-from pytorchltr.datasets.util.file import ChecksumError
+from pytorchltr.utils.file import validate_expected_files
+from pytorchltr.utils.file import validate_and_download
+from pytorchltr.utils.file import ChecksumError
 
 
 def test_validate_expected_files_simple_succeeds():

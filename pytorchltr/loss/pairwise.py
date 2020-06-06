@@ -1,6 +1,6 @@
 """Pairwise ranking losses."""
 import torch as _torch
-from pytorchltr.loss.util import batch_pairwise_difference
+from pytorchltr.utils import batch_pairwise_difference
 
 
 class PairwiseAdditiveLoss(_torch.nn.Module):
