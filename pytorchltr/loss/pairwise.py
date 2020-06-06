@@ -13,15 +13,16 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
         """Initializes the Additive Pairwise Loss."""
         super().__init__()
 
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def loss_per_doc_pair(self, score_pair_diffs, rel_pair_diffs):
         """Computes a loss on given score pairs and relevance pairs.
 
         Args:
-            score_pairs: A tensor of shape (batch_size, list_size, list_size)
-                where each entry indicates the score difference of doc i and j.
-            rel_pairs: A tensor of shape (batch_size, list_size, list_size)
-                where each entry indicates the relevance difference of doc i
-                and j.
+            score_pair_diffs: A tensor of shape (batch_size, list_size,
+                list_size), where each entry (:, i, j) indicates the score
+                difference of doc i and j.
+            rel_pair_diffs: A tensor of shape (batch_size, list_size,
+                list_size), where each entry (:, i, j) indicates the relevance
+                difference of doc i and j.
 
         Returns:
             A tensor of shape (batch_size, list_size, list_size) with a loss
@@ -62,16 +63,17 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
             scores = scores.reshape((scores.shape[0], scores.shape[1], 1))
 
         # Compute pairwise differences for scores and relevances.
-        score_pairs = batch_pairwise_difference(scores)
-        rel_pairs = batch_pairwise_difference(relevance)
+        score_pair_diffs = batch_pairwise_difference(scores)
+        rel_pair_diffs = batch_pairwise_difference(relevance)
 
         # Compute loss per doc pair.
-        loss_pairs = self.loss_per_doc_pair(score_pairs, rel_pairs)
+        loss_pairs = self.loss_per_doc_pair(score_pair_diffs, rel_pair_diffs)
 
         # Mask out padded documents per query in the batch
-        n_grid = n[:, None, None].repeat(1, score_pairs.shape[1],
-                                         score_pairs.shape[2])
-        arange = _torch.arange(score_pairs.shape[1], device=score_pairs.device)
+        n_grid = n[:, None, None].repeat(1, score_pair_diffs.shape[1],
+                                         score_pair_diffs.shape[2])
+        arange = _torch.arange(score_pair_diffs.shape[1],
+                               device=score_pair_diffs.device)
         range_grid = _torch.max(*_torch.meshgrid([arange, arange]))
         range_grid = range_grid[None, :, :].repeat(n.shape[0], 1, 1)
         loss_pairs[n_grid <= range_grid] = 0.0
@@ -88,9 +90,9 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
 
 class PairwiseHingeLoss(PairwiseAdditiveLoss):
     """Pairwise hinge loss formulation of SVMRank."""
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
-        loss = 1.0 - score_pairs
-        loss[rel_pairs <= 0.0] = 0.0
+    def loss_per_doc_pair(self, score_pair_diffs, rel_pair_diffs):
+        loss = 1.0 - score_pair_diffs
+        loss[rel_pair_diffs <= 0.0] = 0.0
         loss[loss < 0.0] = 0.0
         return loss
 
@@ -109,9 +111,10 @@ class PairwiseLogisticLoss(PairwiseAdditiveLoss):
             sigma: A hyper parameter indicating the sharpness of the logistic
                 curve used.
         """
+        super().__init__()
         self.sigma = sigma
 
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
-        loss = _torch.log2(1.0 + _torch.exp(-self.sigma * score_pairs))
-        loss[rel_pairs <= 0.0] = 0.0
+    def loss_per_doc_pair(self, score_pair_diffs, rel_pair_diffs):
+        loss = _torch.log2(1.0 + _torch.exp(-self.sigma * score_pair_diffs))
+        loss[rel_pair_diffs <= 0.0] = 0.0
         return loss
