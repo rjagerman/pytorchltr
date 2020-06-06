@@ -24,7 +24,7 @@ See `examples/01-basic-usage.py` for a more complete example including evaluatio
 ```python
 import torch
 from pytorchltr.datasets import Example3
-from pytorchltr.loss.pairwise import AdditivePairwiseLoss
+from pytorchltr.loss import PairwiseHingeLoss
 
 # Load dataset
 train = Example3("./datasets/example3", split="train")
@@ -33,7 +33,7 @@ collate_fn = train.collate_fn()
 # Setup model, optimizer and loss
 model = torch.nn.Linear(train[0]["features"].shape[1], 1)
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
-loss = AdditivePairwiseLoss()
+loss = PairwiseHingeLoss()
 
 # Train for 3 epochs
 for epoch in range(3):

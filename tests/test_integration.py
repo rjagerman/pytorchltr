@@ -1,7 +1,7 @@
 import torch
 from tests.datasets.test_svmrank import get_sample_dataset
 from pytorchltr.datasets.svmrank import SVMRankingDataset
-from pytorchltr.loss.pairwise import AdditivePairwiseLoss
+from pytorchltr.loss.pairwise import PairwiseHingeLoss
 from pytorchltr.evaluation.arp import arp
 
 
@@ -23,7 +23,7 @@ def test_basic_sgd_learning():
     collate_fn = SVMRankingDataset.collate_fn(max_list_size=50)
     model = Model(input_dim)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
-    loss_fn = AdditivePairwiseLoss()
+    loss_fn = PairwiseHingeLoss()
     arp_per_epoch = torch.zeros(100)
 
     # Perform 100 epochs
