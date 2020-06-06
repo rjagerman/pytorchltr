@@ -3,15 +3,15 @@ import os
 import contextlib
 import pytest
 from unittest import mock
-from pytorchltr.datasets.util.downloader import Downloader
-from pytorchltr.datasets.util.downloader import LoggingProgress
-from pytorchltr.datasets.util.downloader import TerminalProgress
-from pytorchltr.datasets.util.file import ChecksumError
+from pytorchltr.utils.downloader import Downloader
+from pytorchltr.utils.downloader import LoggingDownloadProgress
+from pytorchltr.utils.downloader import TerminalDownloadProgress
+from pytorchltr.utils.file import ChecksumError
 
 
 @contextlib.contextmanager
 def mock_urlopen(read, info):
-    urlopen_fn_to_mock = "pytorchltr.datasets.util.downloader.urlopen"
+    urlopen_fn_to_mock = "pytorchltr.utils.downloader.urlopen"
     with mock.patch(urlopen_fn_to_mock) as urlopen_mock:
         urlopen_obj = mock.MagicMock()
         urlopen_obj.read.side_effect = read
@@ -125,14 +125,14 @@ def test_download_progress_with_unknown_length():
 
 
 def test_download_logging_progress_with_known_length():
-    logging_fn_to_mock = "pytorchltr.datasets.util.downloader.logging"
+    logging_fn_to_mock = "pytorchltr.utils.progress.logging"
     with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked", b"content"],
                           info={"Content-Length": "13"}):
             with tempfile.TemporaryDirectory() as tmpdir:
                 downloader = Downloader(
                     "http://mocked", "file.dat",
-                    progress_fn=LoggingProgress(interval=0.0))
+                    progress_fn=LoggingDownloadProgress(interval=0.0))
                 downloader.download(tmpdir)
                 logging_mock.info.assert_has_calls([
                     mock.call("downloading   0% [0B / 13B]"),
@@ -143,13 +143,13 @@ def test_download_logging_progress_with_known_length():
 
 
 def test_download_logging_progress_with_unknown_length():
-    logging_fn_to_mock = "pytorchltr.datasets.util.downloader.logging"
+    logging_fn_to_mock = "pytorchltr.utils.progress.logging"
     with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked", b"content"], info={}):
             with tempfile.TemporaryDirectory() as tmpdir:
                 downloader = Downloader(
                     "http://mocked", "file.dat",
-                    progress_fn=LoggingProgress(interval=0.0))
+                    progress_fn=LoggingDownloadProgress(interval=0.0))
                 downloader.download(tmpdir)
                 logging_mock.info.assert_has_calls([
                     mock.call("downloading [0B / ?]"),
@@ -160,14 +160,14 @@ def test_download_logging_progress_with_unknown_length():
 
 
 def test_download_logging_progress_with_kilobytes():
-    logging_fn_to_mock = "pytorchltr.datasets.util.downloader.logging"
+    logging_fn_to_mock = "pytorchltr.utils.progress.logging"
     with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"mocked" * 1024, b"content" * 1024],
                           info={"Content-Length": "13312"}):
             with tempfile.TemporaryDirectory() as tmpdir:
                 downloader = Downloader(
                     "http://mocked", "file.dat",
-                    progress_fn=LoggingProgress(interval=0.0))
+                    progress_fn=LoggingDownloadProgress(interval=0.0))
                 downloader.download(tmpdir)
                 logging_mock.info.assert_has_calls([
                     mock.call("downloading   0% [0B / 13KB]"),
@@ -178,7 +178,7 @@ def test_download_logging_progress_with_kilobytes():
 
 
 def test_download_logging_progress_with_megabytes():
-    logging_fn_to_mock = "pytorchltr.datasets.util.downloader.logging"
+    logging_fn_to_mock = "pytorchltr.utils.progress.logging"
     with mock.patch(logging_fn_to_mock) as logging_mock:
         with mock_urlopen(read=[b"moc" * 1024 * 120,
                                 b"moc" * 1024 * 748,
@@ -188,7 +188,7 @@ def test_download_logging_progress_with_megabytes():
             with tempfile.TemporaryDirectory() as tmpdir:
                 downloader = Downloader(
                     "http://mocked", "file.dat",
-                    progress_fn=LoggingProgress(interval=0.0))
+                    progress_fn=LoggingDownloadProgress(interval=0.0))
                 downloader.download(tmpdir)
                 logging_mock.info.assert_has_calls([
                     mock.call("downloading   0% [0B / 7.7MB]"),
@@ -207,7 +207,7 @@ def test_download_terminal_progress():
             with tempfile.TemporaryDirectory() as tmpdir:
                 downloader = Downloader(
                     "http://mocked", "file.dat",
-                    progress_fn=TerminalProgress(interval=0.0))
+                    progress_fn=TerminalDownloadProgress(interval=0.0))
                 downloader.download(tmpdir)
                 print_mock.assert_has_calls([
                     mock.call("\033[Kdownloading   0% [0B / 13B]", end="\r"),

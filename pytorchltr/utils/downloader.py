@@ -1,12 +1,13 @@
 import logging
 import os
 import sys
-import time
 from collections import deque
 from urllib.request import urlopen
 
-from pytorchltr.datasets.util.file import ChecksumError
-from pytorchltr.datasets.util.file import validate_file
+from pytorchltr.utils.file import ChecksumError
+from pytorchltr.utils.file import validate_file
+from pytorchltr.utils.progress import LoggingProgress
+from pytorchltr.utils.progress import TerminalProgress
 
 
 class Downloader:
@@ -140,45 +141,14 @@ class Downloader:
             self.progress_fn(bytes_read, total_size, final)
 
 
-class IntervalProgress:
-    """
-    A progress hook function that reports to output at a specified interval.
-    """
+class LoggingDownloadProgress(LoggingProgress):
     def __init__(self, interval=1.0):
-        self.interval = interval
-        self.last_update = time.time() - interval
-
-    def __call__(self, bytes_read, total_size, final):
-        if final or time.time() - self.last_update >= self.interval:
-            self.progress(bytes_read, total_size, final)
-            self.last_update = time.time()
-
-    def progress(self, bytes_read, total_size, final):
-        """Processes the progress so far. Called only once per interval.
-
-        Args:
-            bytes_read (int): The number of bytes read so far.
-            total_size (int, optional): The total number of bytes.
-            final (bool): Whether this is the final progress call.
-        """
-        raise NotImplementedError
+        super().__init__(interval=interval, progress_str=_progress_string)
 
 
-class LoggingProgress(IntervalProgress):
-    """
-    An interval progress hook that reports to logging.info.
-    """
-    def progress(self, bytes_read, total_size, final):
-        logging.info(_progress_string(bytes_read, total_size, final))
-
-
-class TerminalProgress(IntervalProgress):
-    """
-    An interval progress hook that writes to the terminal via print.
-    """
-    def progress(self, bytes_read, total_size, final):
-        print("\033[K" + _progress_string(bytes_read, total_size, final),
-              end="\n" if final else "\r")
+class TerminalDownloadProgress(TerminalProgress):
+    def __init__(self, interval=1.0):
+        super().__init__(interval=interval, progress_str=_progress_string)
 
 
 def _progress_string(bytes_read, total_size, final):
@@ -222,6 +192,6 @@ def _to_human_readable(nr_of_bytes):
 
 # Set default progress hook depending on whether the stdout is a terminal.
 if sys.stdout.isatty():
-    DefaultProgress = TerminalProgress
+    DefaultDownloadProgress = TerminalDownloadProgress
 else:
-    DefaultProgress = LoggingProgress
+    DefaultDownloadProgress = LoggingDownloadProgress

@@ -1,7 +1,7 @@
 """Average Relevant Position."""
 import torch as _torch
-from pytorchltr.util import rank_by_score as _rank_by_score
-from pytorchltr.util import mask_padded_values as _mask_padded_values
+from pytorchltr.utils import rank_by_score as _rank_by_score
+from pytorchltr.utils import mask_padded_values as _mask_padded_values
 
 
 def arp(scores, relevance, n):

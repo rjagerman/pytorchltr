@@ -1,9 +1,9 @@
 import os
 
-from pytorchltr.datasets.util.downloader import DefaultProgress
-from pytorchltr.datasets.util.downloader import Downloader
-from pytorchltr.datasets.util.file import validate_and_download
-from pytorchltr.datasets.util.file import extract_tar
+from pytorchltr.utils.downloader import DefaultDownloadProgress
+from pytorchltr.utils.downloader import Downloader
+from pytorchltr.utils.file import validate_and_download
+from pytorchltr.utils.file import extract_tar
 from pytorchltr.datasets.svmrank import SVMRankingDataset
 
 
@@ -19,7 +19,7 @@ class IstellaS(SVMRankingDataset):
         url="http://library.istella.it/dataset/istella-s-letor.tar.gz",
         target="istella-s-letor.tar.gz",
         sha256_checksum="41b21116a3650cc043dbe16f02ee39f4467f9405b37fdbcc9a6a05e230a38981",  # noqa: E501
-        progress_fn=DefaultProgress(),
+        progress_fn=DefaultDownloadProgress(),
         postprocess_fn=extract_tar)
 
     expected_files = [
