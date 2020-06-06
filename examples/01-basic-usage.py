@@ -23,7 +23,7 @@
 import torch
 from pytorchltr.datasets import Example3
 from pytorchltr.evaluation.dcg import ndcg
-from pytorchltr.loss.pairwise import AdditivePairwiseLoss
+from pytorchltr.loss import PairwiseHingeLoss
 import logging
 
 
@@ -43,7 +43,7 @@ collate_fn = train.collate_fn()
 # Create model, optimizer and loss to optimize
 model = torch.nn.Linear(train[0]["features"].shape[1], 1)
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
-loss_fn = AdditivePairwiseLoss()
+loss_fn = PairwiseHingeLoss()
 
 
 # Function to evaluate the model on the test split of the dataset
