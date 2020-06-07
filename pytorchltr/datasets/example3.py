@@ -4,6 +4,7 @@ from pytorchltr.utils.downloader import DefaultDownloadProgress
 from pytorchltr.utils.downloader import Downloader
 from pytorchltr.utils.file import validate_and_download
 from pytorchltr.utils.file import extract_tar
+from pytorchltr.utils.file import dataset_dir
 from pytorchltr.datasets.svmrank import SVMRankingDataset
 
 
@@ -33,8 +34,9 @@ class Example3(SVMRankingDataset):
         "test": os.path.join("example3", "test.dat")
     }
 
-    def __init__(self, location, split="train", normalize=True,
-                 filter_queries=None, download=True, validate_checksums=True):
+    def __init__(self, location=dataset_dir("example3"), split="train",
+                 normalize=True, filter_queries=None, download=True,
+                 validate_checksums=True):
         """
         Args:
             location (str): Directory where the dataset is located.

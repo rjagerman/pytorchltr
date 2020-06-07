@@ -27,7 +27,7 @@ from pytorchltr.datasets import Example3
 from pytorchltr.loss import PairwiseHingeLoss
 
 # Load dataset
-train = Example3("./datasets/example3", split="train")
+train = Example3(split="train")
 collate_fn = train.collate_fn()
 
 # Setup model, optimizer and loss

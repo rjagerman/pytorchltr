@@ -60,7 +60,7 @@ class SVMRankingDataset(_Dataset):
         # Compute qid map and dataset length
         self._qid_map = {
             self._unique_qids[self._indices[index]]: index
-            for index in self._indices
+            for index in range(len(self._indices))
         }
         self._n = len(self._indices)
 

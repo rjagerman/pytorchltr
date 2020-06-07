@@ -36,8 +36,8 @@ logging.basicConfig(
 torch.manual_seed(42)
 
 # Load the example3 toy dataset
-train = Example3("./datasets/example3", split="train")
-test = Example3("./datasets/example3", split="test")
+train = Example3(split="train")
+test = Example3(split="test")
 collate_fn = train.collate_fn()
 
 # Create model, optimizer and loss to optimize
