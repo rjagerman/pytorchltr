@@ -297,3 +297,9 @@ def test_get_index():
     dataset = get_sample_dataset()
     for i in range(len(dataset)):
         assert dataset.get_index(dataset[i]["qid"]) == i
+
+
+def test_get_index_filtered_queries():
+    dataset = get_sample_dataset(filter_queries=True)
+    for i in range(len(dataset)):
+        assert dataset.get_index(dataset[i]["qid"]) == i
