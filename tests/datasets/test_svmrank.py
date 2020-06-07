@@ -280,3 +280,14 @@ def test_collate_dense_all():
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
     assert tensor_batch["features"].shape == (3, 14, 45)
+
+
+def test_filter_queries():
+    # Load data set.
+    dataset_filtered = get_sample_dataset(filter_queries=True)
+    dataset = get_sample_dataset(filter_queries=False)
+    assert len(dataset_filtered) != len(dataset)
+
+    assert dataset_filtered[0]["qid"] == dataset[0]["qid"]
+    assert dataset_filtered[1]["qid"] == dataset[1]["qid"]
+    assert dataset_filtered[2]["qid"] == dataset[3]["qid"]
