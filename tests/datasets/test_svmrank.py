@@ -288,18 +288,25 @@ def test_filter_queries():
     dataset = get_sample_dataset(filter_queries=False)
     assert len(dataset_filtered) != len(dataset)
 
+    # Assert qid matches on non-filtered queries
     assert dataset_filtered[0]["qid"] == dataset[0]["qid"]
     assert dataset_filtered[1]["qid"] == dataset[1]["qid"]
     assert dataset_filtered[2]["qid"] == dataset[3]["qid"]
 
 
 def test_get_index():
+    # Load data set.
     dataset = get_sample_dataset()
+
+    # Assert that get_index for each qid matches the index.
     for i in range(len(dataset)):
         assert dataset.get_index(dataset[i]["qid"]) == i
 
 
 def test_get_index_filtered_queries():
+    # Load data set.
     dataset = get_sample_dataset(filter_queries=True)
+
+    # Assert that get_index for each qid matches the index.
     for i in range(len(dataset)):
         assert dataset.get_index(dataset[i]["qid"]) == i
