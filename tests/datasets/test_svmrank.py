@@ -291,3 +291,9 @@ def test_filter_queries():
     assert dataset_filtered[0]["qid"] == dataset[0]["qid"]
     assert dataset_filtered[1]["qid"] == dataset[1]["qid"]
     assert dataset_filtered[2]["qid"] == dataset[3]["qid"]
+
+
+def test_get_index():
+    dataset = get_sample_dataset()
+    for i in range(len(dataset)):
+        assert dataset.get_index(dataset[i]["qid"]) == i
