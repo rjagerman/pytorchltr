@@ -4,6 +4,7 @@ from pytorchltr.utils.downloader import DefaultDownloadProgress
 from pytorchltr.utils.downloader import Downloader
 from pytorchltr.utils.file import validate_and_download
 from pytorchltr.utils.file import extract_zip
+from pytorchltr.utils.file import dataset_dir
 from pytorchltr.datasets.svmrank import SVMRankingDataset
 
 
@@ -54,8 +55,9 @@ class MSLR30K(SVMRankingDataset):
         "vali": "vali.txt"
     }
 
-    def __init__(self, location, split="train", fold=1, normalize=True,
-                 filter_queries=None, download=True, validate_checksums=True):
+    def __init__(self, location=dataset_dir("MSLR30K"), split="train", fold=1,
+                 normalize=True, filter_queries=None, download=True,
+                 validate_checksums=True):
         """
         Args:
             location (str): Directory where the dataset is located.

@@ -160,3 +160,11 @@ def extract_zip(path, destination):
     logging.info("extracting zip file at '%s' to '%s'", path, destination)
     with zipfile.ZipFile(path, "r") as f:
         f.extractall(destination)
+
+
+def dataset_dir(name):
+    dataset_path = os.path.join(os.environ.get("HOME", "."),
+                                ".pytorchltr_datasets")
+    dataset_path = os.environ.get("DATASET_PATH", dataset_path)
+    dataset_path = os.environ.get("PYTORCHLTR_DATASET_PATH", dataset_path)
+    return os.path.join(dataset_path, name)
