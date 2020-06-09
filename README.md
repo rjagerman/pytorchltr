@@ -2,6 +2,7 @@
 
 [![Build](https://img.shields.io/travis/rjagerman/pytorchltr/master)](https://travis-ci.org/rjagerman/pytorchltr)
 [![Coverage](https://img.shields.io/codecov/c/github/rjagerman/pytorchltr/master)](https://codecov.io/gh/rjagerman/pytorchltr)
+[![CodeFactor](https://img.shields.io/codefactor/grade/github/rjagerman/pytorchltr/master)](https://www.codefactor.io/repository/github/rjagerman/pytorchltr)
 [![License](https://img.shields.io/github/license/rjagerman/pytorchltr)](https://github.com/rjagerman/pytorchltr/blob/master/LICENSE.md)
 
 > :warning: **This is an early release and subject to breaking changes**
