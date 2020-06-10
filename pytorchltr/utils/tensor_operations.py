@@ -73,7 +73,9 @@ def rank_by_plackettluce(scores, n):
     # following implementation is a numerically stable variant that operates in
     # log-space.
     log_p = _torch.nn.LogSoftmax(dim=1)(masked_scores)
-    u = _torch.distributions.uniform.Uniform(0.0, 1.0).sample(log_p.shape)
+    c_zero = _torch.tensor(0.0).to(device=scores.device)
+    c_one = _torch.tensor(1.0).to(device=scores.device)
+    u = _torch.distributions.uniform.Uniform(c_zero, c_one).sample(log_p.shape)
     r = _torch.log(-_torch.log(u)) - log_p
     return tiebreak_argsort(r, descending=False)
 
