@@ -1,3 +1,4 @@
-from pytorchltr.loss.pairwise import PairwiseHingeLoss  # noqa: F401
-from pytorchltr.loss.pairwise import PairwiseDCGHingeLoss  # noqa: F401
-from pytorchltr.loss.pairwise import PairwiseLogisticLoss  # noqa: F401
+from pytorchltr.loss.pairwise_additive import PairwiseHingeLoss  # noqa: F401
+from pytorchltr.loss.pairwise_additive import PairwiseDCGHingeLoss  # noqa: F401,E501
+from pytorchltr.loss.pairwise_additive import PairwiseLogisticLoss  # noqa: F401,E501
+
