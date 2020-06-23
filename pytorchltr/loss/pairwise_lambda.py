@@ -9,7 +9,10 @@ class PairwiseLambdaLoss(_torch.nn.Module):
     Implementation of pairwise LambdaLoss.
     """
     def __init__(self, sigma=1.0):
-        """Initializes the Pairwise LambdaLoss."""
+        """
+        Args:
+            sigma: Steepness of the logistic curve.
+        """
         super().__init__()
         self.sigma = sigma
 
@@ -92,10 +95,12 @@ class PairwiseLambdaLoss(_torch.nn.Module):
 class PairwiseLambdaARPLoss1(PairwiseLambdaLoss):
     r"""ARP Loss 1:
 
-    .. math:
-        - \sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{pi} \left(
-            \frac{1}{1 + e^{-\sigma (s_i - s_j)}}
-        \right) ^ y_{i} H(\pi \mid s)
+    $$
+    l(\mathbf{s}, \mathbf{y}) = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
+    \left(\frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}\right)^{y_{\pi_i}}
+    H(\pi \mid \mathbf{s})
+    $$
+
     """
     def loss_per_doc_pair(self, score_pairs, rel_pairs):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
@@ -104,6 +109,15 @@ class PairwiseLambdaARPLoss1(PairwiseLambdaLoss):
 
 
 class PairwiseLambdaARPLoss2(PairwiseLambdaLoss):
+    r"""
+    ARP Loss 2:
+
+    $$
+    l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} |y_i - y_j| \log_2 \left(
+    1 + e^{-\sigma(s_i - s_j)}
+    \right)
+    $$
+    """
     def loss_per_doc_pair(self, score_pairs, rel_pairs):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         rel_diffs = rel_pairs[:, :, :, 0] - rel_pairs[:, :, :, 1]
@@ -113,6 +127,18 @@ class PairwiseLambdaARPLoss2(PairwiseLambdaLoss):
 
 
 class PairwiseLambdaNDCGLoss1(PairwiseLambdaLoss):
+    r"""
+    NDCG Loss 1:
+
+    $$
+    l(\mathbf{s}, \mathbf{y}) = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
+    \left(
+        \frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}
+    \right)^{\frac{G_{\pi_i}}{D_{\pi_i}}}
+    H(\pi \mid \mathbf{s})
+    $$
+    where \(G_i = \frac{2^{y_i} - 1}{\text{maxDCG}}\) and \(D_i = \log_2(1 + i)\).
+    """
     def loss_per_doc_pair(self, score_pairs, rel_pairs):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         gains = (2 ** rel_pairs[:, :, :, 0]) - 1.0
@@ -125,6 +151,17 @@ class PairwiseLambdaNDCGLoss1(PairwiseLambdaLoss):
 
 
 class PairwiseLambdaNDCGLoss2(PairwiseLambdaLoss):
+    r"""
+    NDCG Loss 2:
+
+    $$
+    l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} \log_2 \sum_{\pi}
+    \left(
+    \frac{1}{1 + e^{-\sigma (s_i - s_j)}}
+    \right)^{\delta_{ij} | G_i - G_j |}
+    H(\pi \mid \mathbf{s})
+    $$
+    """
     def loss_per_doc_pair(self, score_pairs, rel_pairs):
         # Compute diffs for different parts of the loss function
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]

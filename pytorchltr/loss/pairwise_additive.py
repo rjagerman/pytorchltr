@@ -1,4 +1,3 @@
-"""Pairwise ranking losses."""
 import torch as _torch
 from pytorchltr.utils import batch_pairs
 
@@ -10,7 +9,7 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
     This includes RankSVM hinge loss and variations.
     """
     def __init__(self):
-        """Initializes the Additive Pairwise Loss."""
+        r""""""
         super().__init__()
 
     def loss_per_doc_pair(self, score_pairs, rel_pairs):
@@ -89,7 +88,14 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
 
 
 class PairwiseHingeLoss(PairwiseAdditiveLoss):
-    """Pairwise hinge loss formulation of SVMRank."""
+    r"""Pairwise hinge loss formulation of SVMRank:
+
+    $$
+    l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y _j} max\left(
+        0, 1 - (s_i - s_j)
+    \right)
+    $$
+    """
     def loss_per_doc_pair(self, score_pairs, rel_pairs):
         score_pair_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         rel_pair_diffs = rel_pairs[:, :, :, 0] - rel_pairs[:, :, :, 1]
@@ -100,18 +106,33 @@ class PairwiseHingeLoss(PairwiseAdditiveLoss):
 
 
 class PairwiseDCGHingeLoss(PairwiseHingeLoss):
-    """Pairwise DCG-modified hinge loss."""
+    r"""Pairwise DCG-modified hinge loss:
+
+    $$
+    l(\mathbf{s}, \mathbf{y}) =
+    \frac{-1}{\log\left(
+        2 + \sum_{y_i > y_j}
+        max\left(0, 1 - (s_i - s_j)\right)
+    \right)}
+    $$
+    """
     def loss_modifier(self, loss):
         return -1.0 / _torch.log(2.0 + loss)
 
 
 class PairwiseLogisticLoss(PairwiseAdditiveLoss):
-    """Pairwise logistic loss formulation of RankNet."""
+    r"""Pairwise logistic loss formulation of RankNet:
+
+    $$
+    l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} \log_2\left(1 + e^{
+        -\sigma \left(s_i - s_j\right)
+    }\right)
+    $$
+    """
     def __init__(self, sigma=1.0):
         """
         Args:
-            sigma: A hyper parameter indicating the sharpness of the logistic
-                curve used.
+            sigma: Steepness of the logistic curve.
         """
         super().__init__()
         self.sigma = sigma
