@@ -137,7 +137,8 @@ class PairwiseLambdaNDCGLoss1(PairwiseLambdaLoss):
     \right)^{\frac{G_{\pi_i}}{D_{\pi_i}}}
     H(\pi \mid \mathbf{s})
     $$
-    where \(G_i = \frac{2^{y_i} - 1}{\text{maxDCG}}\) and \(D_i = \log_2(1 + i)\).
+    where \(G_i = \frac{2^{y_i} - 1}{\text{maxDCG}}\) and
+    \(D_i = \log_2(1 + i)\).
     """
     def loss_per_doc_pair(self, score_pairs, rel_pairs):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
