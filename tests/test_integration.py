@@ -1,7 +1,7 @@
 import torch
 from tests.datasets.test_svmrank import get_sample_dataset
 from pytorchltr.datasets.svmrank import SVMRankingDataset
-from pytorchltr.loss.pairwise import PairwiseHingeLoss
+from pytorchltr.loss import PairwiseHingeLoss
 from pytorchltr.evaluation.arp import arp
 
 
