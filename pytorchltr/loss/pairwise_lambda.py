@@ -208,7 +208,7 @@ def _ndcg_gains(score_pairs, rel_pairs, n, exp=True):
         gains = (2 ** gains) - 1.0
     max_dcg = _max_dcg(rel_pairs[:, :, 0, 0], n, exp)
     max_dcg[max_dcg == 0.0] = 1.0
-    return gains / max_dcg[:, None]
+    return gains / max_dcg[:, None, None, None]
 
 
 def _max_dcg(relevance, n, exp=True):

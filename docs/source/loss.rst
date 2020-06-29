@@ -15,8 +15,11 @@ And produces the following output:
 
   - output: A tensor of size :math:`(N)`: the loss per learning instance in the batch.
 
-The following is a usage example for the Pairwise hinge loss but similar usage
-patterns hold for the other losses.
+Example
+-------
+
+The following is a usage example for the pairwise hinge loss but the same usage
+pattern holds for all the other losses.
 
 .. doctest::
 
@@ -36,6 +39,9 @@ patterns hold for the other losses.
     tensor([6.0000, 3.1000])
     >>> loss_fn(scores, relevance, n).mean()
     tensor(4.5500)
+
+List of loss functions
+----------------------
 
 .. autoclass:: pytorchltr.loss.PairwiseHingeLoss
    :members:
