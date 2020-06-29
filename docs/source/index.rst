@@ -6,3 +6,4 @@ PyTorchLTR
    :caption: Contents:
 
    loss
+   datasets
