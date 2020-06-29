@@ -16,7 +16,7 @@ class PairwiseLambdaLoss(_torch.nn.Module):
         super().__init__()
         self.sigma = sigma
 
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         """Computes a loss on given score pairs and relevance pairs.
 
         Args:
@@ -26,6 +26,7 @@ class PairwiseLambdaLoss(_torch.nn.Module):
             rel_pairs: A tensor of shape (batch_size, list_size, list_size, 2),
                 where each entry (:, i, j, :) indicates the relevance
                 for doc i and j.
+            n: A batch of per-query number of documents (for padding purposes).
 
         Returns:
             A tensor of shape (batch_size, list_size, list_size) with a loss
@@ -67,14 +68,12 @@ class PairwiseLambdaLoss(_torch.nn.Module):
         scores = _torch.gather(scores, 1, ranking)
         relevance = _torch.gather(relevance, 1, ranking)
 
-        # To do: compute arange for NDCG-Loss
-        # To do: compute batch_pairs for both ARP-Loss and NDCG-Loss
         # Compute pairwise differences for scores and relevances.
         score_pairs = _batch_pairs(scores)
         rel_pairs = _batch_pairs(relevance)
 
         # Compute loss per doc pair.
-        loss_pairs = self.loss_per_doc_pair(score_pairs, rel_pairs)
+        loss_pairs = self.loss_per_doc_pair(score_pairs, rel_pairs, n)
 
         # Mask out padded documents per query in the batch
         n_grid = n[:, None, None].repeat(1, score_pairs.shape[1],
@@ -84,6 +83,7 @@ class PairwiseLambdaLoss(_torch.nn.Module):
         range_grid = _torch.max(*_torch.meshgrid([arange, arange]))
         range_grid = range_grid[None, :, :].repeat(n.shape[0], 1, 1)
         loss_pairs[n_grid <= range_grid] = 0.0
+        print(loss_pairs)
 
         # Reduce final list loss from per doc pair loss to a per query loss.
         loss = self.loss_reduction(loss_pairs)
@@ -102,7 +102,7 @@ class PairwiseLambdaARPLoss1(PairwiseLambdaLoss):
     $$
 
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         sigmoid = (1.0 / (1.0 + _torch.exp(-self.sigma * score_diffs)))
         return -(_torch.log2(sigmoid ** rel_pairs[:, :, :, 0]))
@@ -118,7 +118,7 @@ class PairwiseLambdaARPLoss2(PairwiseLambdaLoss):
     \right)
     $$
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         rel_diffs = rel_pairs[:, :, :, 0] - rel_pairs[:, :, :, 1]
         loss = _torch.log2(1.0 + _torch.exp(-self.sigma * score_diffs))
@@ -140,9 +140,9 @@ class PairwiseLambdaNDCGLoss1(PairwiseLambdaLoss):
     where \(G_i = \frac{2^{y_i} - 1}{\text{maxDCG}}\) and
     \(D_i = \log_2(1 + i)\).
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
-        gains = (2 ** rel_pairs[:, :, :, 0]) - 1.0
+        gains = _ndcg_gains(score_pairs, rel_pairs, n)[:, :, :, 0]
         arange = _torch.arange(score_pairs.shape[1],
                                device=score_pairs.device)
         discounts = _torch.log2(2.0 + arange)
@@ -163,11 +163,11 @@ class PairwiseLambdaNDCGLoss2(PairwiseLambdaLoss):
     H(\pi \mid \mathbf{s})
     $$
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         # Compute diffs for different parts of the loss function
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         rel_diffs = rel_pairs[:, :, :, 0] - rel_pairs[:, :, :, 1]
-        gains = (2 ** rel_pairs[:, :, :, :]) - 1.0
+        gains = _ndcg_gains(score_pairs, rel_pairs, n)
         gain_diffs = gains[:, :, :, 0] - gains[:, :, :, 1]
 
         # Compute delta_{i, j} tensor
@@ -181,5 +181,29 @@ class PairwiseLambdaNDCGLoss2(PairwiseLambdaLoss):
         # Compute final loss
         exponent = delta[None, :, :] * _torch.abs(gain_diffs)
         sigmoid = (1.0 / (1.0 + _torch.exp(-self.sigma * score_diffs)))
-        sigmoid[rel_diffs <= 0] = 0.0
-        return -(_torch.log2(sigmoid ** exponent))
+        loss = _torch.log2(sigmoid ** exponent)
+        loss[rel_diffs <= 0] = 0.0
+        return -loss
+
+
+def _ndcg_gains(score_pairs, rel_pairs, n, exp=True):
+    gains = rel_pairs[:, :, :, :]
+    if exp:
+        gains = (2 ** gains) - 1.0
+    arange = _torch.arange(score_pairs.shape[1],
+                           device=score_pairs.device)
+    max_dcg = _max_dcg(rel_pairs[:, :, 0, 0], n, exp)
+    max_dcg[max_dcg == 0.0] = 1.0
+    return gains / max_dcg[:, None]
+
+
+def _max_dcg(relevance, n, exp=True):
+    ranking = _rank_by_score(relevance.double(), n)
+    arange = _torch.arange(ranking.shape[1],
+                           device=relevance.device)
+    discounts = _torch.log2(2.0 + arange)
+    gains = _torch.gather(relevance, 1, ranking)
+    gains[n[:, None] <= arange[None, :]] = 0.0
+    if exp:
+        gains = (2 ** gains) - 1.0
+    return _torch.sum(gains / discounts[None, :], dim=1)
