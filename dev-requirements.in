@@ -2,3 +2,4 @@ pytest
 sphinx
 pytest-cov
 flake8
+sphinx-rtd-theme
