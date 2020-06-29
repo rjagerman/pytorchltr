@@ -6,7 +6,7 @@ from pytorchltr.utils import mask_padded_values as _mask_padded_values
 def simulate_pbm(rankings, ys, n, relevance_probs, cutoff=None, eta=1.0):
     """Simulates clicks according to a position-biased user model.
 
-    Arguments:
+    Args:
         rankings: A tensor of size (batch_size, list_size) of rankings.
         ys: A tensor of size (batch_size, list_size) of relevance labels.
         n: A tensor of size (batch_size) indicating the nr docs per query.
@@ -57,7 +57,7 @@ def simulate_pbm(rankings, ys, n, relevance_probs, cutoff=None, eta=1.0):
 def simulate_perfect(rankings, ys, n, cutoff=None):
     """Simulates clicks according to a perfect user model.
 
-    Arguments:
+    Args:
         rankings: A tensor of size (batch_size, list_size) of rankings.
         ys: A tensor of size (batch_size, list_size) of relevance labels.
         n: A tensor of size (batch_size) indicating the nr docs per query.
@@ -76,7 +76,7 @@ def simulate_perfect(rankings, ys, n, cutoff=None):
 def simulate_position(rankings, ys, n, cutoff=None, eta=1.0):
     """Simulates clicks according to a binary position-biased user model.
 
-    Arguments:
+    Args:
         rankings: A tensor of size (batch_size, list_size) of rankings.
         ys: A tensor of size (batch_size, list_size) of relevance labels.
         n: A tensor of size (batch_size) indicating the nr docs per query.
@@ -96,7 +96,7 @@ def simulate_position(rankings, ys, n, cutoff=None, eta=1.0):
 def simulate_nearrandom(rankings, ys, n, cutoff=None, eta=1.0):
     """Simulates clicks according to a near-random user model.
 
-    Arguments:
+    Args:
         rankings: A tensor of size (batch_size, list_size) of rankings.
         ys: A tensor of size (batch_size, list_size) of relevance labels.
         n: A tensor of size (batch_size) indicating the nr docs per query.

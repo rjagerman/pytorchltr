@@ -163,6 +163,15 @@ def extract_zip(path, destination):
 
 
 def dataset_dir(name):
+    """
+    Returns the location of the dataset directory.
+
+    Args:
+        name: The name of the dataset.
+
+    Returns:
+        The path to the dataset directory.
+    """
     dataset_path = os.path.join(os.environ.get("HOME", "."),
                                 ".pytorchltr_datasets")
     dataset_path = os.environ.get("DATASET_PATH", dataset_path)

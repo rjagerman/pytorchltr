@@ -5,7 +5,7 @@ def generate_pytrec_eval(scores, relevance, n, qids=None, qid_offset=0,
                          q_prefix="q", d_prefix="d"):
     """Generates pytrec_eval qrels and runs from given batch.
 
-    Arguments:
+    Args:
         scores: A FloatTensor of size (batch_size, list_size) indicating the
             scores of each document.
         relevance: A LongTensor of size (batch_size, list_size) indicating the

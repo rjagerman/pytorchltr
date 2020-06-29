@@ -6,7 +6,7 @@ from pytorchltr.utils import rank_by_score as _rank_by_score
 def ndcg(scores, relevance, n, k=None, exp=True):
     """Computes Normalized Discounted Cumulative Gain (NDCG).
 
-    Arguments:
+    Args:
         scores: A tensor of size (batch_size, list_size, 1) or
             (batch_size, list_size), indicating the scores per document per
             query.
@@ -31,7 +31,7 @@ def ndcg(scores, relevance, n, k=None, exp=True):
 def dcg(scores, relevance, n, k=None, exp=True):
     """Computes Discounted Cumulative Gain (DCG).
 
-    Arguments:
+    Args:
         scores: A tensor of size (batch_size, list_size, 1) or
             (batch_size, list_size), indicating the scores per document per
             query.

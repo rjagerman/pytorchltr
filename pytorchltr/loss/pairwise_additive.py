@@ -49,7 +49,7 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
     def forward(self, scores, relevance, n):
         """Computes the loss for given batch of samples.
 
-        Arguments:
+        Args:
             scores: A batch of per-query-document scores.
             relevance: A batch of per-query-document relevance labels.
             n: A batch of per-query number of documents (for padding purposes).

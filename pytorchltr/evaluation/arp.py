@@ -7,7 +7,7 @@ from pytorchltr.utils import mask_padded_values as _mask_padded_values
 def arp(scores, relevance, n):
     """Computes Average Relevant Position (ARP).
 
-    Arguments:
+    Args:
         scores: A tensor of size (batch_size, list_size, 1) or
             (batch_size, list_size), indicating the scores per document per
             query.
