@@ -3,11 +3,8 @@ from pytorchltr.utils import batch_pairs as _batch_pairs
 from pytorchltr.utils import rank_by_score as _rank_by_score
 
 
-class PairwiseLambdaLoss(_torch.nn.Module):
-    """Pairwise LambdaLoss.
-
-    Implementation of pairwise LambdaLoss.
-    """
+class LambdaLoss(_torch.nn.Module):
+    """LambdaLoss."""
     def __init__(self, sigma=1.0):
         """
         Args:
@@ -16,7 +13,7 @@ class PairwiseLambdaLoss(_torch.nn.Module):
         super().__init__()
         self.sigma = sigma
 
-    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
+    def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         """Computes a loss on given score pairs and relevance pairs.
 
         Args:
@@ -34,7 +31,7 @@ class PairwiseLambdaLoss(_torch.nn.Module):
         """
         raise NotImplementedError
 
-    def loss_reduction(self, loss_pairs):
+    def _loss_reduction(self, loss_pairs):
         """Reduces the paired loss to a per sample loss.
 
         Args:
@@ -73,7 +70,7 @@ class PairwiseLambdaLoss(_torch.nn.Module):
         rel_pairs = _batch_pairs(relevance)
 
         # Compute loss per doc pair.
-        loss_pairs = self.loss_per_doc_pair(score_pairs, rel_pairs, n)
+        loss_pairs = self._loss_per_doc_pair(score_pairs, rel_pairs, n)
 
         # Mask out padded documents per query in the batch
         n_grid = n[:, None, None].repeat(1, score_pairs.shape[1],
@@ -83,42 +80,50 @@ class PairwiseLambdaLoss(_torch.nn.Module):
         range_grid = _torch.max(*_torch.meshgrid([arange, arange]))
         range_grid = range_grid[None, :, :].repeat(n.shape[0], 1, 1)
         loss_pairs[n_grid <= range_grid] = 0.0
-        print(loss_pairs)
 
         # Reduce final list loss from per doc pair loss to a per query loss.
-        loss = self.loss_reduction(loss_pairs)
+        loss = self._loss_reduction(loss_pairs)
 
         # Return loss
         return loss
 
 
-class PairwiseLambdaARPLoss1(PairwiseLambdaLoss):
+class LambdaARPLoss1(LambdaLoss):
     r"""ARP Loss 1:
 
-    $$
-    l(\mathbf{s}, \mathbf{y}) = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
-    \left(\frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}\right)^{y_{\pi_i}}
-    H(\pi \mid \mathbf{s})
-    $$
+    .. math::
+        l(\mathbf{s}, \mathbf{y}) = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
+        \left(\frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}\right)^{y_{\pi_i}}
+        H(\pi \mid \mathbf{s})
 
+    Shape:
+        - scores: :math:`(N, \texttt{list_size})`
+        - relevance: :math:`(N, \texttt{list_size})`
+        - n: :math:`(N)`
+        - output: :math:`(N)`
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
+    def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         sigmoid = (1.0 / (1.0 + _torch.exp(-self.sigma * score_diffs)))
         return -(_torch.log2(sigmoid ** rel_pairs[:, :, :, 0]))
 
 
-class PairwiseLambdaARPLoss2(PairwiseLambdaLoss):
+class LambdaARPLoss2(LambdaLoss):
     r"""
     ARP Loss 2:
 
-    $$
-    l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} |y_i - y_j| \log_2 \left(
-    1 + e^{-\sigma(s_i - s_j)}
-    \right)
-    $$
+    .. math::
+        l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} |y_i - y_j| \log_2 \left(
+        1 + e^{-\sigma(s_i - s_j)}
+        \right)
+
+    Shape:
+        - scores: :math:`(N, \texttt{list_size})`
+        - relevance: :math:`(N, \texttt{list_size})`
+        - n: :math:`(N)`
+        - output: :math:`(N)`
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
+    def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         rel_diffs = rel_pairs[:, :, :, 0] - rel_pairs[:, :, :, 1]
         loss = _torch.log2(1.0 + _torch.exp(-self.sigma * score_diffs))
@@ -126,21 +131,27 @@ class PairwiseLambdaARPLoss2(PairwiseLambdaLoss):
         return rel_diffs * loss
 
 
-class PairwiseLambdaNDCGLoss1(PairwiseLambdaLoss):
+class LambdaNDCGLoss1(LambdaLoss):
     r"""
     NDCG Loss 1:
 
-    $$
-    l(\mathbf{s}, \mathbf{y}) = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
-    \left(
+    .. math::
+        l(\mathbf{s}, \mathbf{y}) = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
+        \left(
         \frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}
-    \right)^{\frac{G_{\pi_i}}{D_{\pi_i}}}
-    H(\pi \mid \mathbf{s})
-    $$
-    where \(G_i = \frac{2^{y_i} - 1}{\text{maxDCG}}\) and
-    \(D_i = \log_2(1 + i)\).
+        \right)^{\frac{G_{\pi_i}}{D_{\pi_i}}}
+        H(\pi \mid \mathbf{s})
+
+    where :math:`G_i = \frac{2^{y_i} - 1}{\text{maxDCG}}` and
+    :math:`D_i = \log_2(1 + i)`.
+
+    Shape:
+        - scores: :math:`(N, \texttt{list_size})`
+        - relevance: :math:`(N, \texttt{list_size})`
+        - n: :math:`(N)`
+        - output: :math:`(N)`
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
+    def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         gains = _ndcg_gains(score_pairs, rel_pairs, n)[:, :, :, 0]
         arange = _torch.arange(score_pairs.shape[1],
@@ -151,19 +162,24 @@ class PairwiseLambdaNDCGLoss1(PairwiseLambdaLoss):
         return -(_torch.log2(sigmoid ** exponent))
 
 
-class PairwiseLambdaNDCGLoss2(PairwiseLambdaLoss):
+class LambdaNDCGLoss2(LambdaLoss):
     r"""
     NDCG Loss 2:
 
-    $$
-    l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} \log_2 \sum_{\pi}
-    \left(
-    \frac{1}{1 + e^{-\sigma (s_i - s_j)}}
-    \right)^{\delta_{ij} | G_i - G_j |}
-    H(\pi \mid \mathbf{s})
-    $$
+    .. math::
+        l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} \log_2 \sum_{\pi}
+        \left(
+        \frac{1}{1 + e^{-\sigma (s_i - s_j)}}
+        \right)^{\delta_{ij} | G_i - G_j |}
+        H(\pi \mid \mathbf{s})
+
+    Shape:
+        - scores: :math:`(N, \texttt{list_size})`
+        - relevance: :math:`(N, \texttt{list_size})`
+        - n: :math:`(N)`
+        - output: :math:`(N)`
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs, n):
+    def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
         # Compute diffs for different parts of the loss function
         score_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         rel_diffs = rel_pairs[:, :, :, 0] - rel_pairs[:, :, :, 1]

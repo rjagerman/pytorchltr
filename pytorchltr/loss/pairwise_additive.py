@@ -2,7 +2,7 @@ import torch as _torch
 from pytorchltr.utils import batch_pairs
 
 
-class PairwiseAdditiveLoss(_torch.nn.Module):
+class _PairwiseAdditiveLoss(_torch.nn.Module):
     """Pairwise additive ranking losses.
 
     Implementation of linearly decomposible additive pairwise ranking losses.
@@ -12,7 +12,7 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
         r""""""
         super().__init__()
 
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def _loss_per_doc_pair(self, score_pairs, rel_pairs):
         """Computes a loss on given score pairs and relevance pairs.
 
         Args:
@@ -29,7 +29,7 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
         """
         raise NotImplementedError
 
-    def loss_reduction(self, loss_pairs):
+    def _loss_reduction(self, loss_pairs):
         """Reduces the paired loss to a per sample loss.
 
         Args:
@@ -42,7 +42,7 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
         """
         return loss_pairs.view(loss_pairs.shape[0], -1).sum(1)
 
-    def loss_modifier(self, loss):
+    def _loss_modifier(self, loss):
         """A modifier to apply to the loss."""
         return loss
 
@@ -66,7 +66,7 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
         rel_pairs = batch_pairs(relevance)
 
         # Compute loss per doc pair.
-        loss_pairs = self.loss_per_doc_pair(score_pairs, rel_pairs)
+        loss_pairs = self._loss_per_doc_pair(score_pairs, rel_pairs)
 
         # Mask out padded documents per query in the batch
         n_grid = n[:, None, None].repeat(1, score_pairs.shape[1],
@@ -78,25 +78,30 @@ class PairwiseAdditiveLoss(_torch.nn.Module):
         loss_pairs[n_grid <= range_grid] = 0.0
 
         # Reduce final list loss from per doc pair loss to a per query loss.
-        loss = self.loss_reduction(loss_pairs)
+        loss = self._loss_reduction(loss_pairs)
 
         # Apply a loss modifier.
-        loss = self.loss_modifier(loss)
+        loss = self._loss_modifier(loss)
 
         # Return loss
         return loss
 
 
-class PairwiseHingeLoss(PairwiseAdditiveLoss):
+class PairwiseHingeLoss(_PairwiseAdditiveLoss):
     r"""Pairwise hinge loss formulation of SVMRank:
 
-    $$
-    l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y _j} max\left(
+    .. math::
+        l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y _j} max\left(
         0, 1 - (s_i - s_j)
-    \right)
-    $$
+        \right)
+
+    Shape:
+        - scores: :math:`(N, \texttt{list_size})`
+        - relevance: :math:`(N, \texttt{list_size})`
+        - n: :math:`(N)`
+        - output: :math:`(N)`
     """
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def _loss_per_doc_pair(self, score_pairs, rel_pairs):
         score_pair_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         rel_pair_diffs = rel_pairs[:, :, :, 0] - rel_pairs[:, :, :, 1]
         loss = 1.0 - score_pair_diffs
@@ -108,26 +113,36 @@ class PairwiseHingeLoss(PairwiseAdditiveLoss):
 class PairwiseDCGHingeLoss(PairwiseHingeLoss):
     r"""Pairwise DCG-modified hinge loss:
 
-    $$
-    l(\mathbf{s}, \mathbf{y}) =
-    \frac{-1}{\log\left(
+    .. math::
+        l(\mathbf{s}, \mathbf{y}) =
+        \frac{-1}{\log\left(
         2 + \sum_{y_i > y_j}
         max\left(0, 1 - (s_i - s_j)\right)
-    \right)}
-    $$
+        \right)}
+
+    Shape:
+        - scores: :math:`(N, \texttt{list_size})`
+        - relevance: :math:`(N, \texttt{list_size})`
+        - n: :math:`(N)`
+        - output: :math:`(N)`
     """
-    def loss_modifier(self, loss):
+    def _loss_modifier(self, loss):
         return -1.0 / _torch.log(2.0 + loss)
 
 
-class PairwiseLogisticLoss(PairwiseAdditiveLoss):
+class PairwiseLogisticLoss(_PairwiseAdditiveLoss):
     r"""Pairwise logistic loss formulation of RankNet:
 
-    $$
-    l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} \log_2\left(1 + e^{
+    .. math::
+        l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} \log_2\left(1 + e^{
         -\sigma \left(s_i - s_j\right)
-    }\right)
-    $$
+        }\right)
+
+    Shape:
+        - scores: :math:`(N, \texttt{list_size})`
+        - relevance: :math:`(N, \texttt{list_size})`
+        - n: :math:`(N)`
+        - output: :math:`(N)`
     """
     def __init__(self, sigma=1.0):
         """
@@ -137,7 +152,7 @@ class PairwiseLogisticLoss(PairwiseAdditiveLoss):
         super().__init__()
         self.sigma = sigma
 
-    def loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def _loss_per_doc_pair(self, score_pairs, rel_pairs):
         score_pair_diffs = score_pairs[:, :, :, 0] - score_pairs[:, :, :, 1]
         rel_pair_diffs = rel_pairs[:, :, :, 0] - rel_pairs[:, :, :, 1]
         loss = _torch.log2(1.0 + _torch.exp(-self.sigma * score_pair_diffs))

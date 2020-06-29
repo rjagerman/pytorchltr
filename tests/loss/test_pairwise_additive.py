@@ -1,7 +1,7 @@
 import torch
-from pytorchltr.loss.pairwise_additive import PairwiseHingeLoss
-from pytorchltr.loss.pairwise_additive import PairwiseDCGHingeLoss
-from pytorchltr.loss.pairwise_additive import PairwiseLogisticLoss
+from pytorchltr.loss import PairwiseHingeLoss
+from pytorchltr.loss import PairwiseDCGHingeLoss
+from pytorchltr.loss import PairwiseLogisticLoss
 from math import log
 from math import log2
 from math import exp

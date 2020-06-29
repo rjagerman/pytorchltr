@@ -1,15 +1,15 @@
 import torch
-from pytorchltr.loss.pairwise_lambda import PairwiseLambdaARPLoss1
-from pytorchltr.loss.pairwise_lambda import PairwiseLambdaARPLoss2
-from pytorchltr.loss.pairwise_lambda import PairwiseLambdaNDCGLoss1
-from pytorchltr.loss.pairwise_lambda import PairwiseLambdaNDCGLoss2
+from pytorchltr.loss import LambdaARPLoss1
+from pytorchltr.loss import LambdaARPLoss2
+from pytorchltr.loss import LambdaNDCGLoss1
+from pytorchltr.loss import LambdaNDCGLoss2
 from math import log2
 from math import exp
 from pytest import approx
 
 
-def test_pairwise_lambda_arp1_reshape_scores():
-    loss_fn = PairwiseLambdaARPLoss1()
+def test_lambda_arp1_reshape_scores():
+    loss_fn = LambdaARPLoss1()
     scores = torch.FloatTensor([[0.0, 0.0, 1.0, 2.0, 1.0]])
     ys = torch.LongTensor([[[0], [0], [1], [2], [1]]])
     n = torch.LongTensor([5])
@@ -27,8 +27,8 @@ def test_pairwise_lambda_arp1_reshape_scores():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_arp1_reshape_rel():
-    loss_fn = PairwiseLambdaARPLoss1()
+def test_lambda_arp1_reshape_rel():
+    loss_fn = LambdaARPLoss1()
     scores = torch.FloatTensor([[[0.0], [0.0], [1.0], [2.0], [1.0]]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -46,8 +46,8 @@ def test_pairwise_lambda_arp1_reshape_rel():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_arp1_perfect():
-    loss_fn = PairwiseLambdaARPLoss1()
+def test_lambda_arp1_perfect():
+    loss_fn = LambdaARPLoss1()
     scores = torch.FloatTensor([[0.0, 0.0, 10.0, 20.0, 10.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -65,8 +65,8 @@ def test_pairwise_lambda_arp1_perfect():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_arp1_worst():
-    loss_fn = PairwiseLambdaARPLoss1()
+def test_lambda_arp1_worst():
+    loss_fn = LambdaARPLoss1()
     scores = torch.FloatTensor([[4.0, 4.0, 2.0, 0.0, 2.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -84,8 +84,8 @@ def test_pairwise_lambda_arp1_worst():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_arp1_mid():
-    loss_fn = PairwiseLambdaARPLoss1()
+def test_lambda_arp1_mid():
+    loss_fn = LambdaARPLoss1()
     scores = torch.FloatTensor([[0.0, 1.0, 1.0, -2.0, 0.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([4])
@@ -103,8 +103,8 @@ def test_pairwise_lambda_arp1_mid():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_arp2_perfect():
-    loss_fn = PairwiseLambdaARPLoss2()
+def test_lambda_arp2_perfect():
+    loss_fn = LambdaARPLoss2()
     scores = torch.FloatTensor([[0.0, 0.0, 10.0, 20.0, 10.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -121,8 +121,8 @@ def test_pairwise_lambda_arp2_perfect():
     assert loss.item() == approx(expected, rel=1e-06, abs=1e-6)
 
 
-def test_pairwise_lambda_arp2_worst():
-    loss_fn = PairwiseLambdaARPLoss2()
+def test_lambda_arp2_worst():
+    loss_fn = LambdaARPLoss2()
     scores = torch.FloatTensor([[4.0, 4.0, 2.0, 0.0, 2.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -139,8 +139,8 @@ def test_pairwise_lambda_arp2_worst():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_arp2_mid():
-    loss_fn = PairwiseLambdaARPLoss2()
+def test_lambda_arp2_mid():
+    loss_fn = LambdaARPLoss2()
     scores = torch.FloatTensor([[0.0, 1.0, 1.0, -2.0, 0.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([4])
@@ -157,8 +157,8 @@ def test_pairwise_lambda_arp2_mid():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_ndcg1_perfect():
-    loss_fn = PairwiseLambdaNDCGLoss1()
+def test_lambda_ndcg1_perfect():
+    loss_fn = LambdaNDCGLoss1()
     scores = torch.FloatTensor([[0.0, 0.0, 10.0, 20.0, 10.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -185,8 +185,8 @@ def test_pairwise_lambda_ndcg1_perfect():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_ndcg1_worst():
-    loss_fn = PairwiseLambdaNDCGLoss1()
+def test_lambda_ndcg1_worst():
+    loss_fn = LambdaNDCGLoss1()
     scores = torch.FloatTensor([[4.0, 4.0, 2.0, 0.0, 2.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -213,8 +213,8 @@ def test_pairwise_lambda_ndcg1_worst():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_ndcg1_mid():
-    loss_fn = PairwiseLambdaNDCGLoss1()
+def test_lambda_ndcg1_mid():
+    loss_fn = LambdaNDCGLoss1()
     scores = torch.FloatTensor([[0.0, 1.0, 1.5, -2.0, 0.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([4])
@@ -238,8 +238,8 @@ def test_pairwise_lambda_ndcg1_mid():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_ndcg2_perfect():
-    loss_fn = PairwiseLambdaNDCGLoss2()
+def test_lambda_ndcg2_perfect():
+    loss_fn = LambdaNDCGLoss2()
     scores = torch.FloatTensor([[0.0, 0.0, 10.0, 20.0, 10.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -271,8 +271,8 @@ def test_pairwise_lambda_ndcg2_perfect():
     assert loss.item() == approx(expected, abs=1e-7)
 
 
-def test_pairwise_lambda_ndcg2_worst():
-    loss_fn = PairwiseLambdaNDCGLoss2()
+def test_lambda_ndcg2_worst():
+    loss_fn = LambdaNDCGLoss2()
     scores = torch.FloatTensor([[4.0, 4.0, 2.0, 0.0, 2.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([5])
@@ -304,8 +304,8 @@ def test_pairwise_lambda_ndcg2_worst():
     assert loss.item() == approx(expected)
 
 
-def test_pairwise_lambda_ndcg2_mid():
-    loss_fn = PairwiseLambdaNDCGLoss2()
+def test_lambda_ndcg2_mid():
+    loss_fn = LambdaNDCGLoss2()
     scores = torch.FloatTensor([[0.0, 1.0, 1.5, -2.0, 0.0]])
     ys = torch.LongTensor([[0, 0, 1, 2, 1]])
     n = torch.LongTensor([4])
