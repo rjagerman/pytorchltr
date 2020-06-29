@@ -190,8 +190,6 @@ def _ndcg_gains(score_pairs, rel_pairs, n, exp=True):
     gains = rel_pairs[:, :, :, :]
     if exp:
         gains = (2 ** gains) - 1.0
-    arange = _torch.arange(score_pairs.shape[1],
-                           device=score_pairs.device)
     max_dcg = _max_dcg(rel_pairs[:, :, 0, 0], n, exp)
     max_dcg[max_dcg == 0.0] = 1.0
     return gains / max_dcg[:, None]

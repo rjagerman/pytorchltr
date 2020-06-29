@@ -3,7 +3,6 @@ from pytorchltr.loss.pairwise_lambda import PairwiseLambdaARPLoss1
 from pytorchltr.loss.pairwise_lambda import PairwiseLambdaARPLoss2
 from pytorchltr.loss.pairwise_lambda import PairwiseLambdaNDCGLoss1
 from pytorchltr.loss.pairwise_lambda import PairwiseLambdaNDCGLoss2
-from math import log
 from math import log2
 from math import exp
 from pytest import approx
@@ -20,7 +19,8 @@ def test_pairwise_lambda_arp1_reshape_scores():
     expected = 0.0
     for i in range(n[0]):
         for j in range(n[0]):
-            inner = 1.0 / (1.0 + exp(-1.0 * float(scores[0, i] - scores[0, j])))
+            score_diff = float(scores[0, i] - scores[0, j])
+            inner = 1.0 / (1.0 + exp(-1.0 * score_diff))
             inner = inner ** float(ys[0, i, 0])
             expected -= log2(inner)
 
@@ -264,7 +264,8 @@ def test_pairwise_lambda_ndcg2_perfect():
                 inner = 1.0 / (1.0 + exp(-1.0 * score_diffs))
                 delta_ij = abs((1.0 / discounts[abs(i - j)]) -
                                (1.0 / discounts[abs(i - j) + 1]))
-                loss_pair = log2(inner ** (delta_ij * abs(gains[si] - gains[sj])))
+                loss_pair = log2(
+                    inner ** (delta_ij * abs(gains[si] - gains[sj])))
                 expected -= loss_pair
 
     assert loss.item() == approx(expected, abs=1e-7)
@@ -296,7 +297,8 @@ def test_pairwise_lambda_ndcg2_worst():
                 inner = 1.0 / (1.0 + exp(-1.0 * score_diffs))
                 delta_ij = abs((1.0 / discounts[abs(i - j)]) -
                                (1.0 / discounts[abs(i - j) + 1]))
-                loss_pair = log2(inner ** (delta_ij * abs(gains[si] - gains[sj])))
+                loss_pair = log2(
+                    inner ** (delta_ij * abs(gains[si] - gains[sj])))
                 expected -= loss_pair
 
     assert loss.item() == approx(expected)
@@ -325,7 +327,8 @@ def test_pairwise_lambda_ndcg2_mid():
                 inner = 1.0 / (1.0 + exp(-1.0 * score_diffs))
                 delta_ij = abs((1.0 / discounts[abs(i - j)]) -
                                (1.0 / discounts[abs(i - j) + 1]))
-                loss_pair = log2(inner ** (delta_ij * abs(gains[si] - gains[sj])))
+                loss_pair = log2(
+                    inner ** (delta_ij * abs(gains[si] - gains[sj])))
                 expected -= loss_pair
 
     assert loss.item() == approx(expected)
