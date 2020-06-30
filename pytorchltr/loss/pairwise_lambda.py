@@ -92,14 +92,19 @@ class LambdaARPLoss1(LambdaLoss):
     r"""ARP Loss 1:
 
     .. math::
-        l(\mathbf{s}, \mathbf{y}) = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
-        \left(\frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}\right)^{y_{\pi_i}}
-        H(\pi \mid \mathbf{s})
+        l(\mathbf{s}, \mathbf{y})
+        = -\sum_{i=1}^n \sum_{j=1}^n \log_2
+        \left(
+        \frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}
+        \right)^{y_{\pi_i}}
+
+    where :math:`\pi_i` is the index of the item at rank :math:`i` after
+    sorting the scores
 
     Shape:
-        - scores: :math:`(N, \texttt{list_size})`
-        - relevance: :math:`(N, \texttt{list_size})`
-        - n: :math:`(N)`
+        - input scores: :math:`(N, \texttt{list_size})`
+        - input relevance: :math:`(N, \texttt{list_size})`
+        - input n: :math:`(N)`
         - output: :math:`(N)`
     """
     def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
@@ -118,9 +123,9 @@ class LambdaARPLoss2(LambdaLoss):
         \right)
 
     Shape:
-        - scores: :math:`(N, \texttt{list_size})`
-        - relevance: :math:`(N, \texttt{list_size})`
-        - n: :math:`(N)`
+        - input scores: :math:`(N, \texttt{list_size})`
+        - input relevance: :math:`(N, \texttt{list_size})`
+        - input n: :math:`(N)`
         - output: :math:`(N)`
     """
     def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
@@ -136,19 +141,22 @@ class LambdaNDCGLoss1(LambdaLoss):
     NDCG Loss 1:
 
     .. math::
-        l(\mathbf{s}, \mathbf{y}) = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
+        l(\mathbf{s}, \mathbf{y})
+        = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
         \left(
         \frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}
-        \right)^{\frac{G_{\pi_i}}{D_{\pi_i}}}
+        \right)^{\frac{G_{\pi_i}}{D_i}}
         H(\pi \mid \mathbf{s})
 
-    where :math:`G_i = \frac{2^{y_i} - 1}{\text{maxDCG}}` and
+    where :math:`\pi_i` is the index of the item at rank :math:`i` after
+    sorting the scores and
+    :math:`G_{\pi_i} = \frac{2^{y_{\pi_i}} - 1}{\text{maxDCG}}` and
     :math:`D_i = \log_2(1 + i)`.
 
     Shape:
-        - scores: :math:`(N, \texttt{list_size})`
-        - relevance: :math:`(N, \texttt{list_size})`
-        - n: :math:`(N)`
+        - input scores: :math:`(N, \texttt{list_size})`
+        - input relevance: :math:`(N, \texttt{list_size})`
+        - input n: :math:`(N)`
         - output: :math:`(N)`
     """
     def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
@@ -167,16 +175,21 @@ class LambdaNDCGLoss2(LambdaLoss):
     NDCG Loss 2:
 
     .. math::
-        l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} \log_2 \sum_{\pi}
+        l(\mathbf{s}, \mathbf{y}) = \sum_{y_i > y_j} \log_2
         \left(
-        \frac{1}{1 + e^{-\sigma (s_i - s_j)}}
-        \right)^{\delta_{ij} | G_i - G_j |}
-        H(\pi \mid \mathbf{s})
+        \frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}
+        \right)^{\delta_{ij} | G_{\pi_i} - G_{\pi_j} |}
+
+    where :math:`\pi_i` is the index of the item at rank :math:`i` after
+    sorting the scores and
+    :math:`G_{\pi_i} = \frac{2^{y_{\pi_i}} - 1}{\text{maxDCG}}` and
+    :math:`\delta_{ij} = \left|\frac{1}{D_{|i-j|}} - \frac{1}{D_{|i-j|+1}}
+    \right|` and :math:`D_i = \log_2(1 + i)`.
 
     Shape:
-        - scores: :math:`(N, \texttt{list_size})`
-        - relevance: :math:`(N, \texttt{list_size})`
-        - n: :math:`(N)`
+        - input scores: :math:`(N, \texttt{list_size})`
+        - input relevance: :math:`(N, \texttt{list_size})`
+        - input n: :math:`(N)`
         - output: :math:`(N)`
     """
     def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):

@@ -5,7 +5,7 @@ PyTorchLTR provides serveral common loss functions for LTR. Each loss function
 operates on a batch of query-document lists with corresponding relevance
 labels.
 
-The input to an LTR loss function comprises a batch of three tensors:
+The input to an LTR loss function comprises three tensors:
 
   - scores: A tensor of size :math:`(N, \texttt{list_size})`: the item scores
   - relevance: A tensor of size :math:`(N, \texttt{list_size})`: the relevance labels
@@ -21,7 +21,7 @@ Example
 The following is a usage example for the pairwise hinge loss but the same usage
 pattern holds for all the other losses.
 
-.. doctest::
+.. code-block:: python
 
     >>> import torch
     >>> from pytorchltr.loss import PairwiseHingeLoss
@@ -40,8 +40,13 @@ pattern holds for all the other losses.
     >>> loss_fn(scores, relevance, n).mean()
     tensor(4.5500)
 
-List of loss functions
-----------------------
+Additive ranking losses
+-----------------------
+
+Additive ranking losses are linearly decomposible ranking metrics
+:cite:`joachims2002optimizing,agarwal2019general`. These loss functions
+optimize an upper bound on the rank of relevant documents via either a hinge
+or logistic formulation.
 
 .. autoclass:: pytorchltr.loss.PairwiseHingeLoss
    :members:
@@ -58,6 +63,14 @@ List of loss functions
 
    .. automethod:: __init__
    .. automethod:: forward
+
+
+LambdaLoss
+----------
+
+LambdaLoss :cite:`wang2018lambdaloss` is a probabilistic framework for ranking
+metric optimization. We provide implementations for ARPLoss1, ARPLoss2,
+NDCGLoss1 and NDCGLoss2.
 
 .. autoclass:: pytorchltr.loss.LambdaARPLoss1
    :members:
@@ -82,3 +95,5 @@ List of loss functions
 
    .. automethod:: __init__
    .. automethod:: forward
+
+.. bibliography:: references.bib

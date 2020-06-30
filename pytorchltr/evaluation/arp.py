@@ -5,7 +5,15 @@ from pytorchltr.utils import mask_padded_values as _mask_padded_values
 
 
 def arp(scores, relevance, n):
-    """Computes Average Relevant Position (ARP).
+    r"""Computes Average Relevant Position (ARP).
+
+    .. math::
+
+        \text{arp}(\mathbf{s}, \mathbf{y})
+        = \frac{1}{\sum_{i=1}^n y_i} \sum_{i=1}^n y_{\pi_i} \cdot i
+
+    where :math:`\pi_i` is the index of the item at rank :math:`i` after
+    sorting the scores.
 
     Args:
         scores: A tensor of size (batch_size, list_size, 1) or

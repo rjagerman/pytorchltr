@@ -1,5 +1,5 @@
 import torch
-from pytorchltr.evaluation.arp import arp
+from pytorchltr.evaluation import arp
 from pytest import approx
 
 

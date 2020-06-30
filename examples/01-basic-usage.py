@@ -22,7 +22,7 @@
 
 import torch
 from pytorchltr.datasets import Example3
-from pytorchltr.evaluation.dcg import ndcg
+from pytorchltr.evaluation import ndcg
 from pytorchltr.loss import PairwiseHingeLoss
 import logging
 

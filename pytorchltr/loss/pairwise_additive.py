@@ -96,9 +96,9 @@ class PairwiseHingeLoss(_PairwiseAdditiveLoss):
         \right)
 
     Shape:
-        - scores: :math:`(N, \texttt{list_size})`
-        - relevance: :math:`(N, \texttt{list_size})`
-        - n: :math:`(N)`
+        - input scores: :math:`(N, \texttt{list_size})`
+        - input relevance: :math:`(N, \texttt{list_size})`
+        - input n: :math:`(N)`
         - output: :math:`(N)`
     """
     def _loss_per_doc_pair(self, score_pairs, rel_pairs):
@@ -121,9 +121,9 @@ class PairwiseDCGHingeLoss(PairwiseHingeLoss):
         \right)}
 
     Shape:
-        - scores: :math:`(N, \texttt{list_size})`
-        - relevance: :math:`(N, \texttt{list_size})`
-        - n: :math:`(N)`
+        - input scores: :math:`(N, \texttt{list_size})`
+        - input relevance: :math:`(N, \texttt{list_size})`
+        - input n: :math:`(N)`
         - output: :math:`(N)`
     """
     def _loss_modifier(self, loss):
@@ -139,9 +139,9 @@ class PairwiseLogisticLoss(_PairwiseAdditiveLoss):
         }\right)
 
     Shape:
-        - scores: :math:`(N, \texttt{list_size})`
-        - relevance: :math:`(N, \texttt{list_size})`
-        - n: :math:`(N)`
+        - input scores: :math:`(N, \texttt{list_size})`
+        - input relevance: :math:`(N, \texttt{list_size})`
+        - input n: :math:`(N)`
         - output: :math:`(N)`
     """
     def __init__(self, sigma=1.0):

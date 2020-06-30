@@ -5,5 +5,6 @@ PyTorchLTR
    :maxdepth: 2
    :caption: Contents:
 
-   loss
    datasets
+   loss
+   evaluation

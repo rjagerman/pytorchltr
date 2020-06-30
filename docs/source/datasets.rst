@@ -15,8 +15,8 @@ locations:
     environment variable.
   * :code:`$HOME/.pytorchltr_datasets/{dataset_name}` if all the above fail.
 
-SVMRank style datasets
-----------------------
+SVMRank datasets
+----------------
 .. autoclass:: pytorchltr.datasets.Example3
    :members:
 
@@ -48,4 +48,3 @@ SVMRank style datasets
    .. automethod:: collate_fn
    .. automethod:: __getitem__
    .. automethod:: __len__
-
