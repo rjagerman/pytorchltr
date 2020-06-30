@@ -4,9 +4,15 @@ from pytorchltr.utils import rank_by_score as _rank_by_score
 
 
 def ndcg(scores, relevance, n, k=None, exp=True):
-    """Computes Normalized Discounted Cumulative Gain (NDCG).
+    r"""Normalized Discounted Cumulative Gain (NDCG)
 
-    Arguments:
+    .. math::
+
+        \text{ndcg}(\mathbf{s}, \mathbf{y})
+        = \frac{\text{dcg}(\mathbf{s}, \mathbf{y})}
+        {\text{dcg}(\mathbf{y}, \mathbf{y})}
+
+    Args:
         scores: A tensor of size (batch_size, list_size, 1) or
             (batch_size, list_size), indicating the scores per document per
             query.
@@ -29,9 +35,30 @@ def ndcg(scores, relevance, n, k=None, exp=True):
 
 
 def dcg(scores, relevance, n, k=None, exp=True):
-    """Computes Discounted Cumulative Gain (DCG).
+    r"""Discounted Cumulative Gain (DCG)
 
-    Arguments:
+    .. math::
+
+        \text{dcg}(\mathbf{s}, \mathbf{y})
+        = \sum_{i=1}^n \frac{\text{gain}(y_{\pi_i})}{\log_2(1 + i)}
+
+    where :math:`\pi_i` is the index of the item at rank :math:`i` after
+    sorting the scores, and:
+
+    .. math::
+        :nowrap:
+
+        \[
+        \text{gain}(y_i) = \left\{
+        \begin{array}{ll}
+        2^{y_i} - 1 & \text{if } \texttt{exp=True} \\
+        y_i & \text{otherwise}
+        \end{array}
+        \right.
+        \]
+
+
+    Args:
         scores: A tensor of size (batch_size, list_size, 1) or
             (batch_size, list_size), indicating the scores per document per
             query.

@@ -73,7 +73,7 @@ class Downloader:
         will skip the download if the file already exists and its (optional)
         sha256 checksum matches.
 
-        Arguments:
+        Args:
             destination: The destination to download to
         """
         path = os.path.join(destination, self.target)
@@ -132,7 +132,7 @@ class Downloader:
         """
         Reports download progress to the progress hook if it exists.
 
-        Arguments:
+        Args:
             bytes_read: How many bytes have been read so far.
             total_size: The total size of the download (None if unknown).
             final: True when the download finishes, False otherwise.
@@ -155,7 +155,7 @@ def _progress_string(bytes_read, total_size, final):
     """
     Returns a human-readable string representing the download progress.
 
-    Arguments:
+    Args:
         bytes_read: The number of bytes read so far.
         total_size: The total number of bytes to read or None if unknown.
     """
@@ -175,7 +175,7 @@ def _to_human_readable(nr_of_bytes):
     """
     Returns a human-readable string representation of given bytes.
 
-    Arugments:
+    Args:
         nr_of_bytes: The number bytes as an integer or float
     """
     # Convert to human readble byte format

@@ -1,5 +1,5 @@
 import torch
-from pytorchltr.evaluation.trec import generate_pytrec_eval
+from pytorchltr.evaluation import generate_pytrec_eval
 
 
 def test_pytrec_eval_input():

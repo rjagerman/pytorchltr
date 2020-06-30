@@ -146,9 +146,13 @@ class SVMRankingDataset(_Dataset):
 
                 # Collate relevance
                 if xs.shape[0] > list_size:
-                    out_relevance[batch_index, 0:len(rng_indices)] = sample["relevance"][rng_indices]  # noqa: E501
+                    rel = sample["relevance"][rng_indices]
+                    rel_n = len(rng_indices)
+                    out_relevance[batch_index, 0:rel_n] = rel
                 else:
-                    out_relevance[batch_index, 0:len(sample["relevance"])] = sample["relevance"]  # noqa: E501
+                    rel = sample["relevance"]
+                    rel_n = len(sample["relevance"])
+                    out_relevance[batch_index, 0:rel_n] = rel
 
                 # Collate qid and n
                 out_qid[batch_index] = int(sample["qid"])
@@ -171,6 +175,28 @@ class SVMRankingDataset(_Dataset):
         return _collate_fn
 
     def __getitem__(self, index):
+        r"""
+        Returns the item at given index.
+
+        Args:
+            index (int): The index.
+
+        Returns:
+            bool:
+                A dictionary with the LTR item at given index. The structure of
+                the dict is as follows:
+
+                .. code-block::
+
+                    {
+                        "features": tensor of shape (list_size),
+                        "relevance": tensor of shape (list_size),
+                        "qid": int indicating the query identifier,
+                        "n": int indicating the number of documents,
+                        "sparse": true if the tensors are sparse,
+                    }
+
+        """
         # Extract query features and relevance labels
         qid = self._unique_qids[self._indices[index]]
         start = self._offsets[self._indices[index]]
@@ -199,4 +225,9 @@ class SVMRankingDataset(_Dataset):
         }
 
     def __len__(self):
+        r"""
+        Returns:
+            int:
+                The length of the dataset.
+        """
         return self._n

@@ -44,7 +44,7 @@ def rank_by_score(scores, n):
     This method ensures that padded documents are placed last and ties are
     broken randomly.
 
-    Arguments:
+    Args:
         scores: A tensor of size (batch_size, list_size, 1) or
                 (batch_size, list_size) containing scores.
         n: A tensor of size (batch_size) containing list size of each query.

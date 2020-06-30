@@ -1,6 +1,6 @@
 import torch
-from pytorchltr.evaluation.dcg import dcg
-from pytorchltr.evaluation.dcg import ndcg
+from pytorchltr.evaluation import dcg
+from pytorchltr.evaluation import ndcg
 from pytest import approx
 
 
