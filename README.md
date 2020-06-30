@@ -19,6 +19,10 @@ In your virtualenv simply run:
 
 Note that this library requires Python 3.6 or higher.
 
+## Documentation
+
+Documentation is available [here](https://pytorchltr.readthedocs.io/en/latest/).
+
 ## Example
 
 See `examples/01-basic-usage.py` for a more complete example including evaluation
