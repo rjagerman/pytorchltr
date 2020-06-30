@@ -43,7 +43,7 @@ pattern holds for all the other losses.
 Additive ranking losses
 -----------------------
 
-Additive ranking losses are linearly decomposible ranking metrics
+Additive ranking losses optimize linearly decomposible ranking metrics
 :cite:`joachims2002optimizing,agarwal2019general`. These loss functions
 optimize an upper bound on the rank of relevant documents via either a hinge
 or logistic formulation.
