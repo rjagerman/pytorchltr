@@ -146,9 +146,13 @@ class SVMRankingDataset(_Dataset):
 
                 # Collate relevance
                 if xs.shape[0] > list_size:
-                    out_relevance[batch_index, 0:len(rng_indices)] = sample["relevance"][rng_indices]  # noqa: E501
+                    rel = sample["relevance"][rng_indices]
+                    rel_n = len(rng_indices)
+                    out_relevance[batch_index, 0:rel_n] = rel
                 else:
-                    out_relevance[batch_index, 0:len(sample["relevance"])] = sample["relevance"]  # noqa: E501
+                    rel = sample["relevance"]
+                    rel_n = len(sample["relevance"])
+                    out_relevance[batch_index, 0:rel_n] = rel
 
                 # Collate qid and n
                 out_qid[batch_index] = int(sample["qid"])
@@ -188,7 +192,7 @@ class SVMRankingDataset(_Dataset):
                       "features": tensor of shape (list_size),
                       "relevance": tensor of shape (list_size),
                       "qid": int indicating the query identifier,
-                      "n": int indicating the number of documents (= list_size),
+                      "n": int indicating the number of items (= list_size),
                       "sparse": bool indicating whether the tensors are sparse,
                     }
 
