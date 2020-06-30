@@ -4,3 +4,4 @@ pytest-cov
 flake8
 sphinx-rtd-theme
 sphinxcontrib-bibtex
+pytrec_eval

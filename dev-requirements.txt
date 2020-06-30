@@ -31,6 +31,7 @@ pygments==2.6.1           # via sphinx
 pyparsing==2.4.7          # via packaging
 pytest-cov==2.9.0         # via -r dev-requirements.in
 pytest==5.4.1             # via -r dev-requirements.in, pytest-cov
+pytrec-eval==0.4          # via -r dev-requirements.in
 pytz==2020.1              # via babel
 pyyaml==5.3.1             # via pybtex
 requests==2.23.0          # via sphinx

@@ -8,7 +8,7 @@ def generate_pytrec_eval(scores, relevance, n, qids=None, qid_offset=0,
 
     Example usage:
 
-    .. code-block:: python
+    .. doctest::
 
         >>> import json
         >>> import torch

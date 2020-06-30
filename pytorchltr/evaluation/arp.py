@@ -5,7 +5,7 @@ from pytorchltr.utils import mask_padded_values as _mask_padded_values
 
 
 def arp(scores, relevance, n):
-    r"""Computes Average Relevant Position (ARP).
+    r"""Average Relevant Position (ARP)
 
     .. math::
 

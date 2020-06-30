@@ -21,18 +21,12 @@ Example
 The following is a usage example for the pairwise hinge loss but the same usage
 pattern holds for all the other losses.
 
-.. code-block:: python
+.. doctest::
 
     >>> import torch
     >>> from pytorchltr.loss import PairwiseHingeLoss
-    >>> scores = torch.tensor([
-    >>>     [0.5, 2.0, 1.0],
-    >>>     [0.9, -1.2, 0.0]
-    >>> ])
-    >>> relevance = torch.tensor([
-    >>>     [2, 0, 1],
-    >>>     [0, 1, 0]
-    >>> ])
+    >>> scores = torch.tensor([[0.5, 2.0, 1.0], [0.9, -1.2, 0.0]])
+    >>> relevance = torch.tensor([[2, 0, 1], [0, 1, 0]])
     >>> n = torch.tensor([3, 2])
     >>> loss_fn = PairwiseHingeLoss()
     >>> loss_fn(scores, relevance, n)
@@ -44,9 +38,9 @@ Additive ranking losses
 -----------------------
 
 Additive ranking losses optimize linearly decomposible ranking metrics
-:cite:`joachims2002optimizing,agarwal2019general`. These loss functions
-optimize an upper bound on the rank of relevant documents via either a hinge
-or logistic formulation.
+:cite:`loss-joachims2002optimizing,loss-agarwal2019general`. These loss
+functions optimize an upper bound on the rank of relevant documents via either
+a hinge or logistic formulation.
 
 .. autoclass:: pytorchltr.loss.PairwiseHingeLoss
    :members:
@@ -68,8 +62,8 @@ or logistic formulation.
 LambdaLoss
 ----------
 
-LambdaLoss :cite:`wang2018lambdaloss` is a probabilistic framework for ranking
-metric optimization. We provide implementations for ARPLoss1, ARPLoss2,
+LambdaLoss :cite:`loss-wang2018lambdaloss` is a probabilistic framework for
+ranking metric optimization. We provide implementations for ARPLoss1, ARPLoss2,
 NDCGLoss1 and NDCGLoss2.
 
 .. autoclass:: pytorchltr.loss.LambdaARPLoss1
@@ -96,4 +90,9 @@ NDCGLoss1 and NDCGLoss2.
    .. automethod:: __init__
    .. automethod:: forward
 
+.. rubric:: References
+
 .. bibliography:: references.bib
+    :cited:
+    :style: authoryearstyle
+    :keyprefix: loss-
