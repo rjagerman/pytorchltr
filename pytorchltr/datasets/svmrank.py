@@ -189,7 +189,7 @@ class SVMRankingDataset(_Dataset):
                 .. code-block::
 
                     {
-                        "features": tensor of shape (list_size),
+                        "features": tensor of shape (list_size, feature_size),
                         "relevance": tensor of shape (list_size),
                         "qid": int indicating the query identifier,
                         "n": int indicating the number of documents,
