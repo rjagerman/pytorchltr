@@ -3,11 +3,17 @@ import os
 import sys
 from collections import deque
 from urllib.request import urlopen
+from typing import Callable
+from typing import Optional
 
 from pytorchltr.utils.file import ChecksumError
 from pytorchltr.utils.file import validate_file
 from pytorchltr.utils.progress import LoggingProgress
 from pytorchltr.utils.progress import TerminalProgress
+
+
+_PROGRESS_FN_TYPE = Callable[[int, Optional[int], bool], None]
+_POSTPROCESS_FN_TYPE = Callable[[str, str], None]
 
 
 class Downloader:
@@ -32,9 +38,13 @@ class Downloader:
             when the download finished. Typical use cases include extracting or
             unzipping a downloaded archive.
     """
-    def __init__(self, url, target, sha256_checksum=None, force_download=False,
-                 chunk_size=32*1024, create_dirs=True, progress_fn=None,
-                 postprocess_fn=None, expected_files=None):
+    def __init__(self, url: str, target: str,
+                 sha256_checksum: Optional[str] = None,
+                 force_download: bool = False, chunk_size: int = 32*1024,
+                 create_dirs: bool = True,
+                 progress_fn: _PROGRESS_FN_TYPE = None,
+                 postprocess_fn: _POSTPROCESS_FN_TYPE = None,
+                 expected_files=None):
         """
         Creates a downloader that downloads from a url.
 
@@ -45,17 +55,16 @@ class Downloader:
         Args:
             url: The url to download from.
             target: The target name to save.
-            sha256_checksum: (Optional) sha256 checksum to validate against.
-            force_download: (Optional) forces a re-dowload always.
-            chunk_size: (Optional) chunk size to download in.
-            create_dirs: (Optional) whether to create directories.
-            progress_fn: (Optional) a callable progress function.
-            postprocess_fn: (Optional) function to call after successfull
-                download.
-            expected_files: (Optional) a list of expected files for this
-                downloader. Each entry in the list should be either a string
-                indicating the path of the file or a dict containing a 'path'
-                and 'sha256' key for the path and sha256 checksum of the file.
+            sha256_checksum: sha256 checksum to validate against.
+            force_download: Forces a re-dowload always.
+            chunk_size: Chunk size to download in.
+            create_dirs: Whether to create directories.
+            progress_fn: A callable progress function.
+            postprocess_fn: Function to call after successfull download.
+            expected_files: A list of expected files for this downloader. Each
+                entry in the list should be either a string indicating the path
+                of the file or a dict containing a 'path' and 'sha256' key for
+                the path and sha256 checksum of the file.
         """
         self.url = url
         self.target = target
@@ -67,7 +76,7 @@ class Downloader:
         self.postprocess_fn = postprocess_fn
         self.expected_files = expected_files
 
-    def download(self, destination):
+    def download(self, destination: str):
         """
         Downloads to given destination. Unless force_download is True, this
         will skip the download if the file already exists and its (optional)
@@ -83,7 +92,7 @@ class Downloader:
         if self.postprocess_fn is not None:
             self.postprocess_fn(path, destination)
 
-    def _should_download(self, path):
+    def _should_download(self, path: str):
         """
         Checks if the file should be downloaded.
 
@@ -97,7 +106,7 @@ class Downloader:
             logging.debug("could not validate file at '%s'", path)
             return True
 
-    def _download(self, path):
+    def _download(self, path: str):
         """
         Downloads the file from self.url to path.
 
@@ -128,7 +137,8 @@ class Downloader:
                     self._progress(bytes_read, total_size, False)
                 self._progress(bytes_read, total_size, True)
 
-    def _progress(self, bytes_read, total_size, final):
+    def _progress(self, bytes_read: int, total_size: Optional[int],
+                  final: bool):
         """
         Reports download progress to the progress hook if it exists.
 
@@ -151,7 +161,7 @@ class TerminalDownloadProgress(TerminalProgress):
         super().__init__(interval=interval, progress_str=_progress_string)
 
 
-def _progress_string(bytes_read, total_size, final):
+def _progress_string(bytes_read: int, total_size: Optional[int], final: bool):
     """
     Returns a human-readable string representing the download progress.
 
@@ -171,12 +181,12 @@ def _progress_string(bytes_read, total_size, final):
             _to_human_readable(total_size))
 
 
-def _to_human_readable(nr_of_bytes):
+def _to_human_readable(nr_of_bytes: int):
     """
     Returns a human-readable string representation of given bytes.
 
     Args:
-        nr_of_bytes: The number bytes as an integer or float
+        nr_of_bytes: The number bytes
     """
     # Convert to human readble byte format
     byte_unit = deque(["B", "KB", "MB", "GB", "TB"])

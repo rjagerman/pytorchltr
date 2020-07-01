@@ -1,10 +1,12 @@
+.. _evaluation:
+
 Evaluation
 ==========
 
 PyTorchLTR provides several built-in evaluation metrics including ARP
 :cite:`evaluation-joachims2017unbiased` and DCG
 :cite:`evaluation-kalervo2002cumulated`. Furthermore, the library has support
-for creating `pytrec_eval <https://github.com/cvangysel/pytrec_eval>`_ 
+for creating `pytrec_eval <https://github.com/cvangysel/pytrec_eval>`_
 :cite:`evaluation-gysel2018pytreceval` compatible output.
 
 Example

@@ -41,7 +41,7 @@ test = Example3(split="test")
 collate_fn = train.collate_fn()
 
 # Create model, optimizer and loss to optimize
-model = torch.nn.Linear(train[0]["features"].shape[1], 1)
+model = torch.nn.Linear(train[0].features.shape[1], 1)
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 loss_fn = PairwiseHingeLoss()
 
@@ -53,7 +53,7 @@ def evaluate():
                                          collate_fn=test.collate_fn())
     ndcg_score = 0.0
     for batch in loader:
-        xs, ys, n = batch["features"], batch["relevance"], batch["n"]
+        xs, ys, n = batch.features, batch.relevance, batch.n
         ndcg_score += float(torch.sum(ndcg(model(xs), ys, n, k=10)))
 
     ndcg_score /= len(test)
@@ -68,7 +68,7 @@ for epoch in range(3):
     loader = torch.utils.data.DataLoader(train, batch_size=2, shuffle=True,
                                          collate_fn=train.collate_fn())
     for batch in loader:
-        xs, ys, n = batch["features"], batch["relevance"], batch["n"]
+        xs, ys, n = batch.features, batch.relevance, batch.n
         loss = loss_fn(model(xs), ys, n).mean()
         optimizer.zero_grad()
         loss.backward()

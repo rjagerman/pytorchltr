@@ -1,8 +1,22 @@
 """Generate pytrec_eval runs from model and labels."""
+from typing import Optional
+from typing import Tuple
+from typing import Dict
+import torch as _torch
 
 
-def generate_pytrec_eval(scores, relevance, n, qids=None, qid_offset=0,
-                         q_prefix="q", d_prefix="d"):
+_PYTREC_RETURN_TYPE = Tuple[
+    Dict[str, Dict[str, int]],
+    Dict[str, Dict[str, float]]]
+
+
+def generate_pytrec_eval(scores: _torch.FloatTensor,
+                         relevance: _torch.LongTensor,
+                         n: _torch.LongTensor,
+                         qids: Optional[_torch.LongTensor] = None,
+                         qid_offset: int = 0,
+                         q_prefix: str = "q",
+                         d_prefix: str = "d") -> _PYTREC_RETURN_TYPE:
     """Generates `pytrec_eval <https://github.com/cvangysel/pytrec_eval>`_
     qrels and runs from given batch.
 
@@ -38,15 +52,15 @@ def generate_pytrec_eval(scores, relevance, n, qids=None, qid_offset=0,
             relevance of each document.
         n: A LongTensor of size (batch_size) indicating the number of docs per
             query.
-        qids: (Optional) a LongTensor of size (batch_size) indicating the qid
-            of each query.
-        qid_offset: (Optional) an offset to increment all qids in this batch
-            with. Only used if `qids` is None.
-        q_prefix: (Optional) a string prefix to add for query identifiers.
-        d_prefix: (Optional) a string prefix to add for doc identifiers.
+        qids: A LongTensor of size (batch_size) indicating the qid of each
+            query.
+        qid_offset: An offset to increment all qids in this batch with. Only
+            used if `qids` is None.
+        q_prefix: A string prefix to add for query identifiers.
+        d_prefix: A string prefix to add for doc identifiers.
 
     Returns:
-        A tuple of dicts containing a qrel dict and a run dict.
+        A tuple containing a qrel dict and a run dict.
     """
     qrel = {}
     run = {}

@@ -1,6 +1,6 @@
 import torch
 from tests.datasets.test_svmrank import get_sample_dataset
-from pytorchltr.datasets.svmrank import SVMRankingDataset
+from pytorchltr.datasets.svmrank import SVMRankDataset
 from pytorchltr.loss import PairwiseHingeLoss
 from pytorchltr.evaluation.arp import arp
 
@@ -19,8 +19,8 @@ def test_basic_sgd_learning():
 
     dataset = get_sample_dataset()
 
-    input_dim = dataset[0]["features"].shape[1]
-    collate_fn = SVMRankingDataset.collate_fn(max_list_size=50)
+    input_dim = dataset[0].features.shape[1]
+    collate_fn = SVMRankDataset.collate_fn(max_list_size=50)
     model = Model(input_dim)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
     loss_fn = PairwiseHingeLoss()
@@ -35,7 +35,7 @@ def test_basic_sgd_learning():
             dataset, batch_size=2, shuffle=True, collate_fn=collate_fn)
         for i, batch in enumerate(loader):
             # Get batch of samples
-            xs, ys, n = batch["features"], batch["relevance"], batch["n"]
+            xs, ys, n = batch.features, batch.relevance, batch.n
 
             # Compute loss
             loss = loss_fn(model(xs), ys, n)

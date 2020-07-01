@@ -1,9 +1,13 @@
 """DCG and NDCG evaluation metrics."""
+from typing import Optional
+
 import torch as _torch
 from pytorchltr.utils import rank_by_score as _rank_by_score
 
 
-def ndcg(scores, relevance, n, k=None, exp=True):
+def ndcg(scores: _torch.FloatTensor, relevance: _torch.LongTensor,
+         n: _torch.LongTensor, k: Optional[int] = None,
+         exp: Optional[bool] = True) -> _torch.FloatTensor:
     r"""Normalized Discounted Cumulative Gain (NDCG)
 
     .. math::
@@ -20,7 +24,7 @@ def ndcg(scores, relevance, n, k=None, exp=True):
             relevance judgements per document per query.
         n: A tensor of size (batch_size) indicating the number of docs per
             query.
-        k: (Optional) an integer indicating the cutoff for ndcg.
+        k: An integer indicating the cutoff for ndcg.
         exp: A boolean indicating whether to use the exponential notation of
             DCG.
 
@@ -34,7 +38,9 @@ def ndcg(scores, relevance, n, k=None, exp=True):
     return dcg(scores, relevance, n, k, exp) / idcg
 
 
-def dcg(scores, relevance, n, k=None, exp=True):
+def dcg(scores: _torch.FloatTensor, relevance: _torch.LongTensor,
+        n: _torch.LongTensor, k: Optional[int] = None,
+        exp: Optional[bool] = True) -> _torch.FloatTensor:
     r"""Discounted Cumulative Gain (DCG)
 
     .. math::
@@ -66,7 +72,7 @@ def dcg(scores, relevance, n, k=None, exp=True):
             relevance judgements per document per query.
         n: A tensor of size (batch_size) indicating the number of docs per
             query.
-        k: (Optional) an integer indicating the cutoff for ndcg.
+        k: An integer indicating the cutoff for ndcg.
         exp: A boolean indicating whether to use the exponential notation of
             DCG.
 
