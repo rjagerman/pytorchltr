@@ -1,8 +1,13 @@
 import time
 import logging
+from typing import Callable
+from typing import Optional
 
 
-def _default_progress_str(progress, total, final):
+_PROGRESS_FN_TYPE = Callable[[int, Optional[int], bool], None]
+
+
+def _default_progress_str(progress: int, total: Optional[int], final: bool):
     """
     Default progress string
 
@@ -26,23 +31,24 @@ class IntervalProgress:
     """
     A progress hook function that reports to output at a specified interval.
     """
-    def __init__(self, interval=1.0, progress_str=_default_progress_str):
+    def __init__(self, interval: float = 1.0,
+                 progress_str: _PROGRESS_FN_TYPE = _default_progress_str):
         self.interval = interval
         self.progress_str = progress_str
         self.last_update = time.time() - interval
 
-    def __call__(self, bytes_read, total_size, final):
+    def __call__(self, progress: int, total: Optional[int], final: bool):
         if final or time.time() - self.last_update >= self.interval:
-            self.progress(bytes_read, total_size, final)
+            self.progress(progress, total, final)
             self.last_update = time.time()
 
-    def progress(self, progress, total, final):
+    def progress(self, progress: int, total: Optional[int], final: bool):
         """Processes the progress so far. Called only once per interval.
 
         Args:
-            progress (int): The progress so far.
-            total (int, optional): The total to reach.
-            final (bool): Whether this is the final progress call.
+            progress: The progress so far.
+            total: The total to reach.
+            final: Whether this is the final progress call.
         """
         raise NotImplementedError
 

@@ -5,19 +5,19 @@ from unittest import mock
 
 from pytest import raises
 from pytest import approx
-from pytorchltr.datasets.svmrank import SVMRankingDataset
+from pytorchltr.datasets.svmrank import SVMRankDataset
 
 
 def get_sample_dataset(*args, **kwargs):
     """Get sample dataset, uses the same arguments as `svmranking_dataset`."""
     with open("tests/datasets/dataset.txt", "rb") as dataset_file:
-        return SVMRankingDataset(dataset_file, *args, **kwargs)
+        return SVMRankDataset(dataset_file, *args, **kwargs)
 
 
 @contextlib.contextmanager
 def mock_svmrank_dataset(package_str="pytorchltr.datasets.svmrank"):
     validate_and_download_str = package_str + ".validate_and_download"
-    super_str = "pytorchltr.datasets.svmrank.SVMRankingDataset.__init__"
+    super_str = "pytorchltr.datasets.svmrank.SVMRankDataset.__init__"
     with tempfile.TemporaryDirectory() as tmpdir:
         with mock.patch(validate_and_download_str) as mock_vali:
             with mock.patch(super_str) as mock_super:
@@ -34,7 +34,7 @@ def test_basic():
 
     # Get first sample.
     sample = dataset[0]
-    x, y, q = sample['features'], sample['relevance'], sample['qid']
+    x, y, q = sample.features, sample.relevance, sample.qid
     assert x.shape == (6, 45)
     assert y.shape == (6,)
     assert x[1, 2] == 1.0
@@ -43,7 +43,7 @@ def test_basic():
 
     # Get second sample.
     sample = dataset[1]
-    x, y, q = sample['features'], sample['relevance'], sample['qid']
+    x, y, q = sample.features, sample.relevance, sample.qid
     assert x.shape == (9, 45)
     assert y.shape == (9,)
     assert float(x[5, 3]) == approx(0.422507)
@@ -52,7 +52,7 @@ def test_basic():
 
     # Get third sample.
     sample = dataset[2]
-    x, y, q = sample['features'], sample['relevance'], sample['qid']
+    x, y, q = sample.features, sample.relevance, sample.qid
     assert x.shape == (14, 45)
     assert y.shape == (14,)
     assert float(x[12, 2]) == approx(0.461538)
@@ -61,7 +61,7 @@ def test_basic():
 
     # Get fourth sample.
     sample = dataset[3]
-    x, y, q = sample['features'], sample['relevance'], sample['qid']
+    x, y, q = sample.features, sample.relevance, sample.qid
     assert x.shape == (10, 45)
     assert y.shape == (10,)
     assert float(x[8, 2]) == approx(0.25)
@@ -82,12 +82,12 @@ def test_sparse():
     for i in range(len(dataset_dense)):
         sample_dense = dataset_dense[i]
         sample_sparse = dataset_sparse[i]
-        assert sample_sparse['qid'] == sample_dense['qid']
-        assert sample_sparse['n'] == sample_dense['n']
-        assert sample_sparse['features'].to_dense().numpy() == approx(
-            sample_dense['features'].numpy())
-        assert sample_sparse['relevance'].numpy() == approx(
-            sample_dense['relevance'].numpy())
+        assert sample_sparse.qid == sample_dense.qid
+        assert sample_sparse.n == sample_dense.n
+        assert sample_sparse.features.to_dense().numpy() == approx(
+            sample_dense.features.numpy())
+        assert sample_sparse.relevance.numpy() == approx(
+            sample_dense.relevance.numpy())
 
 
 def test_normalize():
@@ -100,7 +100,7 @@ def test_normalize():
 
     # Get first sample and assert the contents is as expected.
     sample = dataset[0]
-    x, y, q = sample['features'], sample['relevance'], sample['qid']
+    x, y, q = sample.features, sample.relevance, sample.qid
     assert x.shape == (6, 45)
     assert y.shape == (6,)
     assert q == 1
@@ -140,9 +140,9 @@ def test_serialize():
     assert len(dataset) == len(deserialized)
     for i in range(len(dataset)):
         sample1 = dataset[i]
-        x1, y1, q1 = sample1['features'], sample1['relevance'], sample1['qid']
+        x1, y1, q1 = sample1.features, sample1.relevance, sample1.qid
         sample2 = deserialized[i]
-        x2, y2, q2 = sample2['features'], sample2['relevance'], sample2['qid']
+        x2, y2, q2 = sample2.features, sample2.relevance, sample2.qid
         assert x1.numpy() == approx(x2.numpy())
         assert y1.numpy() == approx(y2.numpy())
         assert q1 == q2
@@ -161,9 +161,9 @@ def test_serialize_sparse():
     assert len(dataset) == len(deserialized)
     for i in range(len(dataset)):
         sample1 = dataset[i]
-        x1, y1, q1 = sample1['features'], sample1['relevance'], sample1['qid']
+        x1, y1, q1 = sample1.features, sample1.relevance, sample1.qid
         sample2 = deserialized[i]
-        x2, y2, q2 = sample2['features'], sample2['relevance'], sample2['qid']
+        x2, y2, q2 = sample2.features, sample2.relevance, sample2.qid
         assert x1.to_dense().numpy() == approx(x2.to_dense().numpy())
         assert y1.numpy() == approx(y2.numpy())
         assert q1 == q2
@@ -184,9 +184,9 @@ def test_double_serialize():
     assert len(dataset) == len(deserialized)
     for i in range(len(dataset)):
         sample1 = dataset[i]
-        x1, y1, q1 = sample1['features'], sample1['relevance'], sample1['qid']
+        x1, y1, q1 = sample1.features, sample1.relevance, sample1.qid
         sample2 = deserialized[i]
-        x2, y2, q2 = sample2['features'], sample2['relevance'], sample2['qid']
+        x2, y2, q2 = sample2.features, sample2.relevance, sample2.qid
         assert x1.numpy() == approx(x2.numpy())
         assert y1.numpy() == approx(y2.numpy())
         assert q1 == q2
@@ -200,11 +200,11 @@ def test_collate_sparse_10():
     # Construct a batch of three samples and collate it with a maximum list
     # size of 10.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = SVMRankingDataset.collate_fn(max_list_size=10)
+    collate_fn = SVMRankDataset.collate_fn(max_list_size=10)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert tensor_batch["features"].shape == (3, 10, 45)
+    assert tensor_batch.features.shape == (3, 10, 45)
 
 
 def test_collate_dense_10():
@@ -215,11 +215,11 @@ def test_collate_dense_10():
     # Construct a batch of three samples and collate it with a maximum list
     # size of 10.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = SVMRankingDataset.collate_fn(max_list_size=10)
+    collate_fn = SVMRankDataset.collate_fn(max_list_size=10)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert tensor_batch["features"].shape == (3, 10, 45)
+    assert tensor_batch.features.shape == (3, 10, 45)
 
 
 def test_collate_sparse_3():
@@ -230,11 +230,11 @@ def test_collate_sparse_3():
     # Construct a batch of three samples and collate it with a maximum list
     # size of 3.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = SVMRankingDataset.collate_fn(max_list_size=3)
+    collate_fn = SVMRankDataset.collate_fn(max_list_size=3)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert tensor_batch["features"].shape == (3, 3, 45)
+    assert tensor_batch.features.shape == (3, 3, 45)
 
 
 def test_collate_dense_3():
@@ -245,11 +245,11 @@ def test_collate_dense_3():
     # Construct a batch of three samples and collate it with a maximum list
     # size of 3.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = SVMRankingDataset.collate_fn(max_list_size=3)
+    collate_fn = SVMRankDataset.collate_fn(max_list_size=3)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert tensor_batch["features"].shape == (3, 3, 45)
+    assert tensor_batch.features.shape == (3, 3, 45)
 
 
 def test_collate_sparse_all():
@@ -260,11 +260,11 @@ def test_collate_sparse_all():
     # Construct a batch of three samples and collate it with an unlimited
     # maximum list size.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = SVMRankingDataset.collate_fn(max_list_size=None)
+    collate_fn = SVMRankDataset.collate_fn(max_list_size=None)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert tensor_batch["features"].shape == (3, 14, 45)
+    assert tensor_batch.features.shape == (3, 14, 45)
 
 
 def test_collate_dense_all():
@@ -275,11 +275,11 @@ def test_collate_dense_all():
     # Construct a batch of three samples and collate it with an unlimited
     # maximum list size.
     batch = [dataset[0], dataset[1], dataset[2]]
-    collate_fn = SVMRankingDataset.collate_fn(max_list_size=None)
+    collate_fn = SVMRankDataset.collate_fn(max_list_size=None)
 
     # Assert resulting tensor shape is as expected.
     tensor_batch = collate_fn(batch)
-    assert tensor_batch["features"].shape == (3, 14, 45)
+    assert tensor_batch.features.shape == (3, 14, 45)
 
 
 def test_filter_queries():
@@ -289,9 +289,9 @@ def test_filter_queries():
     assert len(dataset_filtered) != len(dataset)
 
     # Assert qid matches on non-filtered queries
-    assert dataset_filtered[0]["qid"] == dataset[0]["qid"]
-    assert dataset_filtered[1]["qid"] == dataset[1]["qid"]
-    assert dataset_filtered[2]["qid"] == dataset[3]["qid"]
+    assert dataset_filtered[0].qid == dataset[0].qid
+    assert dataset_filtered[1].qid == dataset[1].qid
+    assert dataset_filtered[2].qid == dataset[3].qid
 
 
 def test_get_index():
@@ -300,7 +300,7 @@ def test_get_index():
 
     # Assert that get_index for each qid matches the index.
     for i in range(len(dataset)):
-        assert dataset.get_index(dataset[i]["qid"]) == i
+        assert dataset.get_index(dataset[i].qid) == i
 
 
 def test_get_index_filtered_queries():
@@ -309,4 +309,4 @@ def test_get_index_filtered_queries():
 
     # Assert that get_index for each qid matches the index.
     for i in range(len(dataset)):
-        assert dataset.get_index(dataset[i]["qid"]) == i
+        assert dataset.get_index(dataset[i].qid) == i

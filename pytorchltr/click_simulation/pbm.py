@@ -1,9 +1,18 @@
 """Collection of PBM-based click simulators."""
+from typing import Optional
+from typing import Tuple
+
 import torch as _torch
 from pytorchltr.utils import mask_padded_values as _mask_padded_values
 
 
-def simulate_pbm(rankings, ys, n, relevance_probs, cutoff=None, eta=1.0):
+_SIM_RETURN_TYPE = Tuple[_torch.LongTensor, _torch.FloatTensor]
+
+
+def simulate_pbm(rankings: _torch.LongTensor, ys: _torch.LongTensor,
+                 n: _torch.LongTensor, relevance_probs: _torch.FloatTensor,
+                 cutoff: Optional[int] = None,
+                 eta: float = 1.0) -> _SIM_RETURN_TYPE:
     """Simulates clicks according to a position-biased user model.
 
     Args:
@@ -54,7 +63,8 @@ def simulate_pbm(rankings, ys, n, relevance_probs, cutoff=None, eta=1.0):
     )
 
 
-def simulate_perfect(rankings, ys, n, cutoff=None):
+def simulate_perfect(rankings: _torch.LongTensor, ys: _torch.LongTensor,
+                     n: _torch.LongTensor, cutoff: Optional[int] = None):
     """Simulates clicks according to a perfect user model.
 
     Args:
@@ -73,7 +83,9 @@ def simulate_perfect(rankings, ys, n, cutoff=None):
     return simulate_pbm(rankings, ys, n, rel_probs, cutoff, 0.0)
 
 
-def simulate_position(rankings, ys, n, cutoff=None, eta=1.0):
+def simulate_position(rankings: _torch.LongTensor, ys: _torch.LongTensor,
+                      n: _torch.LongTensor, cutoff: Optional[int] = None,
+                      eta: float = 1.0) -> _SIM_RETURN_TYPE:
     """Simulates clicks according to a binary position-biased user model.
 
     Args:
@@ -93,7 +105,9 @@ def simulate_position(rankings, ys, n, cutoff=None, eta=1.0):
     return simulate_pbm(rankings, ys, n, rel_probs, cutoff, eta)
 
 
-def simulate_nearrandom(rankings, ys, n, cutoff=None, eta=1.0):
+def simulate_nearrandom(rankings: _torch.LongTensor, ys: _torch.LongTensor,
+                        n: _torch.LongTensor, cutoff: Optional[int] = None,
+                        eta: float = 1.0) -> _SIM_RETURN_TYPE:
     """Simulates clicks according to a near-random user model.
 
     Args:

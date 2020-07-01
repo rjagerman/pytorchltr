@@ -7,11 +7,18 @@ training a neural network on a LTR task.
 Data loading
 ------------
 
+.. warning::
+
+    PyTorchLTR provides utilities to automatically download and prepare several
+    public LTR datasets. We do not host or distribute these datasets and it is
+    ultimately **your responsibility** to determine whether you have permission
+    to use each dataset under its respective license.
+
 The first step is loading the dataset. For this guide we will use the
 MSLR-WEB10K dataset which is a learning to rank dataset containing 10,000
 queries split across a training (60%), validation (20%) and test (20%) split.
-For this guide we will use the first fold of the dataset. The following code
-will automatically download the dataset if it has not yet been downloaded.
+We will use the first fold of the dataset. The following code will
+automatically download the dataset if it has not yet been downloaded.
 Downloading and processing the data can take a few minutes.
 
 .. code-block:: python
@@ -20,6 +27,7 @@ Downloading and processing the data can take a few minutes.
     >>> train = MSLR10K(split="train", fold=1)
     >>> test = MSLR10K(split="test", fold=1)
 
+A complete list of available datasets is available :ref:`here <datasets>`.
 
 Building a scoring function
 ---------------------------
@@ -49,14 +57,16 @@ create a model instance.
 .. code-block:: python
 
     >>> torch.manual_seed(42)
-    >>> dimensionality = train[0]['features'].shape[1]
+    >>> dimensionality = train[0].features.shape[1]
     >>> model = Model(dimensionality)
 
 Training the model
 ------------------
 
 Next, we will train the model using a basic training loop. First we set up the
-loss function and optimizer.
+loss function and optimizer. For this example we will use a simple
+pairwise hinge loss. More information about the available loss functions can be
+found :ref:`here <loss>`.
 
 .. code-block:: python
 
@@ -77,7 +87,7 @@ complexity that is quadratic in the list size.
     >>>     train, batch_size=16, shuffle=True,
     >>>     collate_fn=train.collate_fn(max_list_size=20))
     >>>   for batch in loader:
-    >>>     xs, ys, n = batch["features"], batch["relevance"], batch["n"]
+    >>>     xs, ys, n = batch.features, batch.relevance, batch.n
     >>>     loss = loss_fn(model(xs), ys, n).mean()
     >>>     optimizer.zero_grad()
     >>>     loss.backward()
@@ -107,10 +117,10 @@ complexity that is quadratic in the list size.
 Evaluating the trained model
 ----------------------------
 
-Finally we will evaluate the model using ndcg@10 on the test set. To do so we
-iterate over the test set in batches and compute ndcg@10 on each batch. To
-compute the average ndcg@10 on the test set we take the sum of all scores and
-finally divide by the length of the test set.
+Finally we will evaluate the model using :math:`ndcg@10` on the test set. To do
+so we iterate over the test set in batches and compute :math:`ndcg@10` on each
+batch. To compute the average :math:`ndcg@10` on the test set we take the sum
+of all scores and finally divide by the length of the test set.
 
 .. code-block:: python
 
@@ -119,10 +129,12 @@ finally divide by the length of the test set.
     >>>   test, batch_size=16, collate_fn=test.collate_fn())
     >>> final_score = 0.0
     >>> for batch in loader:
-    >>>   xs, ys, n = batch["features"], batch["relevance"], batch["n"]
+    >>>   xs, ys, n = batch.features, batch.relevance, batch.n
     >>>   ndcg_score = ndcg(model(xs), ys, n, k=10)
     >>>   final_score += float(torch.sum(ndcg_score))
 
     >>> print("ndcg@10 on test set: %f" % (final_score / len(test)))
     ndcg@10 on test set: 0.448297
 
+Additional information about available evaluation metrics and how to integrate
+with :code:`pytrec_eval` can be found :ref:`here <evaluation>`.

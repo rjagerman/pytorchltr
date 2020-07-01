@@ -3,6 +3,10 @@ import logging
 import os
 import tarfile
 import zipfile
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 
 class ChecksumError(Exception):
@@ -14,12 +18,12 @@ class ChecksumError(Exception):
         expected (str): The expected checksum.
         actual (str): The checksum that occurre
     """
-    def __init__(self, origin, expected, actual):
+    def __init__(self, origin: str, expected: str, actual: str):
         """
         Args:
-            origin (str): The origin of the checksum error.
-            expected (str): The expected checksum.
-            actual (str): The actual checksum that occurred.
+            origin: The origin of the checksum error.
+            expected: The expected checksum.
+            actual: The actual checksum that occurred.
         """
         self.origin = origin
         self.expected = expected
@@ -28,7 +32,7 @@ class ChecksumError(Exception):
             origin, expected, actual)
 
 
-def sha256_checksum(path, chunk_size=4*1024*1024):
+def sha256_checksum(path: str, chunk_size: int = 4*1024*1024):
     """
     Computes the sha256 checksum on the file in given path.
 
@@ -47,7 +51,7 @@ def sha256_checksum(path, chunk_size=4*1024*1024):
     return hash_sha256.hexdigest()
 
 
-def validate_file(path, sha256=None):
+def validate_file(path: str, sha256: Optional[str] = None):
     """
     Performs a validation check on the file in given path:
      * Checks if the file exists.
@@ -72,8 +76,9 @@ def validate_file(path, sha256=None):
             raise ChecksumError(path, sha256, actual)
 
 
-def validate_expected_files(location, expected_files,
-                            validate_checksums=False):
+def validate_expected_files(location: str,
+                            expected_files: List[Union[str, Dict[str, str]]],
+                            validate_checksums: bool = False):
     """
     Performs a validation check on a set of expected files:
      * Checks if all files exists
@@ -105,8 +110,13 @@ def validate_expected_files(location, expected_files,
                     "str or a dict containing 'path' and 'sha256' keys.")
 
 
-def validate_and_download(location, expected_files, downloader=None,
-                          validate_checksums=False):
+_DOWNLOADER_TYPE = "pytorchltr.utils.downloader.Downloader"
+
+
+def validate_and_download(location: str,
+                          expected_files: List[Union[str, Dict[str, str]]],
+                          downloader: Optional[_DOWNLOADER_TYPE] = None,
+                          validate_checksums: bool = False):
     """Validates expected files at given location and attempts to download
     if validation fails.
 
@@ -136,7 +146,7 @@ def validate_and_download(location, expected_files, downloader=None,
             raise
 
 
-def extract_tar(path, destination):
+def extract_tar(path: str, destination: str):
     """
     Extracts the .tar[.gz] file at given path to given destination.
 
@@ -149,7 +159,7 @@ def extract_tar(path, destination):
         f.extractall(destination)
 
 
-def extract_zip(path, destination):
+def extract_zip(path: str, destination: str):
     """
     Extracts the .zip file at given path to given destination.
 
@@ -162,7 +172,7 @@ def extract_zip(path, destination):
         f.extractall(destination)
 
 
-def dataset_dir(name):
+def dataset_dir(name: str) -> str:
     """
     Returns the location of the dataset directory.
 

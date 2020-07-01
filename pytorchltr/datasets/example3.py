@@ -1,14 +1,15 @@
 import os
+from typing import Optional
 
 from pytorchltr.utils.downloader import DefaultDownloadProgress
 from pytorchltr.utils.downloader import Downloader
 from pytorchltr.utils.file import validate_and_download
 from pytorchltr.utils.file import extract_tar
 from pytorchltr.utils.file import dataset_dir
-from pytorchltr.datasets.svmrank import SVMRankingDataset
+from pytorchltr.datasets.svmrank import SVMRankDataset
 
 
-class Example3(SVMRankingDataset):
+class Example3(SVMRankDataset):
     """
     Utility class for loading and using the Example3 dataset:
     http://www.cs.cornell.edu/people/tj/svm_light/svm_rank.html
@@ -34,21 +35,22 @@ class Example3(SVMRankingDataset):
         "test": os.path.join("example3", "test.dat")
     }
 
-    def __init__(self, location=dataset_dir("example3"), split="train",
-                 normalize=True, filter_queries=None, download=True,
-                 validate_checksums=True):
+    def __init__(self, location: str = dataset_dir("example3"),
+                 split: str = "train",
+                 normalize: bool = True, filter_queries: Optional[bool] = None,
+                 download: bool = True, validate_checksums: bool = True):
         """
         Args:
-            location (str): Directory where the dataset is located.
-            split (str): The data split to load ("train" or "test")
-            normalize (bool): Whether to perform query-level feature
+            location: Directory where the dataset is located.
+            split: The data split to load ("train" or "test")
+            normalize: Whether to perform query-level feature
                 normalization.
-            filter_queries (bool, optional): Whether to filter out queries that
+            filter_queries: Whether to filter out queries that
                 have no relevant items. If not given this will filter queries
                 for the test set but not the train set.
-            download (bool): Whether to download the dataset if it does not
+            download: Whether to download the dataset if it does not
                 exist.
-            validate_checksums (bool): Whether to validate the dataset files
+            validate_checksums: Whether to validate the dataset files
                 via sha256.
         """
         # Check if specified split exists.

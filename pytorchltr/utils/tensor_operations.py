@@ -2,7 +2,9 @@
 import torch as _torch
 
 
-def mask_padded_values(xs, n, mask_value=-float('inf'), mutate=False):
+def mask_padded_values(xs: _torch.FloatTensor, n: _torch.LongTensor,
+                       mask_value: float = -float('inf'),
+                       mutate: bool = False):
     """Turns padded values into given mask value.
 
     Args:
@@ -23,7 +25,8 @@ def mask_padded_values(xs, n, mask_value=-float('inf'), mutate=False):
     return xs
 
 
-def tiebreak_argsort(x, descending=True):
+def tiebreak_argsort(x: _torch.FloatTensor,
+                     descending: bool = True) -> _torch.LongTensor:
     """Computes a per-row argsort of matrix x with random tiebreaks.
 
     Args:
@@ -38,7 +41,8 @@ def tiebreak_argsort(x, descending=True):
     return p[_torch.argsort(x[:, p], descending=descending)]
 
 
-def rank_by_score(scores, n):
+def rank_by_score(scores: _torch.FloatTensor,
+                  n: _torch.LongTensor) -> _torch.LongTensor:
     """Sorts scores in decreasing order.
 
     This method ensures that padded documents are placed last and ties are
@@ -54,7 +58,8 @@ def rank_by_score(scores, n):
     return tiebreak_argsort(mask_padded_values(scores, n))
 
 
-def rank_by_plackettluce(scores, n):
+def rank_by_plackettluce(scores: _torch.FloatTensor,
+                         n: _torch.LongTensor) -> _torch.LongTensor:
     """Samples a ranking from a plackett luce distribution.
 
     This method ensures that padded documents are placed last.
@@ -80,7 +85,7 @@ def rank_by_plackettluce(scores, n):
     return tiebreak_argsort(r, descending=False)
 
 
-def batch_pairs(x):
+def batch_pairs(x: _torch.Tensor) -> _torch.Tensor:
     """Returns a pair matrix
 
     This matrix contains all pairs (i, j) as follows:

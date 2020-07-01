@@ -1,14 +1,15 @@
 import os
+from typing import Optional
 
 from pytorchltr.utils.downloader import DefaultDownloadProgress
 from pytorchltr.utils.downloader import Downloader
 from pytorchltr.utils.file import validate_and_download
 from pytorchltr.utils.file import extract_zip
 from pytorchltr.utils.file import dataset_dir
-from pytorchltr.datasets.svmrank import SVMRankingDataset
+from pytorchltr.datasets.svmrank import SVMRankDataset
 
 
-class MSLR30K(SVMRankingDataset):
+class MSLR30K(SVMRankDataset):
     """
     Utility class for downloading and using the MSLR-WEB30K dataset:
     https://www.microsoft.com/en-us/research/project/mslr/.
@@ -55,22 +56,23 @@ class MSLR30K(SVMRankingDataset):
         "vali": "vali.txt"
     }
 
-    def __init__(self, location=dataset_dir("MSLR30K"), split="train", fold=1,
-                 normalize=True, filter_queries=None, download=True,
-                 validate_checksums=True):
+    def __init__(self, location: str = dataset_dir("MSLR30K"),
+                 split: str = "train", fold: int = 1, normalize: bool = True,
+                 filter_queries: Optional[bool] = None, download: bool = True,
+                 validate_checksums: bool = True):
         """
         Args:
-            location (str): Directory where the dataset is located.
-            split (str): The data split to load ("train", "test" or "vali")
-            fold (int): Which data fold to load (1...5)
-            normalize (bool): Whether to perform query-level feature
+            location: Directory where the dataset is located.
+            split: The data split to load ("train", "test" or "vali")
+            fold: Which data fold to load (1...5)
+            normalize: Whether to perform query-level feature
                 normalization.
-            filter_queries (bool, optional): Whether to filter out queries that
+            filter_queries: Whether to filter out queries that
                 have no relevant items. If not given this will filter queries
                 for the test set but not the train set.
-            download (bool): Whether to download the dataset if it does not
+            download: Whether to download the dataset if it does not
                 exist.
-            validate_checksums (bool): Whether to validate the dataset files
+            validate_checksums: Whether to validate the dataset files
                 via sha256.
         """
         # Check if specified split and fold exists.

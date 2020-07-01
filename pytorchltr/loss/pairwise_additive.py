@@ -12,7 +12,8 @@ class _PairwiseAdditiveLoss(_torch.nn.Module):
         r""""""
         super().__init__()
 
-    def _loss_per_doc_pair(self, score_pairs, rel_pairs):
+    def _loss_per_doc_pair(self, score_pairs: _torch.FloatTensor,
+                           rel_pairs: _torch.LongTensor) -> _torch.FloatTensor:
         """Computes a loss on given score pairs and relevance pairs.
 
         Args:
@@ -29,7 +30,8 @@ class _PairwiseAdditiveLoss(_torch.nn.Module):
         """
         raise NotImplementedError
 
-    def _loss_reduction(self, loss_pairs):
+    def _loss_reduction(self,
+                        loss_pairs: _torch.FloatTensor) -> _torch.FloatTensor:
         """Reduces the paired loss to a per sample loss.
 
         Args:
@@ -42,11 +44,12 @@ class _PairwiseAdditiveLoss(_torch.nn.Module):
         """
         return loss_pairs.view(loss_pairs.shape[0], -1).sum(1)
 
-    def _loss_modifier(self, loss):
+    def _loss_modifier(self, loss: _torch.FloatTensor) -> _torch.FloatTensor:
         """A modifier to apply to the loss."""
         return loss
 
-    def forward(self, scores, relevance, n):
+    def forward(self, scores: _torch.FloatTensor, relevance: _torch.LongTensor,
+                n: _torch.LongTensor) -> _torch.FloatTensor:
         """Computes the loss for given batch of samples.
 
         Args:
@@ -144,7 +147,7 @@ class PairwiseLogisticLoss(_PairwiseAdditiveLoss):
         - input n: :math:`(N)`
         - output: :math:`(N)`
     """
-    def __init__(self, sigma=1.0):
+    def __init__(self, sigma: float = 1.0):
         """
         Args:
             sigma: Steepness of the logistic curve.

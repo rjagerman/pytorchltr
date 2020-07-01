@@ -5,7 +5,7 @@ from pytorchltr.utils import rank_by_score as _rank_by_score
 
 class LambdaLoss(_torch.nn.Module):
     """LambdaLoss."""
-    def __init__(self, sigma=1.0):
+    def __init__(self, sigma: float = 1.0):
         """
         Args:
             sigma: Steepness of the logistic curve.
@@ -13,7 +13,9 @@ class LambdaLoss(_torch.nn.Module):
         super().__init__()
         self.sigma = sigma
 
-    def _loss_per_doc_pair(self, score_pairs, rel_pairs, n):
+    def _loss_per_doc_pair(self, score_pairs: _torch.FloatTensor,
+                           rel_pairs: _torch.LongTensor,
+                           n: _torch.LongTensor) -> _torch.FloatTensor:
         """Computes a loss on given score pairs and relevance pairs.
 
         Args:
@@ -31,7 +33,8 @@ class LambdaLoss(_torch.nn.Module):
         """
         raise NotImplementedError
 
-    def _loss_reduction(self, loss_pairs):
+    def _loss_reduction(self,
+                        loss_pairs: _torch.FloatTensor) -> _torch.FloatTensor:
         """Reduces the paired loss to a per sample loss.
 
         Args:
@@ -44,7 +47,8 @@ class LambdaLoss(_torch.nn.Module):
         """
         return loss_pairs.view(loss_pairs.shape[0], -1).sum(1)
 
-    def forward(self, scores, relevance, n):
+    def forward(self, scores: _torch.FloatTensor, relevance: _torch.LongTensor,
+                n: _torch.LongTensor) -> _torch.FloatTensor:
         """Computes the loss for given batch of samples.
 
         Args:
@@ -215,7 +219,8 @@ class LambdaNDCGLoss2(LambdaLoss):
         return -loss
 
 
-def _ndcg_gains(score_pairs, rel_pairs, n, exp=True):
+def _ndcg_gains(score_pairs: _torch.FloatTensor, rel_pairs: _torch.LongTensor,
+                n: _torch.LongTensor, exp: bool = True) -> _torch.FloatTensor:
     gains = rel_pairs[:, :, :, :]
     if exp:
         gains = (2 ** gains) - 1.0
@@ -224,7 +229,8 @@ def _ndcg_gains(score_pairs, rel_pairs, n, exp=True):
     return gains / max_dcg[:, None, None, None]
 
 
-def _max_dcg(relevance, n, exp=True):
+def _max_dcg(relevance: _torch.FloatTensor, n: _torch.LongTensor,
+             exp: bool = True) -> _torch.FloatTensor:
     ranking = _rank_by_score(relevance.double(), n)
     arange = _torch.arange(ranking.shape[1],
                            device=relevance.device)
