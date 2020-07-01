@@ -4,7 +4,8 @@ from pytorchltr.utils import rank_by_score as _rank_by_score
 from pytorchltr.utils import mask_padded_values as _mask_padded_values
 
 
-def arp(scores, relevance, n):
+def arp(scores: _torch.FloatTensor, relevance: _torch.LongTensor,
+        n: _torch.LongTensor) -> _torch.FloatTensor:
     r"""Average Relevant Position (ARP)
 
     .. math::
