@@ -37,8 +37,9 @@ pyyaml==5.3.1             # via pybtex
 requests==2.23.0          # via sphinx
 six==1.14.0               # via latexcodec, packaging, pybtex, pybtex-docutils
 snowballstemmer==2.0.0    # via sphinx
+sphinx-autodoc-typehints==1.11.0  # via -r dev-requirements.in
 sphinx-rtd-theme==0.5.0   # via -r dev-requirements.in
-sphinx==3.0.3             # via -r dev-requirements.in, sphinx-rtd-theme, sphinxcontrib-bibtex
+sphinx==3.0.3             # via -r dev-requirements.in, sphinx-autodoc-typehints, sphinx-rtd-theme, sphinxcontrib-bibtex
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-bibtex==1.0.0  # via -r dev-requirements.in
 sphinxcontrib-devhelp==1.0.2  # via sphinx

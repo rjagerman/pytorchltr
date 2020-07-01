@@ -93,6 +93,16 @@ complexity that is quadratic in the list size.
     Finished epoch 8
     Finished epoch 9
     Finished epoch 10
+    Finished epoch 11
+    Finished epoch 12
+    Finished epoch 13
+    Finished epoch 14
+    Finished epoch 15
+    Finished epoch 16
+    Finished epoch 17
+    Finished epoch 18
+    Finished epoch 19
+    Finished epoch 20
 
 Evaluating the trained model
 ----------------------------
