@@ -9,9 +9,10 @@ automatically process and/or download the dataset files.
 .. warning::
 
     PyTorchLTR provides utilities to automatically download and prepare several
-    public LTR datasets. We do not host or distribute any datasets and it is
-    ultimately **your responsibility** to determine whether you have permission
-    to use each dataset under its respective license.
+    public LTR datasets. We cannot vouch for the quality, correctness or
+    usefulness of these datasets. We do not host or distribute any datasets and
+    it is ultimately **your responsibility** to determine whether you have
+    permission to use each dataset under its respective license.
 
 Example
 -------
