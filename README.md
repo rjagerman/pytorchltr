@@ -6,8 +6,6 @@
 [![CodeFactor](https://img.shields.io/codefactor/grade/github/rjagerman/pytorchltr/master)](https://www.codefactor.io/repository/github/rjagerman/pytorchltr)
 [![License](https://img.shields.io/github/license/rjagerman/pytorchltr)](https://github.com/rjagerman/pytorchltr/blob/master/LICENSE.md)
 
-> :warning: **This is an early release and subject to breaking changes**
-
 This is a library for Learning to Rank (LTR) with PyTorch.
 The goal of this library is to support the infrastructure necessary for performing LTR experiments in PyTorch.
 
@@ -15,7 +13,7 @@ The goal of this library is to support the infrastructure necessary for performi
 
 In your virtualenv simply run:
 
-    pip install git+ssh://git@github.com/rjagerman/pytorchltr.git#egg=pytorchltr
+    pip install pytorchltr 
 
 Note that this library requires Python 3.6 or higher.
 
