@@ -19,7 +19,7 @@ Note that this library requires Python 3.6 or higher.
 
 ## Documentation
 
-Documentation is available [here](https://pytorchltr.readthedocs.io/en/latest/).
+Documentation is available [here](https://pytorchltr.readthedocs.io/).
 
 ## Example
 
