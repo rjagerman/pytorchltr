@@ -1,8 +1,8 @@
 name: Upload Python Package
 
 on:
-  pull_request:
-    branches: [ master ]
+  release:
+    types: [created]
 
 jobs:
   deploy:
@@ -31,5 +31,5 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         python setup.py sdist bdist_wheel
-        twine upload --repository testpypi dist/*
+        twine upload dist/*
 
