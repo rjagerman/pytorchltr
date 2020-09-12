@@ -1,28 +1,28 @@
 import os
 
 import pytest
-from pytorchltr.datasets.mslr10k import MSLR10K
-from tests.datasets.test_svmrank import mock_svmrank_dataset
+from pytorchltr.datasets.svmrank.mslr30k import MSLR30K
+from tests.datasets.svmrank.test_svmrank import mock_svmrank_dataset
 
 
-pkg = "pytorchltr.datasets.mslr10k"
+pkg = "pytorchltr.datasets.svmrank.mslr30k"
 
 
 def test_wrong_split_raises_error():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
         with pytest.raises(ValueError):
-            MSLR10K(tmpdir, split="nonexisting")
+            MSLR30K(tmpdir, split="nonexisting")
 
 
 def test_wrong_fold_raises_error():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
         with pytest.raises(ValueError):
-            MSLR10K(tmpdir, split="train", fold=99)
+            MSLR30K(tmpdir, split="train", fold=99)
 
 
 def test_call_validate_download():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
-        MSLR10K(tmpdir, split="train")
+        MSLR30K(tmpdir, split="train")
         mock_vali.called_once()
         args, kwargs = mock_vali.call_args
         assert kwargs["location"] == tmpdir
@@ -32,7 +32,7 @@ def test_call_validate_download():
 
 def test_call_super_train():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
-        MSLR10K(tmpdir, split="train", fold=1)
+        MSLR30K(tmpdir, split="train", fold=1)
         mock_super.called_once()
         args, kwargs = mock_super.call_args
         assert kwargs["file"] == os.path.join(tmpdir, "Fold1", "train.txt")
@@ -42,7 +42,7 @@ def test_call_super_train():
 
 def test_call_super_vali():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
-        MSLR10K(tmpdir, split="vali", fold=2)
+        MSLR30K(tmpdir, split="vali", fold=2)
         mock_super.called_once()
         args, kwargs = mock_super.call_args
         assert kwargs["file"] == os.path.join(tmpdir, "Fold2", "vali.txt")
@@ -52,7 +52,7 @@ def test_call_super_vali():
 
 def test_call_super_test():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
-        MSLR10K(tmpdir, split="test", fold=5)
+        MSLR30K(tmpdir, split="test", fold=5)
         mock_super.called_once()
         args, kwargs = mock_super.call_args
         assert kwargs["file"] == os.path.join(tmpdir, "Fold5", "test.txt")
