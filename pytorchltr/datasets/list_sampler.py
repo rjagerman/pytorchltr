@@ -1,6 +1,5 @@
 from typing import Optional
 import torch as _torch
-import numpy as _np
 
 
 class ListSampler:
