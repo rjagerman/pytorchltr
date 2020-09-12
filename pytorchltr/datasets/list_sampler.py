@@ -30,8 +30,8 @@ class UniformSampler(ListSampler):
 
 class BalancedRelevanceSampler(UniformSampler):
     def __init__(self, max_list_size: Optional[int] = None,
-                 rng: Optional[_np.random.RandomState] = None):
-        super().__init__(max_list_size, rng)
+                 generator: Optional[_torch.Generator] = None):
+        super().__init__(max_list_size, generator)
 
     def __call__(self, relevance: _torch.LongTensor) -> _torch.LongTensor:
         # Get the unique relevance grades and randomly permute them
