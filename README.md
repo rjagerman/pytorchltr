@@ -35,7 +35,7 @@ train = Example3(split="train")
 collate_fn = train.collate_fn()
 
 # Setup model, optimizer and loss
-model = torch.nn.Linear(train[0]["features"].shape[1], 1)
+model = torch.nn.Linear(train[0].features.shape[1], 1)
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 loss = PairwiseHingeLoss()
 
@@ -43,7 +43,7 @@ loss = PairwiseHingeLoss()
 for epoch in range(3):
     loader = torch.utils.data.DataLoader(train, batch_size=2, collate_fn=collate_fn)
     for batch in loader:
-        xs, ys, n = batch["features"], batch["relevance"], batch["n"]
+        xs, ys, n = batch.features, batch.relevance, batch.n
         l = loss(model(xs), ys, n).mean()
         optimizer.zero_grad()
         l.backward()
