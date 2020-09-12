@@ -82,10 +82,11 @@ complexity that is quadratic in the list size.
 
 .. code-block:: python
 
+    >>> from pytorchltr.datasets.list_sampler import UniformSampler
     >>> for epoch in range(1, 21):
     >>>   loader = torch.utils.data.DataLoader(
     >>>     train, batch_size=16, shuffle=True,
-    >>>     collate_fn=train.collate_fn(max_list_size=20))
+    >>>     collate_fn=train.collate_fn(UniformSampler(max_list_size=20)))
     >>>   for batch in loader:
     >>>     xs, ys, n = batch.features, batch.relevance, batch.n
     >>>     loss = loss_fn(model(xs), ys, n).mean()
@@ -134,7 +135,7 @@ of all scores and finally divide by the length of the test set.
     >>>   final_score += float(torch.sum(ndcg_score))
 
     >>> print("ndcg@10 on test set: %f" % (final_score / len(test)))
-    ndcg@10 on test set: 0.448297
+    ndcg@10 on test set: 0.445652
 
 Additional information about available evaluation metrics and how to integrate
 with :code:`pytrec_eval` can be found :ref:`here <evaluation>`.
