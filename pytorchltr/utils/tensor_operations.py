@@ -1,4 +1,5 @@
 """Common utils for the library."""
+from typing import Optional
 import torch as _torch
 
 
@@ -25,8 +26,10 @@ def mask_padded_values(xs: _torch.FloatTensor, n: _torch.LongTensor,
     return xs
 
 
-def tiebreak_argsort(x: _torch.FloatTensor,
-                     descending: bool = True) -> _torch.LongTensor:
+def tiebreak_argsort(
+        x: _torch.FloatTensor,
+        descending: bool = True,
+        generator: Optional[_torch.Generator] = None) -> _torch.LongTensor:
     """Computes a per-row argsort of matrix x with random tiebreaks.
 
     Args:
@@ -37,12 +40,15 @@ def tiebreak_argsort(x: _torch.FloatTensor,
         A 2D tensor of the same size as x, where each row is the argsort of x,
         with ties broken randomly.
     """
-    p = _torch.randperm(x.shape[1], device=x.device)
+    rng_kwargs = {"generator": generator} if generator is not None else {}
+    p = _torch.randperm(x.shape[1], device=x.device, **rng_kwargs)
     return p[_torch.argsort(x[:, p], descending=descending)]
 
 
-def rank_by_score(scores: _torch.FloatTensor,
-                  n: _torch.LongTensor) -> _torch.LongTensor:
+def rank_by_score(
+        scores: _torch.FloatTensor,
+        n: _torch.LongTensor,
+        generator: Optional[_torch.Generator] = None) -> _torch.LongTensor:
     """Sorts scores in decreasing order.
 
     This method ensures that padded documents are placed last and ties are
@@ -55,11 +61,12 @@ def rank_by_score(scores: _torch.FloatTensor,
     """
     if scores.dim() == 3:
         scores = scores.reshape((scores.shape[0], scores.shape[1]))
-    return tiebreak_argsort(mask_padded_values(scores, n))
+    return tiebreak_argsort(mask_padded_values(scores, n), generator=generator)
 
 
-def rank_by_plackettluce(scores: _torch.FloatTensor,
-                         n: _torch.LongTensor) -> _torch.LongTensor:
+def rank_by_plackettluce(
+        scores: _torch.FloatTensor, n: _torch.LongTensor,
+        generator: Optional[_torch.Generator] = None) -> _torch.LongTensor:
     """Samples a ranking from a plackett luce distribution.
 
     This method ensures that padded documents are placed last.
@@ -78,11 +85,10 @@ def rank_by_plackettluce(scores: _torch.FloatTensor,
     # following implementation is a numerically stable variant that operates in
     # log-space.
     log_p = _torch.nn.LogSoftmax(dim=1)(masked_scores)
-    c_zero = _torch.tensor(0.0).to(device=scores.device)
-    c_one = _torch.tensor(1.0).to(device=scores.device)
-    u = _torch.distributions.uniform.Uniform(c_zero, c_one).sample(log_p.shape)
+    rng_kwargs = {"generator": generator} if generator is not None else {}
+    u = _torch.rand(log_p.shape, device=scores.device, **rng_kwargs)
     r = _torch.log(-_torch.log(u)) - log_p
-    return tiebreak_argsort(r, descending=False)
+    return tiebreak_argsort(r, descending=False, generator=generator)
 
 
 def batch_pairs(x: _torch.Tensor) -> _torch.Tensor:

@@ -1,22 +1,28 @@
 import os
 
 import pytest
-from pytorchltr.datasets.istella_s import IstellaS
-from tests.datasets.test_svmrank import mock_svmrank_dataset
+from pytorchltr.datasets.svmrank.mslr10k import MSLR10K
+from tests.datasets.svmrank.test_svmrank import mock_svmrank_dataset
 
 
-pkg = "pytorchltr.datasets.istella_s"
+pkg = "pytorchltr.datasets.svmrank.mslr10k"
 
 
 def test_wrong_split_raises_error():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
         with pytest.raises(ValueError):
-            IstellaS(tmpdir, split="nonexisting")
+            MSLR10K(tmpdir, split="nonexisting")
+
+
+def test_wrong_fold_raises_error():
+    with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
+        with pytest.raises(ValueError):
+            MSLR10K(tmpdir, split="train", fold=99)
 
 
 def test_call_validate_download():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
-        IstellaS(tmpdir, split="train")
+        MSLR10K(tmpdir, split="train")
         mock_vali.called_once()
         args, kwargs = mock_vali.call_args
         assert kwargs["location"] == tmpdir
@@ -26,29 +32,29 @@ def test_call_validate_download():
 
 def test_call_super_train():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
-        IstellaS(tmpdir, split="train")
+        MSLR10K(tmpdir, split="train", fold=1)
         mock_super.called_once()
         args, kwargs = mock_super.call_args
-        assert kwargs["file"] == os.path.join(tmpdir, "sample", "train.txt")
+        assert kwargs["file"] == os.path.join(tmpdir, "Fold1", "train.txt")
         assert kwargs["normalize"]
         assert not kwargs["filter_queries"]
 
 
 def test_call_super_vali():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
-        IstellaS(tmpdir, split="vali")
+        MSLR10K(tmpdir, split="vali", fold=2)
         mock_super.called_once()
         args, kwargs = mock_super.call_args
-        assert kwargs["file"] == os.path.join(tmpdir, "sample", "vali.txt")
+        assert kwargs["file"] == os.path.join(tmpdir, "Fold2", "vali.txt")
         assert kwargs["normalize"]
         assert kwargs["filter_queries"]
 
 
 def test_call_super_test():
     with mock_svmrank_dataset(pkg) as (tmpdir, mock_super, mock_vali):
-        IstellaS(tmpdir, split="test")
+        MSLR10K(tmpdir, split="test", fold=5)
         mock_super.called_once()
         args, kwargs = mock_super.call_args
-        assert kwargs["file"] == os.path.join(tmpdir, "sample", "test.txt")
+        assert kwargs["file"] == os.path.join(tmpdir, "Fold5", "test.txt")
         assert kwargs["normalize"]
         assert kwargs["filter_queries"]

@@ -6,7 +6,7 @@ from pytorchltr.utils.downloader import Downloader
 from pytorchltr.utils.file import validate_and_download
 from pytorchltr.utils.file import extract_tar
 from pytorchltr.utils.file import dataset_dir
-from pytorchltr.datasets.svmrank import SVMRankDataset
+from pytorchltr.datasets.svmrank.svmrank import SVMRankDataset
 
 
 class IstellaS(SVMRankDataset):

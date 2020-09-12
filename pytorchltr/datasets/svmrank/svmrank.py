@@ -12,6 +12,7 @@ import logging
 from scipy.sparse import coo_matrix as _coo_matrix
 from sklearn.datasets import load_svmlight_file as _load_svmlight_file
 from torch.utils.data import Dataset as _Dataset
+from pytorchltr.datasets.list_sampler import ListSampler
 
 
 class SVMRankItem:
@@ -118,27 +119,21 @@ class SVMRankDataset(_Dataset):
         return self._qid_map[qid]
 
     @staticmethod
-    def collate_fn(max_list_size: Optional[int] = None,
-                   rng: Optional[_np.random.RandomState] = None) -> _COLLATE_RETURN_TYPE:  # noqa: E501
+    def collate_fn(list_sampler: Optional[ListSampler] = None) -> _COLLATE_RETURN_TYPE:  # noqa: E501
         r"""Returns a collate_fn that can be used to collate batches.
-
         Args:
-            max_list_size: If set, list size per query will be
-                truncated to this size.
-            rng: The random number generator used to sample documents when
-                truncating query list sizes.
+            list_sampler: Sampler to use for sampling lists of documents.
         """
-        if rng is None:
-            rng = _np.random.RandomState(42)
+        if list_sampler is None:
+            list_sampler = ListSampler()
 
         def _collate_fn(batch: List[SVMRankItem]) -> SVMRankBatch:
             # Check if batch is sparse or not
             sparse = batch[0].sparse
 
             # Compute list size
-            list_size = max([b.features.shape[0] for b in batch])
-            if max_list_size is not None:
-                list_size = min(max_list_size, list_size)
+            list_size = max([list_sampler.max_list_size(b.relevance)
+                             for b in batch])
 
             # Create output tensors from batch
             if sparse:
@@ -157,8 +152,7 @@ class SVMRankDataset(_Dataset):
                 # Generate random indices when we exceed the list_size.
                 xs = sample.features
                 if xs.shape[0] > list_size:
-                    rng_indices = _np.sort(
-                        rng.permutation(xs.shape[0])[:list_size])
+                    rng_indices = list_sampler(sample.relevance)
 
                 # Collate features
                 if sparse:
