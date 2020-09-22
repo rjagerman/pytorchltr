@@ -16,7 +16,7 @@ class IstellaX(SVMRankDataset):
     """
 
     downloader = Downloader(
-        url="http://quickrank.isti.cnr.it/istella-datasets-mirror/istella-X.tar.gz",
+        url="http://quickrank.isti.cnr.it/istella-datasets-mirror/istella-X.tar.gz",  # noqa: E501
         target="istella-X.tar.gz",
         sha256_checksum="e67be60d1c6a68983a669e4de9df2c395914717b2017cb3b68a97eb89f2ea763",  # noqa: E501
         progress_fn=DefaultDownloadProgress(),
