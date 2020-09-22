@@ -66,9 +66,29 @@ Example3
    .. automethod:: __getitem__
    .. automethod:: __len__
 
+Istella
+^^^^^^^^^
+.. autoclass:: pytorchltr.datasets.Istella
+   :members:
+
+   .. automethod:: __init__
+   .. automethod:: collate_fn
+   .. automethod:: __getitem__
+   .. automethod:: __len__
+
 Istella-S
 ^^^^^^^^^
 .. autoclass:: pytorchltr.datasets.IstellaS
+   :members:
+
+   .. automethod:: __init__
+   .. automethod:: collate_fn
+   .. automethod:: __getitem__
+   .. automethod:: __len__
+
+Istella-X
+^^^^^^^^^
+.. autoclass:: pytorchltr.datasets.IstellaX
    :members:
 
    .. automethod:: __init__
