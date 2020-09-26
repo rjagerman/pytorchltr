@@ -194,7 +194,8 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
     unsigned long row = 0;
     unsigned int col = 0;
     unsigned long nr_cols = 0;
-    unsigned long min_col = -1;
+    unsigned long min_col = 0;
+    int set_min_col = 1;
     long decplaces = 0;
     long sign = 1;
     long val = 0;
@@ -333,8 +334,9 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                     cols[cols_cursor] = col;
                     cols_cursor += 1;
 
-                    if (min_col == -1 || col < min_col) {
+                    if (set_min_col == 1 || col < min_col) {
                         min_col = col;
+                        set_min_col = 0;
                     }
                     if (col + 1 > nr_cols) {
                         nr_cols = col + 1;
@@ -428,9 +430,6 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
     fclose(fp);
 
     // Construct dense output matrix.
-    if (min_col == -1) {
-        min_col = 0;
-    }
     double* xs = calloc((nr_cols - min_col) * row, sizeof(double));
     for (size_t i=0; i<vals_cursor; i++) {
         xs[rows[i] * (nr_cols - min_col) + cols[i] - min_col] = vals[i];
