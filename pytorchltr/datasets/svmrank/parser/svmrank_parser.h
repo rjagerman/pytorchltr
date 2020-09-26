@@ -171,7 +171,7 @@ void init_svmrank_parser() {
 }
 
 // Main SVMrank parse function.
-int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_out, long** qids_out) {
+int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_out, long** qids_out) {
 
     // Main file reading variables.
     char buffer[BUFFER_SIZE];
@@ -189,10 +189,10 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_o
     state current_state = START_Y;
 
     // Current parse variables.
-    long y = 0;
+    int y = 0;
     long qid = 0;
     unsigned long row = 0;
-    unsigned long col = 0;
+    unsigned int col = 0;
     unsigned long nr_cols = 0;
     unsigned long min_col = -1;
     long decplaces = 0;
@@ -205,8 +205,8 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_o
     // Allocate output data holders
     size_t ys_capacity = 100;
     size_t ys_cursor = 0;
-    long* ys = malloc(ys_capacity * sizeof(long));
-    long* realloc_ys;
+    int* ys = malloc(ys_capacity * sizeof(int));
+    int* realloc_ys;
     size_t qids_capacity = 100;
     size_t qids_cursor = 0;
     long* qids = malloc(qids_capacity * sizeof(long));
@@ -217,8 +217,8 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_o
     long* realloc_rows;
     size_t cols_capacity = 1000;
     size_t cols_cursor = 0;
-    long* cols = malloc(cols_capacity * sizeof(long));
-    long* realloc_cols;
+    int* cols = malloc(cols_capacity * sizeof(int));
+    int* realloc_cols;
     size_t vals_capacity = 1000;
     size_t vals_cursor = 0;
     double* vals = malloc(vals_capacity * sizeof(double));
@@ -251,7 +251,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_o
                     if (ys_cursor >= ys_capacity) {
                         ys_capacity = 1 + (ys_cursor * 3 / 2);
                         realloc_ys = realloc(
-                            ys, ys_capacity * sizeof(long));
+                            ys, ys_capacity * sizeof(int));
                         if (realloc_ys == NULL) {
                             free(ys);
                             free(qids);
@@ -275,7 +275,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_o
                     if (qids_cursor >= qids_capacity) {
                         qids_capacity = 1 + (qids_cursor * 3 / 2);
                         realloc_qids = realloc(
-                            qids, qids_capacity * sizeof(long));
+                            qids, qids_capacity * sizeof(int));
                         if (realloc_qids == NULL) {
                             free(ys);
                             free(qids);
@@ -319,7 +319,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_o
                     if (cols_cursor >= cols_capacity) {
                         cols_capacity = 1 + (cols_cursor * 3 / 2);
                         realloc_cols = realloc(
-                            cols, cols_capacity * sizeof(long));
+                            cols, cols_capacity * sizeof(int));
                         if (realloc_cols == NULL) {
                             free(ys);
                             free(qids);
@@ -442,7 +442,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_o
     free(vals);
 
     // Shrink ys to correct size
-    realloc_ys = realloc(ys, (1 + ys_cursor) * sizeof(long));
+    realloc_ys = realloc(ys, (1 + ys_cursor) * sizeof(int));
     if (realloc_ys == NULL) {
         free(ys);
         free(qids);

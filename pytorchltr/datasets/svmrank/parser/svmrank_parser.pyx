@@ -13,7 +13,7 @@ cdef extern from "svmrank_parser.h":
     int PARSE_OK
     int PARSE_FILE_ERROR
     int PARSE_FORMAT_ERROR
-    int c_parse_svmrank_file "parse_svmrank_file" (char* path, double** xs, shape* xs_shape, long** ys, long** qids) nogil
+    int c_parse_svmrank_file "parse_svmrank_file" (char* path, double** xs, shape* xs_shape, int** ys, long** qids) nogil
     void init_svmrank_parser()
 
 
@@ -21,7 +21,7 @@ def parse_svmrank_file(path):
     global errno
 
     # Initialize pointers
-    cdef long* ys
+    cdef int* ys
     cdef long* qids
     cdef double* xs
     cdef shape xs_shape
@@ -32,7 +32,7 @@ def parse_svmrank_file(path):
     cdef int result = 0
 
     # Initialize output array views
-    cdef long[:] ys_view
+    cdef int[:] ys_view
     cdef long[:] qids_view
     cdef double[:,:] xs_view
 
@@ -42,7 +42,7 @@ def parse_svmrank_file(path):
         result = c_parse_svmrank_file(c_path, &xs, &xs_shape, &ys, &qids)
 
     if result == PARSE_OK:
-        ys_view = <long[:xs_shape.rows]> ys
+        ys_view = <int[:xs_shape.rows]> ys
         ys_np = np.asarray(ys_view)
         qids_view = <long[:xs_shape.rows]> qids
         qids_np = np.asarray(qids_view)
