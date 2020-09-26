@@ -54,6 +54,6 @@ def parse_svmrank_file(path):
     elif result == PARSE_FILE_ERROR:
         raise OSError(errno, "could not open file %s" % path)
     elif result == PARSE_FORMAT_ERROR:
-        raise ValueError("could not parse file %s, not in expected SVMrank format" % path)
+        raise ValueError("could not parse file %s, not in SVMrank format" % path)
     elif result == PARSE_MEMORY_ERROR:
         raise OSError(errno, "could not allocate memory")
