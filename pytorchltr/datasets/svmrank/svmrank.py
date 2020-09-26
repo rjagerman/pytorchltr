@@ -3,7 +3,6 @@ from typing import Callable
 from typing import List
 from typing import Optional
 from typing import Union
-from typing import BinaryIO
 
 import numpy as _np
 import torch as _torch
