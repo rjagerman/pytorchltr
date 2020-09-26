@@ -208,6 +208,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
     size_t ys_cursor = 0;
     int* ys = malloc(ys_capacity * sizeof(int));
     if (ys == NULL) {
+        fclose(fp);
         return PARSE_MEMORY_ERROR;
     }
     int* realloc_ys;
@@ -216,6 +217,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
     long* qids = malloc(qids_capacity * sizeof(long));
     if (qids == NULL) {
         free(ys);
+        fclose(fp);
         return PARSE_MEMORY_ERROR;
     }
     long* realloc_qids;
@@ -225,6 +227,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
     if (rows == NULL) {
         free(ys);
         free(qids);
+        fclose(fp);
         return PARSE_MEMORY_ERROR;
     }
     long* realloc_rows;
@@ -235,6 +238,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
         free(ys);
         free(qids);
         free(rows);
+        fclose(fp);
         return PARSE_MEMORY_ERROR;
     }
     int* realloc_cols;
@@ -246,6 +250,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
         free(qids);
         free(rows);
         free(cols);
+        fclose(fp);
         return PARSE_MEMORY_ERROR;
     }
     double* realloc_vals;
@@ -284,6 +289,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                             free(rows);
                             free(cols);
                             free(vals);
+                            fclose(fp);
                             return PARSE_MEMORY_ERROR;
                         }
                         ys = realloc_ys;
@@ -308,6 +314,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                             free(rows);
                             free(cols);
                             free(vals);
+                            fclose(fp);
                             return PARSE_MEMORY_ERROR;
                         }
                         qids = realloc_qids;
@@ -336,6 +343,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                             free(rows);
                             free(cols);
                             free(vals);
+                            fclose(fp);
                             return PARSE_MEMORY_ERROR;
                         }
                         rows = realloc_rows;
@@ -352,6 +360,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                             free(rows);
                             free(cols);
                             free(vals);
+                            fclose(fp);
                             return PARSE_MEMORY_ERROR;
                         }
                         cols = realloc_cols;
@@ -398,6 +407,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                             free(rows);
                             free(cols);
                             free(vals);
+                            fclose(fp);
                             return PARSE_MEMORY_ERROR;
                         }
                         vals = realloc_vals;
@@ -420,6 +430,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                 free(rows);
                 free(cols);
                 free(vals);
+                fclose(fp);
                 return PARSE_FORMAT_ERROR;
             }
 
@@ -443,6 +454,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                 free(rows);
                 free(cols);
                 free(vals);
+                fclose(fp);
                 return PARSE_MEMORY_ERROR;
             }
             vals = realloc_vals;
