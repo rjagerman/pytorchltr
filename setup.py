@@ -1,5 +1,7 @@
 from setuptools import setup
 from setuptools import find_packages
+from Cython.Build import cythonize
+import numpy
 
 
 with open("README.md", "rt") as f:
@@ -18,6 +20,8 @@ setup(
     license="MIT",
     packages=find_packages(exclude=("tests", "tests.*",)),
     python_requires='>=3.6',
+    ext_modules=cythonize("pytorchltr/datasets/svmrank/parser/svmrank_parser.pyx",
+                          include_path=[numpy.get_include()]),
     install_requires=["numpy",
                       "scikit-learn",
                       "scipy",

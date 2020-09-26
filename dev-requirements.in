@@ -6,3 +6,4 @@ sphinx-rtd-theme
 sphinxcontrib-bibtex
 sphinx-autodoc-typehints
 pytrec_eval
+cython
