@@ -276,7 +276,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                     if (qids_cursor >= qids_capacity) {
                         qids_capacity = 1 + (qids_cursor * 3 / 2);
                         realloc_qids = realloc(
-                            qids, qids_capacity * sizeof(int));
+                            qids, qids_capacity * sizeof(long));
                         if (realloc_qids == NULL) {
                             free(ys);
                             free(qids);
