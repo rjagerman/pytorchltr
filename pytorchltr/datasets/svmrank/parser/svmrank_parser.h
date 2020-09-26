@@ -1,9 +1,9 @@
 /*
  * This is a reasonably fast implementation to parse SVMrank files.
  * 
- * This implementation uses a DFA and performs a single pass over the input.
- * A second pass over in-memory data is performed to construct a dense feature
- * matrix.
+ * This implementation uses a DFA parser and performs a single pass over the
+ * input. A second pass over in-memory data is performed to construct a dense
+ * feature matrix.
  * 
  * This parser only supports ASCII-encoded SVMrank files using the format as
  * described in http://www.cs.cornell.edu/people/tj/svm_light/svm_rank.html.
