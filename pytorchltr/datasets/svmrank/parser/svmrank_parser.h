@@ -207,22 +207,47 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
     size_t ys_capacity = 100;
     size_t ys_cursor = 0;
     int* ys = malloc(ys_capacity * sizeof(int));
+    if (ys == NULL) {
+        return PARSE_MEMORY_ERROR;
+    }
     int* realloc_ys;
     size_t qids_capacity = 100;
     size_t qids_cursor = 0;
     long* qids = malloc(qids_capacity * sizeof(long));
+    if (qids == NULL) {
+        free(ys);
+        return PARSE_MEMORY_ERROR;
+    }
     long* realloc_qids;
     size_t rows_capacity = 1000;
     size_t rows_cursor = 0;
     long* rows = malloc(rows_capacity * sizeof(long));
+    if (rows == NULL) {
+        free(ys);
+        free(qids);
+        return PARSE_MEMORY_ERROR;
+    }
     long* realloc_rows;
     size_t cols_capacity = 1000;
     size_t cols_cursor = 0;
     int* cols = malloc(cols_capacity * sizeof(int));
+    if (cols == NULL) {
+        free(ys);
+        free(qids);
+        free(rows);
+        return PARSE_MEMORY_ERROR;
+    }
     int* realloc_cols;
     size_t vals_capacity = 1000;
     size_t vals_cursor = 0;
     double* vals = malloc(vals_capacity * sizeof(double));
+    if (vals == NULL) {
+        free(ys);
+        free(qids);
+        free(rows);
+        free(cols);
+        return PARSE_MEMORY_ERROR;
+    }
     double* realloc_vals;
 
     // Read file in buffer-sized chunks and parse them.
@@ -431,6 +456,14 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
 
     // Construct dense output matrix.
     double* xs = calloc((nr_cols - min_col) * row, sizeof(double));
+    if (xs == NULL) {
+        free(ys);
+        free(qids);
+        free(rows);
+        free(cols);
+        free(vals);
+        return PARSE_MEMORY_ERROR;
+    }
     for (size_t i=0; i<vals_cursor; i++) {
         xs[rows[i] * (nr_cols - min_col) + cols[i] - min_col] = vals[i];
     }
