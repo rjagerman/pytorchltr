@@ -21,6 +21,7 @@ size_t BUFFER_SIZE = 8192;
 int PARSE_OK = 0;
 int PARSE_FILE_ERROR = 1;
 int PARSE_FORMAT_ERROR = 2;
+int PARSE_MEMORY_ERROR = 3;
 
 // Parser DFA states
 typedef enum {
@@ -170,7 +171,7 @@ void init_svmrank_parser() {
 }
 
 // Main SVMrank parse function.
-int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long** qids) {
+int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, long** ys_out, long** qids_out) {
 
     // Main file reading variables.
     char buffer[BUFFER_SIZE];
@@ -193,6 +194,7 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
     unsigned long row = 0;
     unsigned long col = 0;
     unsigned long nr_cols = 0;
+    unsigned long min_col = -1;
     long decplaces = 0;
     long sign = 1;
     long val = 0;
@@ -203,19 +205,24 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
     // Allocate output data holders
     size_t ys_capacity = 100;
     size_t ys_cursor = 0;
-    *ys = malloc(ys_capacity * sizeof(long));
+    long* ys = malloc(ys_capacity * sizeof(long));
+    long* realloc_ys;
     size_t qids_capacity = 100;
     size_t qids_cursor = 0;
-    *qids = malloc(qids_capacity * sizeof(long));
+    long* qids = malloc(qids_capacity * sizeof(long));
+    long* realloc_qids;
     size_t rows_capacity = 1000;
     size_t rows_cursor = 0;
     long* rows = malloc(rows_capacity * sizeof(long));
+    long* realloc_rows;
     size_t cols_capacity = 1000;
     size_t cols_cursor = 0;
     long* cols = malloc(cols_capacity * sizeof(long));
+    long* realloc_cols;
     size_t vals_capacity = 1000;
     size_t vals_cursor = 0;
     double* vals = malloc(vals_capacity * sizeof(double));
+    double* realloc_vals;
 
     // Read file in buffer-sized chunks and parse them.
     do {
@@ -234,6 +241,7 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
                 case RESET:
                     break;
                 case PREPARE_Y:
+                    row += 1;
                     y = c - '0';
                     break;
                 case UPDATE_Y:
@@ -241,10 +249,20 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
                     break;
                 case STORE_Y:
                     if (ys_cursor >= ys_capacity) {
-                        ys_capacity = 1 + (ys_capacity * 3 / 2);
-                        *ys = realloc(*ys, ys_capacity * sizeof(long));
+                        ys_capacity = 1 + (ys_cursor * 3 / 2);
+                        realloc_ys = realloc(
+                            ys, ys_capacity * sizeof(long));
+                        if (realloc_ys == NULL) {
+                            free(ys);
+                            free(qids);
+                            free(rows);
+                            free(cols);
+                            free(vals);
+                            return PARSE_MEMORY_ERROR;
+                        }
+                        ys = realloc_ys;
                     }
-                    (*ys)[ys_cursor] = y;
+                    ys[ys_cursor] = y;
                     ys_cursor += 1;
                     break;
                 case PREPARE_QID:
@@ -255,10 +273,20 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
                     break;
                 case STORE_QID:
                     if (qids_cursor >= qids_capacity) {
-                        qids_capacity = 1 + (qids_capacity * 3 / 2);
-                        *qids = realloc(*qids, qids_capacity * sizeof(long));
+                        qids_capacity = 1 + (qids_cursor * 3 / 2);
+                        realloc_qids = realloc(
+                            qids, qids_capacity * sizeof(long));
+                        if (realloc_qids == NULL) {
+                            free(ys);
+                            free(qids);
+                            free(rows);
+                            free(cols);
+                            free(vals);
+                            return PARSE_MEMORY_ERROR;
+                        }
+                        qids = realloc_qids;
                     }
-                    (*qids)[qids_cursor] = qid;
+                    qids[qids_cursor] = qid;
                     qids_cursor += 1;
                     break;
                 case PREPARE_FEAT_COL:
@@ -273,18 +301,41 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
                     break;
                 case STORE_FEAT_COL:
                     if (rows_cursor >= rows_capacity) {
-                        rows_capacity = 1 + (rows_capacity * 3 / 2);
-                        rows = realloc(rows, rows_capacity * sizeof(long));
+                        rows_capacity = 1 + (rows_cursor * 3 / 2);
+                        realloc_rows = realloc(
+                            rows, rows_capacity * sizeof(long));
+                        if (realloc_rows == NULL) {
+                            free(ys);
+                            free(qids);
+                            free(rows);
+                            free(cols);
+                            free(vals);
+                            return PARSE_MEMORY_ERROR;
+                        }
+                        rows = realloc_rows;
                     }
-                    rows[rows_cursor] = row;
+                    rows[rows_cursor] = row - 1;
                     rows_cursor += 1;
                     if (cols_cursor >= cols_capacity) {
-                        cols_capacity = 1 + (cols_capacity * 3 / 2);
-                        cols = realloc(cols, cols_capacity * sizeof(long));
+                        cols_capacity = 1 + (cols_cursor * 3 / 2);
+                        realloc_cols = realloc(
+                            cols, cols_capacity * sizeof(long));
+                        if (realloc_cols == NULL) {
+                            free(ys);
+                            free(qids);
+                            free(rows);
+                            free(cols);
+                            free(vals);
+                            return PARSE_MEMORY_ERROR;
+                        }
+                        cols = realloc_cols;
                     }
                     cols[cols_cursor] = col;
                     cols_cursor += 1;
 
+                    if (min_col == -1 || col < min_col) {
+                        min_col = col;
+                    }
                     if (col + 1 > nr_cols) {
                         nr_cols = col + 1;
                     }
@@ -311,8 +362,18 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
                     expval = (expval * expsign) - decplaces;
                     feat_val = feat_val * pow(10, (double)expval);
                     if (vals_cursor >= vals_capacity) {
-                        vals_capacity = 1 + (vals_capacity * 3 / 2);
-                        vals = realloc(vals, vals_capacity * sizeof(double));
+                        vals_capacity = 1 + (vals_cursor * 3 / 2);
+                        realloc_vals = realloc(
+                            vals, vals_capacity * sizeof(double));
+                        if (realloc_vals == NULL) {
+                            free(ys);
+                            free(qids);
+                            free(rows);
+                            free(cols);
+                            free(vals);
+                            return PARSE_MEMORY_ERROR;
+                        }
+                        vals = realloc_vals;
                     }
                     vals[vals_cursor] = feat_val;
                     vals_cursor += 1;
@@ -327,8 +388,8 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
             // Return an appropriate error code if parsing fails due to invalid
             // format.
             if (next_state == INVALID) {
-                free(*ys);
-                free(*qids);
+                free(ys);
+                free(qids);
                 free(rows);
                 free(cols);
                 free(vals);
@@ -337,29 +398,73 @@ int parse_svmrank_file(char* path, double** xs, shape* xs_shape, long** ys, long
 
             // Perform DFA state transition.
             current_state = next_state;
-
-            // Increment row counter when encountering newline.
-            if (c == '\n') {
-                row += 1;
-            }
         }
     } while (bytes_read == BUFFER_SIZE);
+
+    // If end of file is reached while parsing a feature value, finish processing it.
+    if (current_state == PROCESS_FEAT_VAL_1 || current_state == PROCESS_FEAT_VAL_2 || current_state == PROCESS_FEAT_VAL_3) {
+        feat_val = (double)val;
+        expval = (expval * expsign) - decplaces;
+        feat_val = feat_val * pow(10, (double)expval);
+        if (vals_cursor >= vals_capacity) {
+            vals_capacity = 1 + (vals_capacity * 3 / 2);
+            realloc_vals = realloc(
+                vals, vals_capacity * sizeof(double));
+            if (realloc_vals == NULL) {
+                free(ys);
+                free(qids);
+                free(rows);
+                free(cols);
+                free(vals);
+                return PARSE_MEMORY_ERROR;
+            }
+            vals = realloc_vals;
+        }
+        vals[vals_cursor] = feat_val;
+        vals_cursor += 1;
+    }
 
     // Close file.
     fclose(fp);
 
     // Construct dense output matrix.
-    *xs = calloc(sizeof(double), nr_cols * row);
-    for (size_t i=0; i<vals_cursor; i++) {
-        (*xs)[rows[i] * nr_cols + cols[i]] = vals[i];
+    if (min_col == -1) {
+        min_col = 0;
     }
-    xs_shape->rows = row;
-    xs_shape->cols = nr_cols;
+    double* xs = calloc((nr_cols - min_col) * row, sizeof(double));
+    for (size_t i=0; i<vals_cursor; i++) {
+        xs[rows[i] * (nr_cols - min_col) + cols[i] - min_col] = vals[i];
+    }
 
     // Free used resources.
     free(rows);
     free(cols);
     free(vals);
+
+    // Shrink ys to correct size
+    realloc_ys = realloc(ys, (1 + ys_cursor) * sizeof(long));
+    if (realloc_ys == NULL) {
+        free(ys);
+        free(qids);
+        return PARSE_MEMORY_ERROR;
+    }
+    ys = realloc_ys;
+
+    // Shrink qids to correct size
+    realloc_qids = realloc(qids, (1 + qids_cursor) * sizeof(long));
+    if (realloc_qids == NULL) {
+        free(ys);
+        free(qids);
+        return PARSE_MEMORY_ERROR;
+    }
+    qids = realloc_qids;
+
+    // Set output variables
+    *xs_out = xs;
+    *ys_out = ys;
+    *qids_out = qids;
+    xs_shape->rows = row;
+    xs_shape->cols = nr_cols - min_col;
 
     // Return success.
     return PARSE_OK;

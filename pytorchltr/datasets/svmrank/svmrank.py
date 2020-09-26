@@ -13,6 +13,7 @@ from scipy.sparse import coo_matrix as _coo_matrix
 from sklearn.datasets import load_svmlight_file as _load_svmlight_file
 from torch.utils.data import Dataset as _Dataset
 from pytorchltr.datasets.list_sampler import ListSampler
+from pytorchltr.datasets.svmrank.parser import parse_svmrank_file
 
 
 class SVMRankItem:
@@ -44,7 +45,7 @@ _COLLATE_RETURN_TYPE = Callable[[List[SVMRankItem]], SVMRankBatch]
 
 
 class SVMRankDataset(_Dataset):
-    def __init__(self, file: Union[str, BinaryIO], sparse: bool = False,
+    def __init__(self, file: str, sparse: bool = False,
                  normalize: bool = False, filter_queries: bool = False,
                  zero_based: Union[str, int] = "auto"):
         """Creates an SVMRank-style dataset from a file.
@@ -61,8 +62,13 @@ class SVMRankDataset(_Dataset):
         logging.info("loading svmrank dataset from %s", file)
 
         # Load svmlight file
-        self._xs, self._ys, qids = _load_svmlight_file(
-            file, query_id=True, zero_based=zero_based)
+        if not sparse:
+            # Use faster cython dense parser
+            self._xs, self._ys, qids = parse_svmrank_file(file)
+        else:
+            # Use sklearn's sparse-support parser
+            self._xs, self._ys, qids = _load_svmlight_file(
+                file, query_id=True, zero_based=zero_based)
 
         # Compute query offsets and unique qids
         self._offsets = _np.hstack(
@@ -71,8 +77,8 @@ class SVMRankDataset(_Dataset):
 
         # Densify
         self._sparse = sparse
-        if not sparse:
-            self._xs = self._xs.A
+        # if not sparse:
+        #     self._xs = self._xs.A
 
         # Normalize xs
         if normalize:

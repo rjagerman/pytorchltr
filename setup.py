@@ -22,6 +22,7 @@ setup(
     python_requires='>=3.6',
     ext_modules=cythonize("pytorchltr/datasets/svmrank/parser/svmrank_parser.pyx",
                           include_path=[numpy.get_include()]),
+    include_dirs=[numpy.get_include()],
     install_requires=["numpy",
                       "scikit-learn",
                       "scipy",

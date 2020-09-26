@@ -11,8 +11,8 @@ from pytorchltr.datasets.list_sampler import UniformSampler
 
 def get_sample_dataset(*args, **kwargs):
     """Get sample dataset, uses the same arguments as `svmranking_dataset`."""
-    with open("tests/datasets/resources/dataset.txt", "rb") as dataset_file:
-        return SVMRankDataset(dataset_file, *args, **kwargs)
+    dataset_file = "tests/datasets/resources/dataset.txt"
+    return SVMRankDataset(dataset_file, *args, **kwargs)
 
 
 @contextlib.contextmanager
