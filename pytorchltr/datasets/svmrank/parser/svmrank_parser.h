@@ -394,7 +394,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
                     expval = expval * 10 + (c - '0');
                     break;
                 case STORE_FEAT_VAL:
-                    feat_val = (double)val;
+                    feat_val = (double)(sign * val);
                     expval = (expval * expsign) - decplaces;
                     feat_val = feat_val * pow(10, (double)expval);
                     if (vals_cursor >= vals_capacity) {
