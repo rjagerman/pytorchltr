@@ -4,7 +4,6 @@
 #
 #    pip-compile requirements.in
 #
-cython==0.29.21           # via -r requirements.in
 future==0.18.2            # via torch
 joblib==0.14.1            # via scikit-learn
 numpy==1.18.3             # via -r requirements.in, scikit-learn, scipy, torch
