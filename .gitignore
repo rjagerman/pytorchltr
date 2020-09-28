@@ -101,6 +101,9 @@ ENV/
 # IDEA project settings
 .idea/
 
+# VSCode project settings
+.vscode/
+
 # OSX
 .DS_Store
 

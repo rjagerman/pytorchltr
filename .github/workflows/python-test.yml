@@ -1,14 +1,11 @@
-name: Upload Python Package
+name: Test Python Package
 
-on:
-  release:
-    types: [created]
+on: [push, pull_request]
 
 jobs:
-  deploy:
+  test:
 
     strategy:
-      fail-fast: false
       matrix:
         os: [macos-latest, windows-latest, ubuntu-18.04]
         python-version: [ '3.6', '3.7', '3.8' ]
@@ -39,16 +36,3 @@ jobs:
       run: |
         pytest tests
         flake8 tests/ pytorchltr/
-    - name: Build binaries
-      run: |
-        python setup.py bdist_wheel
-    - name: Build source tar if py3.6 ubuntu
-      if: matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.6'
-      run: |
-        python setup.py sdist
-    - name: Publish dist
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        twine upload dist/*
