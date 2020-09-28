@@ -13,6 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build manylinux wheel
+      env:
+        CFLAGS: -std=c99
       run: |
         /opt/python/${{ matrix.python-version }}/bin/python -m pip install --upgrade pip setuptools wheel twine
         /opt/python/${{ matrix.python-version }}/bin/python -m pip install -r requirements.txt -r dev-requirements.txt
