@@ -12,5 +12,6 @@ jobs:
     - name: Build manylinux wheel
       run: |
         pwd
+        ls
         echo "Test hello world!"
         ls /opt/python/
