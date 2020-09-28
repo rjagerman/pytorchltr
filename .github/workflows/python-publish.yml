@@ -5,15 +5,14 @@ on:
     types: [created]
 
 jobs:
-  deploy:
+  deploy-macos:
 
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-18.04]
         python-version: [ '3.6', '3.7', '3.8' ]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -22,31 +21,82 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: 'x64'
-    - name: Setup build environment
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
-    - name: Install windows-specific dependencies
-      if: matrix.os == 'windows-latest'
-      run: |
-        pip install torch==1.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
-    - name: Install dependencies
-      run: |
         pip install -r requirements.txt
         pip install -r dev-requirements.txt
-        python setup.py build_ext --inplace
-    - name: Test
-      run: |
-        pytest tests
-        flake8 tests/ pytorchltr/
-    - name: Build binaries
+        python setup.py build_ext
+    - name: Build windows wheel
       run: |
         python setup.py bdist_wheel
-    - name: Build source tar if py3.6 ubuntu
-      if: matrix.os == 'ubuntu-18.04' && matrix.python-version == '3.6'
+    - name: Upload wheel
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        python setup.py sdist
-    - name: Publish dist
+        twine upload dist/*
+
+  deploy-windows:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ '3.6', '3.7', '3.8' ]
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: 'x64'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+        pip install torch==1.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        pip install -r requirements.txt
+        pip install -r dev-requirements.txt
+        python setup.py build_ext
+    - name: Build macos wheel
+      run: |
+        python setup.py bdist_wheel
+    - name: Upload wheel
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine upload dist/*
+
+  deploy-linux:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ 'cp36-cp36m', 'cp37-cp37m', 'cp38-cp38' ]
+
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux1_x86_64
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install dependencies
+      run: |
+        /opt/python/${{ matrix.python-version }}/bin/python -m pip install --upgrade pip setuptools wheel twine
+        /opt/python/${{ matrix.python-version }}/bin/python -m pip install -r requirements.txt
+        /opt/python/${{ matrix.python-version }}/bin/python -m pip install -r dev-requirements.txt
+    - name: Build manylinux wheel
+      env:
+        CFLAGS: -std=c99
+      run: |
+        /opt/python/${{ matrix.python-version }}/bin/python setup.py build_ext
+        /opt/python/${{ matrix.python-version }}/bin/pip wheel . --no-deps -w wheelhouse/
+        for whl in wheelhouse/*.whl; do if auditwheel show "$whl"; then auditwheel repair "$whl" --plat "manylinux1_x86_64" -w ./dist/; fi; done
+    - name: Upload wheel
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
