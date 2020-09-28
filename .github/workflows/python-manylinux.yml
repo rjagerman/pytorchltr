@@ -11,5 +11,6 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build manylinux wheel
       run: |
+        pwd
         echo "Test hello world!"
         ls /opt/python/
