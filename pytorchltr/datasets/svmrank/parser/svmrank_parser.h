@@ -17,11 +17,11 @@
 #include <math.h>
 
 // Constants
-size_t BUFFER_SIZE = 8192;
-int PARSE_OK = 0;
-int PARSE_FILE_ERROR = 1;
-int PARSE_FORMAT_ERROR = 2;
-int PARSE_MEMORY_ERROR = 3;
+const size_t BUFFER_SIZE = 8192;
+const int PARSE_OK = 0;
+const int PARSE_FILE_ERROR = 1;
+const int PARSE_FORMAT_ERROR = 2;
+const int PARSE_MEMORY_ERROR = 3;
 
 // Parser DFA states
 typedef enum {
