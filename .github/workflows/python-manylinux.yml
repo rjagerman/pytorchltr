@@ -6,12 +6,19 @@ jobs:
   test:
     runs-on: ubuntu-18.04
     container: quay.io/pypa/manylinux1_x86_64
+    strategy:
+      matrix:
+        python-version: ['cp36-cp36m', 'cp37-cp37m', 'cp38-cp38']
 
     steps:
     - uses: actions/checkout@v1
     - name: Build manylinux wheel
       run: |
-        pwd
-        ls
-        echo "Test hello world!"
-        ls /opt/python/
+        /opt/python/${{ matrix.python-version }}/bin/python -m pip install --upgrade pip setuptools wheel twine
+        /opt/python/${{ matrix.python-version }}/bin/python -m pip install -r requirements.txt -r dev-requirements.txt
+        /opt/python/${{ matrix.python-version }}/bin/python setup.py build_ext
+        /opt/python/${{ matrix.python-version }}/bin/pip wheel . --no-deps -w wheelhouse/
+        for whl in wheelhouse/*.whl; do if auditwheel show "$whl"; then auditwheel repair "$whl" --plat "manylinux1_x86_64" -w ./dist/; fi; done
+    - name: Publish dist
+      run: |
+        echo "/opt/python/${{ matrix.python-version }}/bin/twine upload dist/*"
