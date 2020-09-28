@@ -1,0 +1,15 @@
+name: Dev Manylinux Python Wheel
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    container: quay.io/pypa/manylinux1_x86_64
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build manylinux wheel
+      run: |
+        echo "Test hello world!"
+        ls /opt/python/
