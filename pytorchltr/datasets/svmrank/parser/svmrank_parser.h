@@ -17,7 +17,7 @@
 #include <math.h>
 
 // Constants
-const size_t BUFFER_SIZE = 8192;
+#define SVMRANK_PARSER_BUFFER_SIZE 8192
 const int PARSE_OK = 0;
 const int PARSE_FILE_ERROR = 1;
 const int PARSE_FORMAT_ERROR = 2;
@@ -174,7 +174,7 @@ void init_svmrank_parser() {
 int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_out, long** qids_out) {
 
     // Main file reading variables.
-    char buffer[BUFFER_SIZE];
+    char buffer[SVMRANK_PARSER_BUFFER_SIZE];
     size_t bytes_read = 0;
     long total_read = 0;
     FILE* fp = fopen(path, "r");
@@ -257,7 +257,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
 
     // Read file in buffer-sized chunks and parse them.
     do {
-        bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
+        bytes_read = fread(buffer, sizeof(char), SVMRANK_PARSER_BUFFER_SIZE, fp);
         total_read += bytes_read;
 
         // Iterate each character in the current buffer.
@@ -437,7 +437,7 @@ int parse_svmrank_file(char* path, double** xs_out, shape* xs_shape, int** ys_ou
             // Perform DFA state transition.
             current_state = next_state;
         }
-    } while (bytes_read == BUFFER_SIZE);
+    } while (bytes_read == SVMRANK_PARSER_BUFFER_SIZE);
 
     // If end of file is reached while parsing a feature value, finish processing it.
     if (current_state == PROCESS_FEAT_VAL_1 || current_state == PROCESS_FEAT_VAL_2 || current_state == PROCESS_FEAT_VAL_3) {
