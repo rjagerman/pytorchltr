@@ -35,7 +35,7 @@ jobs:
     - name: Test
       run: |
         flake8 tests/ pytorchltr/
-        pytest tests --cov-report=xml --cov=pytorchltr
+        python -m pytest tests --cov-report=xml --cov=pytorchltr
     - name: Report coverage
       uses: codecov/codecov-action@v1
       with:
