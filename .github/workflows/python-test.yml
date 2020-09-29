@@ -7,7 +7,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-18.04]
+        os: [macos-latest, windows-latest, ubuntu-latest]
         python-version: [ '3.6', '3.7', '3.8' ]
 
     runs-on: ${{ matrix.os }}
@@ -34,5 +34,8 @@ jobs:
         python setup.py build_ext --inplace
     - name: Test
       run: |
-        pytest tests
         flake8 tests/ pytorchltr/
+        pytest tests --cov-report=xml --cov=pytorchltr
+    - name: Report coverage
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.6'
+      uses: codecov/codecov-action@v1
