@@ -37,7 +37,7 @@ with open("README.md", "rt") as f:
 
 setup(
     name="pytorchltr",
-    version="0.2.0",
+    version="0.2.1",
     description="Learning to Rank with PyTorch",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -46,7 +46,7 @@ setup(
     author_email="rjagerman@gmail.com",
     license="MIT",
     packages=find_packages(exclude=("tests", "tests.*",)),
-    python_requires='>=3.6',
+    python_requires='>=3.5',
     ext_modules=get_svmrank_parser_ext(),
     include_dirs=[numpy.get_include()],
     install_requires=["numpy",

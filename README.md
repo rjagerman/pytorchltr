@@ -15,7 +15,7 @@ In your virtualenv simply run:
 
     pip install pytorchltr 
 
-Note that this library requires Python 3.6 or higher.
+Note that this library requires Python 3.5 or higher.
 
 ## Documentation
 
