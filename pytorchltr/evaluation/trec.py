@@ -68,15 +68,16 @@ def generate_pytrec_eval(scores: _torch.FloatTensor,
 
         # Store under correct qid.
         if qids is not None:
-            qid = f"{q_prefix}{int(qids[i])}"
+            qid = "{:s}{:d}".format(q_prefix, int(qids[i]))
         else:
-            qid = f"{q_prefix}{i + qid_offset}"
+            qid = "{:s}{:d}".format(q_prefix, i + qid_offset)
         qrel[qid] = {}
         run[qid] = {}
 
         # Iterate documents and get relevance and scores.
         for d in range(n[i]):
-            qrel[qid][f"{d_prefix}{d}"] = int(relevance[i, d])
-            run[qid][f"{d_prefix}{d}"] = float(scores[i, d])
+            docid = "{:s}{:d}".format(d_prefix, d)
+            qrel[qid][docid] = int(relevance[i, d])
+            run[qid][docid] = float(scores[i, d])
 
     return qrel, run
