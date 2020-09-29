@@ -146,11 +146,10 @@ class LambdaNDCGLoss1(LambdaLoss):
 
     .. math::
         l(\mathbf{s}, \mathbf{y})
-        = -\sum_{i=1}^n \sum_{j=1}^n \log_2 \sum_{\pi}
+        = -\sum_{i=1}^n \sum_{j=1}^n \log_2
         \left(
         \frac{1}{1 + e^{-\sigma (s_{\pi_i} - s_{\pi_j})}}
         \right)^{\frac{G_{\pi_i}}{D_i}}
-        H(\pi \mid \mathbf{s})
 
     where :math:`\pi_i` is the index of the item at rank :math:`i` after
     sorting the scores and
