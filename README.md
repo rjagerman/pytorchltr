@@ -1,6 +1,6 @@
 # PyTorch Learning to Rank (LTR)
 
-![Build](https://img.shields.io/github/workflow/status/rjagerman/pytorchltr/Test/master)
+[![Build](https://img.shields.io/github/workflow/status/rjagerman/pytorchltr/Test/master)](https://github.com/rjagerman/pytorchltr/actions?query=branch%3Amaster+workflow%3ATest)
 [![Documentation](https://img.shields.io/readthedocs/pytorchltr)](https://pytorchltr.readthedocs.io/)
 [![Coverage](https://img.shields.io/codecov/c/github/rjagerman/pytorchltr/master)](https://codecov.io/gh/rjagerman/pytorchltr)
 [![CodeFactor](https://img.shields.io/codefactor/grade/github/rjagerman/pytorchltr/master)](https://www.codefactor.io/repository/github/rjagerman/pytorchltr)
