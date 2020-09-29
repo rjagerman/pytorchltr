@@ -1,6 +1,12 @@
-name: Test Python Package
+name: Test
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 2'  # every Tuesday at 00:00
 
 jobs:
   test:
