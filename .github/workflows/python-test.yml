@@ -1,13 +1,19 @@
-name: Test Python Package
+name: Test
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 2'  # every Tuesday at 00:00
 
 jobs:
   test:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-18.04]
+        os: [macos-latest, windows-latest, ubuntu-latest]
         python-version: [ '3.6', '3.7', '3.8' ]
 
     runs-on: ${{ matrix.os }}
@@ -34,5 +40,10 @@ jobs:
         python setup.py build_ext --inplace
     - name: Test
       run: |
-        pytest tests
         flake8 tests/ pytorchltr/
+        pytest tests --cov-report=xml --cov=pytorchltr
+    - name: Report coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
