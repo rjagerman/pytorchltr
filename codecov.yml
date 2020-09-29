@@ -1,6 +1,6 @@
 fixes:
   - "__init__.py::pytorchltr/__init__.py"
-  - "__init__.py::pytorchltr/datasets/__init__.py"
-  - "__init__.py::pytorchltr/evaluation/__init__.py"
-  - "__init__.py::pytorchltr/loss/__init__.py"
-  - "__init__.py::pytorchltr/utils/__init__.py"
+  - "datasets/__init__.py::pytorchltr/datasets/__init__.py"
+  - "evaluation/__init__.py::pytorchltr/evaluation/__init__.py"
+  - "loss/__init__.py::pytorchltr/loss/__init__.py"
+  - "utils/__init__.py::pytorchltr/utils/__init__.py"
