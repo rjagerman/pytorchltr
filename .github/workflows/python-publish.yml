@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.6', '3.7', '3.8' ]
+        python-version: [ '3.5', '3.6', '3.7', '3.8' ]
 
     runs-on: macos-latest
 
@@ -71,7 +71,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.6', '3.7', '3.8' ]
+        python-version: [ '3.5', '3.6', '3.7', '3.8' ]
 
     runs-on: windows-latest
 
@@ -105,7 +105,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 'cp36-cp36m', 'cp37-cp37m', 'cp38-cp38' ]
+        python-version: [ 'cp35-cp35m', 'cp36-cp36m', 'cp37-cp37m', 'cp38-cp38' ]
 
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux1_x86_64
