@@ -46,7 +46,7 @@ packaging==20.3
     #   sphinx
 pluggy==0.13.1
     # via pytest
-py==1.8.1
+py==1.10.0
     # via pytest
 pybtex-docutils==0.2.2
     # via sphinxcontrib-bibtex
