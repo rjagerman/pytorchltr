@@ -10,7 +10,7 @@ attrs==19.3.0
     # via pytest
 babel==2.8.0
     # via sphinx
-certifi==2020.4.5.1
+certifi==2022.12.7
     # via requests
 chardet==3.0.4
     # via requests
@@ -48,12 +48,12 @@ pluggy==0.13.1
     # via pytest
 py==1.8.1
     # via pytest
-pybtex-docutils==0.2.2
-    # via sphinxcontrib-bibtex
 pybtex==0.22.2
     # via
     #   pybtex-docutils
     #   sphinxcontrib-bibtex
+pybtex-docutils==0.2.2
+    # via sphinxcontrib-bibtex
 pycodestyle==2.6.0
     # via flake8
 pyflakes==2.2.0
@@ -62,12 +62,12 @@ pygments==2.6.1
     # via sphinx
 pyparsing==2.4.7
     # via packaging
-pytest-cov==2.9.0
-    # via -r dev-requirements.in
 pytest==5.4.1
     # via
     #   -r dev-requirements.in
     #   pytest-cov
+pytest-cov==2.9.0
+    # via -r dev-requirements.in
 pytz==2020.1
     # via babel
 pyyaml==5.3.1
@@ -82,16 +82,16 @@ six==1.14.0
     #   pybtex-docutils
 snowballstemmer==2.0.0
     # via sphinx
-sphinx-autodoc-typehints==1.11.0
-    # via -r dev-requirements.in
-sphinx-rtd-theme==0.5.0
-    # via -r dev-requirements.in
 sphinx==3.0.3
     # via
     #   -r dev-requirements.in
     #   sphinx-autodoc-typehints
     #   sphinx-rtd-theme
     #   sphinxcontrib-bibtex
+sphinx-autodoc-typehints==1.11.0
+    # via -r dev-requirements.in
+sphinx-rtd-theme==0.5.0
+    # via -r dev-requirements.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-bibtex==1.0.0
