@@ -198,7 +198,7 @@ class SVMRankDataset(_Dataset):
                 ind = _torch.cat([d[0] for d in out_features], dim=1)
                 val = _torch.cat([d[1] for d in out_features], dim=0)
                 size = (len(batch), list_size, batch[0].features.shape[1])
-                out_features = _torch.sparse.FloatTensor(
+                out_features = _torch.sparse_coo_tensor(
                     ind, val, _torch.Size(size))
 
             return SVMRankBatch(out_features, out_relevance, out_n, out_qid,
@@ -231,7 +231,7 @@ class SVMRankDataset(_Dataset):
             coo = _coo_matrix(features)
             ind = _torch.LongTensor(_np.vstack((coo.row, coo.col)))
             val = _torch.FloatTensor(coo.data)
-            features = _torch.sparse.FloatTensor(
+            features = _torch.sparse_coo_tensor(
                 ind, val, _torch.Size(coo.shape))
         else:
             features = _torch.FloatTensor(features)

@@ -76,7 +76,7 @@ class _PairwiseAdditiveLoss(_torch.nn.Module):
                                          score_pairs.shape[2])
         arange = _torch.arange(score_pairs.shape[1],
                                device=score_pairs.device)
-        range_grid = _torch.max(*_torch.meshgrid([arange, arange]))
+        range_grid = _torch.max(*_torch.meshgrid([arange, arange], indexing="ij"))
         range_grid = range_grid[None, :, :].repeat(n.shape[0], 1, 1)
         loss_pairs[n_grid <= range_grid] = 0.0
 
