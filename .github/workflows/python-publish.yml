@@ -14,7 +14,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.6'
+        python-version: '3.10'
         architecture: 'x64'
     - name: Install dependencies
       run: |
@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.5', '3.6', '3.7', '3.8' ]
+        python-version: [ '3.10', '3.11' ]
 
     runs-on: macos-latest
 
@@ -71,7 +71,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.5', '3.6', '3.7', '3.8' ]
+        python-version: [ '3.10', '3.11' ]
 
     runs-on: windows-latest
 
@@ -86,7 +86,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install --upgrade setuptools wheel twine
-        pip install torch==1.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        pip install torch==2.0.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
         pip install -r requirements.txt
         pip install -r dev-requirements.txt
         python setup.py build_ext
@@ -105,10 +105,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 'cp35-cp35m', 'cp36-cp36m', 'cp37-cp37m', 'cp38-cp38' ]
+        python-version: [ 'cp310-cp310', 'cp311-cp311' ]
 
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux1_x86_64
+    container: quay.io/pypa/manylinux_2_28_x86_64
 
     steps:
     - uses: actions/checkout@v1
