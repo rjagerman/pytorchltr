@@ -1,5 +1,6 @@
 MIT License
 
+Copyright (c) 2024 Alexander Kreuzer
 Copyright (c) 2020 Rolf Jagerman
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

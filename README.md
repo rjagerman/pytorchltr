@@ -1,25 +1,22 @@
 # PyTorch Learning to Rank (LTR)
 
-[![Build](https://img.shields.io/github/workflow/status/rjagerman/pytorchltr/Test/master)](https://github.com/rjagerman/pytorchltr/actions?query=branch%3Amaster+workflow%3ATest)
-[![Documentation](https://img.shields.io/readthedocs/pytorchltr)](https://pytorchltr.readthedocs.io/)
-[![Coverage](https://img.shields.io/codecov/c/github/rjagerman/pytorchltr/master)](https://codecov.io/gh/rjagerman/pytorchltr)
-[![CodeFactor](https://img.shields.io/codefactor/grade/github/rjagerman/pytorchltr/master)](https://www.codefactor.io/repository/github/rjagerman/pytorchltr)
-[![License](https://img.shields.io/github/license/rjagerman/pytorchltr)](https://github.com/rjagerman/pytorchltr/blob/master/LICENSE.md)
-
 This is a library for Learning to Rank (LTR) with PyTorch.
 The goal of this library is to support the infrastructure necessary for performing LTR experiments in PyTorch.
+
+This is a fork of the original [pytorchltr](https://github.com/rjagerman/pytorchltr). It add fix and updates to allow it to work with Python >=3.10.
+
 
 ## Installation
 
 In your virtualenv simply run:
 
-    pip install pytorchltr 
+    pip install pytorchltr2
 
-Note that this library requires Python 3.5 or higher.
+Note that this library requires Python 3.10 or higher.
 
 ## Documentation
 
-Documentation is available [here](https://pytorchltr.readthedocs.io/).
+Original documentation is available [here](https://pytorchltr.readthedocs.io/).
 
 ## Example
 
@@ -56,7 +53,7 @@ We cannot vouch for the quality, correctness or usefulness of these datasets.
 We do not host or distribute these datasets and it is ultimately **your responsibility** to determine whether you have permission to use each dataset under its respective license.
 
 ## Citing
-If you find this software useful for your research, we kindly ask you to cite the following publication:
+If you find this software useful for your research, please cite the publication for the original pytorchltr.
 
     @inproceedings{jagerman2020accelerated,
         author = {Jagerman, Rolf and de Rijke, Maarten},

@@ -36,14 +36,14 @@ with open("README.md", "rt") as f:
 
 
 setup(
-    name="pytorchltr",
+    name="pytorchltr2",
     version="0.2.2",
-    description="Learning to Rank with PyTorch",
+    description="Learning to Rank with PyTorch (Fork of pytorchltr)",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/rjagerman/pytorchltr",
+    url="https://github.com/akreuzer/pytorchltr",
     author="Rolf Jagerman",
-    author_email="rjagerman@gmail.com",
+    author_email="a_kreuzer@posteo.de",
     license="MIT",
     packages=find_packages(exclude=("tests", "tests.*",)),
     python_requires='>=3.10',
