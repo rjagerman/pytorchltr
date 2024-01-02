@@ -7,6 +7,7 @@ on:
   pull_request:
   schedule:
     - cron: '0 0 * * 2'  # every Tuesday at 00:00
+  workflow_dispatch:
 
 jobs:
   test:
@@ -42,8 +43,8 @@ jobs:
       run: |
         flake8 tests/ pytorchltr/
         pytest tests --cov-report=xml --cov=pytorchltr
-    - name: Report coverage
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
+#    - name: Report coverage
+#      uses: codecov/codecov-action@v1
+#      with:
+#        token: ${{ secrets.CODECOV_TOKEN }}
+#        file: ./coverage.xml
